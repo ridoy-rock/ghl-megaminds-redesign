@@ -1,0 +1,228 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import { testimonials } from '../data/site';
+
+interface Props {
+  /** Navy panel instead of sage (the /v2 page). */
+  dark?: boolean;
+}
+
+const { dark = false } = Astro.props;
+
+// Sample (placeholder) testimonials only render locally and on review builds, never on the live site.
+const showSamples = import.meta.env.DEV || import.meta.env.PUBLIC_REVIEW_BUILD === 'true';
+const items = testimonials.filter((t) => showSamples || !t.sample);
+
+// Turn a YouTube / Vimeo / file URL into what the player dialog needs.
+const toPlayer = (url: string) => {
+  const youtube = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/);
+  if (youtube) return { type: 'iframe', src: `https://www.youtube-nocookie.com/embed/${youtube[1]}?autoplay=1&rel=0` };
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return { type: 'iframe', src: `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1` };
+  return { type: 'file', src: url };
+};
+---
+
+<section id="testimonials" aria-labelledby="testimonials-title" class="scroll-mt-20 px-2 sm:px-4">
+  <div class:list={['relative overflow-hidden rounded-[2rem] py-20 lg:py-24', dark ? 'on-dark bg-pine text-canvas' : 'bg-sage']}>
+    <div
+      class:list={[
+        'pointer-events-none absolute -bottom-48 -left-32 size-[30rem] rounded-full border-[48px]',
+        dark ? 'border-canvas/[0.04]' : 'border-forest/[0.06]',
+      ]}
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="container-x relative flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+      <div data-stagger>
+        <Eyebrow tone={dark ? 'dark' : 'light'} icon="chat-circle-dots-fill">Client testimonials</Eyebrow>
+        <h2
+          id="testimonials-title"
+          class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]"
+        >
+          What our clients say.
+        </h2>
+      </div>
+      <div class="flex gap-2.5" data-carousel-controls>
+        <button type="button" class="carousel-btn" data-carousel-dir="-1" aria-controls="testimonial-track" aria-label="Previous testimonials">
+          <Icon name="arrow-left" class="size-5" />
+        </button>
+        <button type="button" class="carousel-btn" data-carousel-dir="1" aria-controls="testimonial-track" aria-label="Next testimonials">
+          <Icon name="arrow-right" class="size-5" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Touch: mandatory snapping for clean swipes. Mouse/trackpad: no snapping, so wheel and trackpad scrolling move freely. -->
+    <ul
+      id="testimonial-track"
+      class="testimonial-track relative mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 pointer-fine:snap-none"
+      aria-label="Testimonials"
+    >
+      {
+        items.map((t, i) => (
+          <li class="flex shrink-0 snap-start" data-reveal="fade" style={`--d: ${Math.min(i, 3) * 110}`}>
+            {t.kind === 'text' ? (
+              <article class="flex w-[min(84vw,400px)] flex-col rounded-card bg-paper p-7 text-ink ring-1 ring-ink/[0.06] sm:p-8">
+                <Icon name="quotes-fill" class="size-9 text-forest" />
+                <blockquote class="mt-5 grow font-display text-[1.3rem] font-semibold leading-[1.32] tracking-[-0.015em]">
+                  <p>&ldquo;{t.quote}&rdquo;</p>
+                </blockquote>
+                <footer class="mt-8 flex items-center gap-3.5 border-t border-ink/10 pt-6">
+                  {t.photo && (
+                    <Image src={t.photo} alt="" widths={[96, 144]} sizes="48px" class="size-12 rounded-full object-cover" />
+                  )}
+                  <div>
+                    <p class="font-bold">{t.name}</p>
+                    <p class="text-sm text-ink-soft">{t.role}</p>
+                  </div>
+                </footer>
+              </article>
+            ) : t.video ? (
+              <button
+                type="button"
+                class="group relative block aspect-[9/16] w-[min(72vw,280px)] overflow-hidden rounded-card bg-pine text-left text-canvas"
+                data-video-src={toPlayer(t.video).src}
+                data-video-type={toPlayer(t.video).type}
+                data-video-aspect={t.aspect ?? '16/9'}
+                aria-label={`Play video testimonial from ${t.name}`}
+              >
+                {t.poster && (
+                  <Image
+                    src={t.poster}
+                    alt=""
+                    widths={[320, 560]}
+                    sizes="280px"
+                    class="absolute inset-0 size-full object-cover transition-[scale] duration-700 ease-out-soft group-hover:scale-105"
+                  />
+                )}
+                {/* UGC look: full-bleed footage, translucent play button, gold name label */}
+                {t.sample && (
+                  <span class="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-ink">
+                    Sample
+                  </span>
+                )}
+                <span class="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink/65 to-transparent" />
+                <span class="play-btn absolute left-1/2 top-1/2 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-ink/45 text-white ring-1 ring-white/25 backdrop-blur-md">
+                  <Icon name="play-fill" class="size-6 translate-x-0.5" />
+                </span>
+                <span class="absolute inset-x-4 bottom-5 flex flex-col items-center text-center">
+                  <span class="rounded-[12px] bg-sun px-4 py-2 font-display text-[17px] font-bold leading-none text-ink">
+                    {t.name}
+                  </span>
+                  <span class="mt-2 text-[13px] font-medium text-white/90 [text-shadow:0_1px_8px_rgb(0_0_0/0.45)]">
+                    {t.role}
+                  </span>
+                </span>
+              </button>
+            ) : (
+              <div class="relative grid aspect-[9/16] w-[min(72vw,280px)] place-items-center overflow-hidden rounded-card bg-pine text-center text-canvas">
+                {/* Slot for a video testimonial that hasn't been added yet */}
+                <span class="pointer-events-none absolute inset-x-6 top-1/3 h-40 rounded-full bg-sun/20 blur-3xl" aria-hidden="true" />
+                <div class="relative px-6">
+                  <span class="mx-auto grid size-16 place-items-center rounded-full text-canvas/70 ring-1 ring-canvas/25">
+                    <Icon name="play-fill" class="size-6 translate-x-0.5" />
+                  </span>
+                  <p class="mt-5 font-display text-lg font-semibold">Video testimonial</p>
+                  <p class="mt-1 text-sm text-canvas/60">Coming soon</p>
+                </div>
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <dialog id="video-dialog" class="video-dialog" aria-label="Video testimonial">
+    <button type="button" class="video-dialog-close" data-close-dialog aria-label="Close video">
+      <Icon name="x" class="size-5" />
+    </button>
+    <div class="overflow-hidden rounded-card bg-pine" data-player></div>
+  </dialog>
+</section>
+
+<script>
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Carousel: arrow buttons scroll about one viewport of cards; snap points keep cards aligned.
+  const track = document.getElementById('testimonial-track');
+  const controls = document.querySelector<HTMLElement>('[data-carousel-controls]');
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-carousel-dir]')];
+  if (track && controls) {
+    buttons.forEach((button) =>
+      button.addEventListener('click', () =>
+        track.scrollBy({
+          left: Number(button.dataset.carouselDir) * track.clientWidth * 0.7,
+          behavior: reduceMotion ? 'auto' : 'smooth',
+        }),
+      ),
+    );
+    // Hide the arrows when every card already fits.
+    new ResizeObserver(() => controls.classList.toggle('invisible', track.scrollWidth <= track.clientWidth + 2)).observe(track);
+    // Disable an arrow when its end card is fully in view.
+    const items = track.querySelectorAll('li');
+    if (items.length) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const dir = entry.target === items[0] ? '-1' : '1';
+            const button = buttons.find((b) => b.dataset.carouselDir === dir);
+            if (button) button.disabled = entry.intersectionRatio > 0.95;
+          }
+        },
+        { root: track, threshold: [0, 0.95, 1] },
+      );
+      io.observe(items[0]);
+      io.observe(items[items.length - 1]);
+    }
+  }
+
+  // Video player: build the player on open, tear it down on close so playback stops.
+  const dialog = document.getElementById('video-dialog') as HTMLDialogElement | null;
+  const player = dialog?.querySelector<HTMLElement>('[data-player]');
+  if (dialog && player) {
+    document.querySelectorAll<HTMLButtonElement>('[data-video-src]').forEach((card) =>
+      card.addEventListener('click', () => {
+        const { videoSrc = '', videoType, videoAspect = '16/9' } = card.dataset;
+        const vertical = videoAspect === '9/16';
+        dialog.style.width = vertical ? 'min(92vw, 46vh)' : 'min(92vw, 1000px, calc(80vh * 16 / 9))';
+        player.style.aspectRatio = videoAspect.replace('/', ' / ');
+        player.replaceChildren();
+        if (videoType === 'iframe') {
+          const frame = document.createElement('iframe');
+          frame.src = videoSrc;
+          frame.title = card.getAttribute('aria-label') ?? 'Video testimonial';
+          frame.allow = 'autoplay; fullscreen; picture-in-picture';
+          frame.allowFullscreen = true;
+          frame.className = 'block size-full border-0';
+          player.append(frame);
+        } else {
+          const video = document.createElement('video');
+          video.src = videoSrc;
+          video.controls = true;
+          video.autoplay = true;
+          video.playsInline = true;
+          video.className = 'block size-full bg-black object-contain';
+          player.append(video);
+        }
+        dialog.showModal();
+      }),
+    );
+    // Removing the player element is what stops playback. Do it directly on our own close paths; the
+    // close event (which browsers can deliver late) only backs up the Escape key.
+    const closePlayer = () => {
+      player.replaceChildren();
+      dialog.close();
+    };
+    dialog.addEventListener('close', () => player.replaceChildren());
+    dialog.querySelector('[data-close-dialog]')?.addEventListener('click', closePlayer);
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closePlayer();
+    });
+    dialog.addEventListener('cancel', () => player.replaceChildren());
+  }
+</script>

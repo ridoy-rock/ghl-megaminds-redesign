@@ -1,0 +1,19 @@
+---
+// Horizontal lockup: the rising dots + "GHL" (semibold) + "Megaminds" (extrabold), matching brand/ghl-megaminds-logo.svg.
+import LogoMark from './LogoMark.astro';
+
+interface Props {
+  tone?: 'ink' | 'light';
+  class?: string;
+}
+
+const { tone = 'ink', class: className } = Astro.props;
+const color = tone === 'ink' ? 'text-ink' : 'text-canvas';
+---
+
+<span class:list={['inline-flex items-center gap-2.5', color, className]}>
+  <LogoMark class="size-9 shrink-0" />
+  <span class="whitespace-nowrap font-display text-[1.3rem] leading-none tracking-[-0.012em]">
+    <span class="font-semibold">GHL</span>{' '}<span class="font-extrabold">Megaminds</span>
+  </span>
+</span>

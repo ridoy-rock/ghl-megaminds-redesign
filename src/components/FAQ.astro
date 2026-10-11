@@ -1,0 +1,41 @@
+---
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import { faqs, BOOK_HREF, BOOK_LABEL } from '../data/site';
+---
+
+<section id="faq" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32">
+  <div class="container-x grid gap-12 lg:grid-cols-12 lg:gap-10">
+    <div class="self-start lg:sticky lg:top-28 lg:col-span-4" data-stagger>
+      <Eyebrow icon="question-fill">FAQ</Eyebrow>
+      <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
+        Questions agencies ask us.
+      </h2>
+      <p class="mt-5 max-w-[24rem] text-lg leading-relaxed text-ink-soft">
+        Something else on your mind? Ask us directly on a 30-minute call.
+      </p>
+      <a href={BOOK_HREF} class="link-arrow mt-7">
+        {BOOK_LABEL}
+        <Icon name="arrow-right" class="btn-arrow size-4" />
+      </a>
+    </div>
+
+    <div class="grid gap-3 lg:col-span-8">
+      {
+        faqs.map((faq, i) => (
+          <details class="faq rounded-card bg-paper ring-1 ring-ink/[0.08]" data-reveal style={`--d: ${i * 60}`}>
+            <summary class="flex items-center justify-between gap-6 rounded-card px-6 py-5 text-[1.075rem] font-semibold sm:px-7 sm:py-6">
+              {faq.q}
+              <span class="faq-icon grid size-9 shrink-0 place-items-center rounded-full bg-canvas ring-1 ring-ink/10">
+                <Icon name="plus" class="size-4" />
+              </span>
+            </summary>
+            <div class="px-6 pb-6 sm:px-7 sm:pb-7">
+              <p class="max-w-[44rem] leading-relaxed text-ink-soft">{faq.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

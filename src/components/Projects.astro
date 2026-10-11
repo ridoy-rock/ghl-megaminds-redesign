@@ -1,0 +1,134 @@
+---
+import CountUp from './CountUp.astro';
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import BrandLogo from './BrandLogo.astro';
+import { projects, projectStats, BOOK_HREF, BOOK_LABEL } from '../data/site';
+
+// Small cells rotate through the palette tints so the grid never reads as cream-on-cream.
+const tints = ['bg-butter', 'bg-sage', 'bg-stone'];
+---
+
+<section id="projects" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32">
+  <div class="container-x">
+    <div class="max-w-[46rem]" data-stagger>
+      <Eyebrow icon="code-fill">Projects we built</Eyebrow>
+      <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
+        Built for HighLevel agencies.
+      </h2>
+      <p class="mt-5 max-w-[36rem] text-lg leading-relaxed text-ink-soft">
+        Marketplace apps, middleware and templates we have shipped for the HighLevel ecosystem.
+      </p>
+    </div>
+
+    <ul class="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-ink/10 py-8 sm:grid-cols-4">
+      {
+        projectStats.map((stat) => (
+          <li>
+            <p class="font-display text-3xl font-extrabold leading-none tracking-[-0.035em] sm:text-[2.25rem]">
+              <CountUp value={stat.value} />
+            </p>
+            <p class="mt-2 max-w-[13rem] text-[14.5px] leading-snug text-ink-soft">{stat.label}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-10 grid grid-flow-row-dense gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+      {
+        projects.map((project, i) => {
+          const wide = project.visual.kind === 'shot';
+          const tint = tints[i % tints.length];
+          return (
+            <article
+              class:list={[
+                'group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]',
+                wide && 'md:col-span-2 lg:grid lg:grid-cols-[0.78fr_1.22fr]',
+              ]}
+              data-reveal="pop"
+              style={`--d: ${(i % 3) * 110}`}
+            >
+              {project.visual.kind === 'shot' ? (
+                <div class="relative overflow-hidden bg-stone/70 pl-6 pt-6 sm:pl-8 sm:pt-8 lg:order-last">
+                  <Image
+                    src={project.visual.image}
+                    alt={project.visual.alt}
+                    widths={[480, 720, 960]}
+                    sizes="(min-width: 1024px) 420px, (min-width: 768px) 80vw, 92vw"
+                    class="h-full min-h-[220px] w-full rounded-tl-[14px] object-cover object-left-top shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--color-ink)_35%,transparent)] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1"
+                  />
+                </div>
+              ) : (
+                <div class:list={['flex h-44 items-center justify-center gap-3', tint]} aria-hidden="true">
+                  <span class="grid size-16 place-items-center rounded-[18px] bg-paper text-ink shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--color-ink)_30%,transparent)]">
+                    <BrandLogo logo="highlevel" height={24} />
+                  </span>
+                  <span class="flex items-center text-ink/35">
+                    <span class="w-5 border-t-2 border-dashed border-current" />
+                    <Icon name="link-simple" class="mx-1 size-5 text-ink/55" />
+                    <span class="w-5 border-t-2 border-dashed border-current" />
+                  </span>
+                  <span class="grid size-16 place-items-center rounded-[18px] bg-paper text-ink shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--color-ink)_30%,transparent)]">
+                    {project.visual.kind === 'logo' ? (
+                      <BrandLogo logo={project.visual.logo} height={28} />
+                    ) : project.visual.mono ? (
+                      <span class="font-mono text-[12px] font-bold tracking-tight">{project.visual.glyph}</span>
+                    ) : (
+                      <span class="font-display text-3xl font-bold leading-none">{project.visual.glyph}</span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              <div class:list={['flex grow flex-col p-6 sm:p-7', wide && 'lg:p-9']}>
+                <div class="flex flex-wrap items-center justify-between gap-2 text-[13px]">
+                  <span class="font-semibold text-ink-soft">{project.type}</span>
+                  {project.installs && (
+                    <span class="rounded-full bg-butter px-2.5 py-1 font-bold">{project.installs} installs</span>
+                  )}
+                </div>
+                <h3
+                  class:list={[
+                    'mt-3 font-bold leading-snug tracking-[-0.02em]',
+                    wide ? 'text-2xl' : 'text-xl',
+                  ]}
+                >
+                  {project.title}
+                </h3>
+                <p class="mt-2.5 text-[15px] leading-relaxed text-ink-soft">{project.body}</p>
+                <div class="mt-auto pt-6">
+                  <a href={project.href} target="_blank" rel="noopener" class="link-arrow text-[15px]">
+                    {project.cta}
+                    <Icon name="arrow-up-right" class="btn-arrow size-4" />
+                    <span class="sr-only">(opens in a new tab)</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+
+      <article
+        class="on-dark flex flex-col rounded-card bg-pine p-7 text-canvas hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-26px_color-mix(in_srgb,var(--color-pine)_60%,transparent)] sm:p-8 md:col-span-2 lg:col-span-1"
+        data-reveal="pop"
+        style="--d: 220"
+      >
+        <Icon name="puzzle-piece-fill" class="size-9 text-sun" />
+        <h3 class="mt-6 text-[1.6rem] font-extrabold leading-tight tracking-[-0.03em]">
+          Need something HighLevel can't do yet?
+        </h3>
+        <p class="mt-3 leading-relaxed text-canvas/70">
+          We build private apps, middleware and client portals. Bring us the gap and we'll scope the fix.
+        </p>
+        <div class="mt-auto pt-8">
+          <a href={BOOK_HREF} class="btn btn-sun w-full">
+            {BOOK_LABEL}
+            <Icon name="arrow-right" class="btn-arrow size-4" />
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+---
+// Renders a stat like "< 48 hrs" with its number wrapped for the count-up in Base.astro.
+// The final value is what ships in the HTML, so crawlers and no-JS visitors see the real figure.
+interface Props {
+  value: string;
+}
+
+const { value } = Astro.props;
+const match = value.match(/^(\D*)(\d+)(.*)$/);
+---
+
+{
+  match ? (
+    <>
+      {match[1]}
+      <span data-count={match[2]} class="tabular-nums">
+        {match[2]}
+      </span>
+      {match[3]}
+    </>
+  ) : (
+    value
+  )
+}

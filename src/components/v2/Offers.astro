@@ -1,0 +1,127 @@
+---
+// /v2 plans: the middle plan (Support) is the featured navy card with the green button; the other two are white with
+// outlined buttons. Same subgrid as the homepage, so titles, prices and lists still line up across the three.
+import { Image } from 'astro:assets';
+import Icon from '../Icon.astro';
+import Eyebrow from '../Eyebrow.astro';
+import guaranteeArt from '../../assets/illustrations/guarantee.png';
+import { offers, BOOK_HREF, BOOK_LABEL } from '../../data/site';
+import { art } from '../../lib/theme';
+
+const FEATURED = 'support';
+---
+
+<section id="offers" class="scroll-mt-20 py-24 lg:py-32">
+  <div class="container-x">
+    <div class="mx-auto max-w-[44rem] text-center" data-stagger>
+      <Eyebrow tone="sun" icon="lightning-fill">Launch offer: 40% off</Eyebrow>
+      <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
+        Offload the tech. Keep the margins.
+      </h2>
+      <p class="mx-auto mt-5 max-w-[34rem] text-lg leading-relaxed text-ink-soft">
+        Plug certified HighLevel specialists and full-stack developers into your agency, starting tomorrow.
+      </p>
+    </div>
+
+    <div class="mt-14 grid gap-5 lg:grid-cols-3 lg:gap-y-0">
+      {
+        offers.map((offer, i) => {
+          const featured = offer.id === FEATURED;
+          return (
+            <article
+              id={`offer-${offer.id}`}
+              class:list={[
+                'group flex flex-col rounded-card p-2.5 hover:-translate-y-1.5 lg:row-span-7 lg:grid lg:grid-rows-subgrid',
+                featured
+                  ? 'on-dark bg-pine text-canvas shadow-[0_30px_60px_-30px_color-mix(in_srgb,var(--color-pine)_70%,transparent)]'
+                  : 'bg-paper ring-1 ring-ink/[0.08] hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]',
+              ]}
+              data-reveal="pop"
+              style={`--d: ${i * 100}`}
+            >
+              <div class="relative overflow-hidden rounded-[18px]">
+                <Image
+                  src={art(offer.art, Astro.url)}
+                  alt={offer.artAlt}
+                  widths={[400, 600, 800, 1168]}
+                  sizes="(min-width: 1240px) 380px, (min-width: 1024px) 30vw, 92vw"
+                  class="aspect-[16/10] w-full object-cover transition-[scale] duration-700 ease-out-soft group-hover:scale-105 md:aspect-[12/5] lg:aspect-[16/10]"
+                />
+                {featured && (
+                  <span class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-pine px-3 py-1.5 text-xs font-bold text-canvas">
+                    <Icon name="star-fill" class="size-3.5 text-sun" />
+                    Recommended
+                  </span>
+                )}
+              </div>
+
+              <div class="px-4 pt-6 sm:px-5">
+                <p class:list={['text-sm font-semibold', featured ? 'text-sun' : 'text-forest']}>{offer.kicker}</p>
+                <h3 class="mt-1 text-[1.6rem] font-extrabold leading-tight tracking-[-0.03em]">{offer.title}</h3>
+              </div>
+
+              <p class:list={['px-4 pt-3 text-[15.5px] leading-relaxed sm:px-5', featured ? 'text-canvas/70' : 'text-ink-soft']}>
+                {offer.blurb}
+              </p>
+
+              <div class="flex flex-wrap items-end gap-x-3 gap-y-2 px-4 pt-7 sm:px-5">
+                <p class="font-display text-[3.25rem] font-extrabold leading-[0.9] tracking-[-0.05em]">{offer.price}</p>
+                <p class:list={['pb-1 text-sm leading-tight', featured ? 'text-canvas/60' : 'text-ink-soft']}>
+                  /month
+                  <br />
+                  <span class="sr-only">Regular price </span>
+                  <s class={featured ? 'decoration-canvas/50' : 'decoration-ink/50'}>{offer.was}</s>
+                </p>
+                <span class="mb-1 ml-auto rounded-full bg-sun px-2.5 py-1 text-xs font-bold text-ink">Save 40%</span>
+              </div>
+
+              <p class:list={['px-4 pt-3 text-[13.5px] leading-relaxed sm:px-5', featured ? 'text-canvas/60' : 'text-ink-soft']}>
+                {offer.terms}
+              </p>
+
+              <div class="px-4 sm:px-5">
+                <hr class:list={['my-6', featured ? 'border-canvas/15' : 'border-ink/10']} />
+                <ul class="grid gap-2.5 text-[15px] leading-snug">
+                  {offer.items.map((item) => (
+                    <li class:list={['flex gap-2.5', featured && 'text-canvas/90']}>
+                      <Icon name="check-circle-fill" class:list={['mt-px size-[18px] shrink-0', featured ? 'text-[#17c94b]' : 'text-leaf']} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div class="mt-auto px-4 pb-4 pt-8 sm:px-5">
+                <a href={BOOK_HREF} class:list={['btn w-full', featured ? 'btn-ink' : 'btn-ghost']}>
+                  {BOOK_LABEL}
+                  <Icon name="arrow-right" class="btn-arrow size-4" />
+                </a>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <div
+      class="mt-5 grid items-center gap-6 rounded-card bg-paper p-6 ring-1 ring-ink/[0.08] sm:grid-cols-[auto_1fr] sm:gap-8 sm:p-8 lg:px-10"
+      data-reveal
+    >
+      <Image
+        src={art(guaranteeArt, Astro.url)}
+        alt="Clay illustration of a navy shield with a golden checkmark"
+        widths={[160, 240]}
+        sizes="96px"
+        class="scroll-tilt h-auto w-20 sm:w-24"
+        style="--tilt: 8deg"
+      />
+      <div>
+        <h3 class="text-2xl font-extrabold tracking-[-0.03em]">7-day, 100% money-back guarantee</h3>
+        <p class="mt-2 max-w-[50rem] leading-relaxed text-ink-soft">
+          If we cannot deliver the quality, speed and technical precision we promise within your first 7 days, you get
+          a full refund. No questions asked.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

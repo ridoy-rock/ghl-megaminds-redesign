@@ -1,0 +1,46 @@
+---
+import CountUp from './CountUp.astro';
+import BrandLogo from './BrandLogo.astro';
+import { heroStats, integrations } from '../data/site';
+---
+
+<section aria-label="Track record and integrations" class="bg-canvas">
+  <div class="container-x">
+    <ul class="grid grid-cols-2 gap-x-6 gap-y-8 py-10 lg:grid-cols-4 lg:gap-0 lg:py-12">
+      {
+        heroStats.map((stat, i) => (
+          <li
+            class:list={['lg:px-8', i === 0 && 'lg:pl-0', i > 0 && 'lg:border-l lg:border-ink/10']}
+            data-reveal
+            style={`--d: ${i * 80}`}
+          >
+            <p class="font-display text-[2.15rem] font-extrabold leading-none tracking-[-0.035em] sm:text-[2.5rem]">
+              <CountUp value={stat.value} />
+            </p>
+            <p class="mt-2.5 max-w-[15rem] text-[15px] leading-snug text-ink-soft">{stat.label}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="flex flex-col gap-5 border-t border-ink/10 py-8 lg:flex-row lg:items-center lg:gap-10">
+      <p class="shrink-0 text-sm font-semibold text-ink-soft lg:w-44">We plug into the stack you already run</p>
+      <div class="marquee relative min-w-0 grow overflow-hidden">
+        <div class="marquee-track flex">
+          {
+            [false, true].map((duplicate) => (
+              <ul class="flex shrink-0 items-center gap-12 pr-12" aria-hidden={duplicate ? 'true' : undefined}>
+                {integrations.map((item) => (
+                  <li class="flex items-center gap-2.5 whitespace-nowrap text-ink/65 transition-colors hover:text-ink">
+                    <BrandLogo logo={item.logo} height={item.logo === 'highlevel' ? 20 : 22} />
+                    <span class="font-display text-[17px] font-semibold tracking-[-0.015em]">{item.name}</span>
+                  </li>
+                ))}
+              </ul>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

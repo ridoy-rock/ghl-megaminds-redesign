@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.captures
+.review-build
+review
+docs
+.env*
+.vercel
+incoming-videos

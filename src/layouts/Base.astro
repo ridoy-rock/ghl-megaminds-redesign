@@ -1,0 +1,187 @@
+---
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
+import '@fontsource-variable/figtree';
+import '../styles/global.css';
+import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
+import bodyFont from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
+import { site, faqs, socials, GTM_ID } from '../data/site';
+import { themeOf } from '../lib/theme';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = site.title, description = site.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+// Review builds (PUBLIC_REVIEW_BUILD=true: the review zip and Vercel preview links) skip GTM and the HighLevel chat
+// widget it loads, and ask search engines not to index the copy. Normal production builds include GTM.
+const reviewBuild = import.meta.env.PUBLIC_REVIEW_BUILD === 'true';
+const enableGtm = import.meta.env.PROD && !reviewBuild;
+// The blue theme (/v2) is an alternate colour version of the homepage: same content, so it points its canonical at the
+// homepage and is never indexed.
+const theme = themeOf(Astro.url);
+const blue = theme === 'blue';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${site.url}/#org`,
+      name: site.name,
+      url: `${site.url}/`,
+      logo: `${site.url}/favicon.svg`,
+      description: 'White-label HighLevel support by certified admins and software engineers.',
+      ...(socials.some((s) => s.href && !s.dummy) && {
+        sameAs: socials.filter((s) => s.href && !s.dummy).map((s) => s.href),
+      }),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${site.url}/#website`,
+      url: `${site.url}/`,
+      name: site.name,
+      publisher: { '@id': `${site.url}/#org` },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en" data-theme={blue ? 'blue' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={blue ? `${site.url}/` : canonical} />
+    {(reviewBuild || blue) && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content={blue ? '#0f1d38' : '#f4f2ec'} />
+    <link rel="icon" type="image/svg+xml" href={blue ? '/favicon-blue.svg' : '/favicon.svg'} />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    {
+      enableGtm && (
+        <script is:inline define:vars={{ GTM_ID }}>
+          (function (w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+            var f = d.getElementsByTagName(s)[0],
+              j = d.createElement(s),
+              dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+            f.parentNode.insertBefore(j, f);
+          })(window, document, 'script', 'dataLayer', GTM_ID);
+        </script>
+      )
+    }
+  </head>
+  <body class="grain bg-canvas text-ink">
+    {
+      enableGtm && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+            title="Google Tag Manager"
+          />
+        </noscript>
+      )
+    }
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-canvas"
+      >Skip to content</a
+    >
+    <slot />
+
+    <script>
+      // Button hover fill: grow from where the pointer enters, shrink toward where it leaves.
+      const setFillOrigin = (event: PointerEvent) => {
+        const button = (event.target as Element | null)?.closest?.('.btn') as HTMLElement | null;
+        if (!button || button.contains(event.relatedTarget as Node | null)) return;
+        const rect = button.getBoundingClientRect();
+        button.style.setProperty('--x', `${event.clientX - rect.left}px`);
+        button.style.setProperty('--y', `${event.clientY - rect.top}px`);
+      };
+      document.addEventListener('pointerover', setFillOrigin);
+      document.addEventListener('pointerout', setFillOrigin);
+      // The fill layer carries a dark copy of the label, so text is dark exactly where the fill has reached.
+      document.querySelectorAll<HTMLElement>('.btn').forEach((button) => {
+        const fill = document.createElement('span');
+        fill.className = 'btn-fill';
+        fill.setAttribute('aria-hidden', 'true');
+        button.childNodes.forEach((node) => fill.append(node.cloneNode(true)));
+        button.append(fill);
+      });
+
+      // Reveal-on-scroll: one observer for single elements and staggered groups; each animates once.
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealables = document.querySelectorAll<HTMLElement>('[data-reveal], [data-stagger]');
+
+      // Count-ups: the real number stays in the HTML; it rolls up from 0 the first time it scrolls into view.
+      const counters = reduceMotion ? [] : [...document.querySelectorAll<HTMLElement>('[data-count]')];
+      const countUp = (el: HTMLElement) => {
+        const target = Number(el.dataset.count);
+        const duration = 1400;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / duration);
+          el.textContent = String(Math.round(target * (1 - Math.pow(1 - t, 4))));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+      counters.forEach((el) => (el.textContent = '0'));
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              const el = entry.target as HTMLElement;
+              if (el.dataset.count !== undefined) countUp(el);
+              else el.classList.add('is-in');
+              io.unobserve(el);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.1 },
+        );
+        revealables.forEach((el) => io.observe(el));
+        counters.forEach((el) => io.observe(el));
+      } else {
+        revealables.forEach((el) => el.classList.add('is-in'));
+        counters.forEach((el) => (el.textContent = el.dataset.count ?? el.textContent));
+      }
+    </script>
+  </body>
+</html>

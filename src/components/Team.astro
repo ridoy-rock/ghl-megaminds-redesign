@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import CountUp from './CountUp.astro';
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import { team } from '../data/site';
+---
+
+<section id="team" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32">
+  <div class="container-x">
+    <div class="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-12">
+      <div class="lg:col-span-7" data-stagger>
+        <Eyebrow icon="users-three-fill">Meet the team</Eyebrow>
+        <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
+          You're in experienced hands.
+        </h2>
+      </div>
+
+      <!-- Credentials strip: figures, not boxes -->
+      <dl
+        class="grid grid-cols-2 gap-8 border-t border-ink/10 pt-8 lg:col-span-5 lg:border-l lg:border-t-0 lg:pb-1 lg:pl-12 lg:pt-0"
+        data-stagger
+      >
+        <div class="flex flex-col">
+          <dt class="mt-2.5 text-[15px] leading-snug text-ink-soft">Combined engineering experience</dt>
+          <dd class="order-first font-display text-[2.75rem] font-extrabold leading-none tracking-[-0.04em]">
+            <CountUp value="28+ yrs" />
+          </dd>
+        </div>
+        <div class="flex flex-col">
+          <dt class="mt-2.5 text-[15px] leading-snug text-ink-soft">Certified HighLevel admins on the team</dt>
+          <dd class="order-first font-display text-[2.75rem] font-extrabold leading-none tracking-[-0.04em]">
+            <CountUp value="2" />
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <ul class="mt-14 grid gap-5 sm:grid-cols-3 sm:gap-6 lg:mt-16 lg:gap-8">
+      {
+        team.map((member, i) => (
+          <li class="group flex items-center gap-5 sm:block" data-reveal="pop" style={`--d: ${i * 110}`}>
+            <!-- Compact row on phones, portrait card from sm up. Portraits share one framing and backdrop. -->
+            <div class="portrait-bg w-28 shrink-0 overflow-hidden rounded-inner ring-1 ring-ink/[0.06] sm:w-auto sm:rounded-card">
+              <Image
+                src={member.photo}
+                alt={member.alt}
+                widths={[240, 380, 560, 760]}
+                sizes="(min-width: 1240px) 360px, (min-width: 640px) 30vw, 112px"
+                class="block h-auto w-full origin-bottom transition-[scale] duration-700 ease-out-soft group-hover:scale-[1.04]"
+              />
+            </div>
+            <div class="min-w-0 flex-1 sm:mt-6">
+              <h3 class="font-display text-lg font-bold tracking-[-0.02em] sm:text-[1.4rem]">{member.name}</h3>
+              <p class="mt-0.5 text-[15px] text-ink-soft">{member.role}</p>
+              <div class="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-ink/10 pt-4 text-[13.5px]">
+                <p>
+                  <span class="text-ink-soft">Experience</span>
+                  <span class="ml-1 font-semibold">{member.years.replace('yrs', 'years')}</span>
+                </p>
+                {member.certified && (
+                  <p class="inline-flex items-center gap-1.5 font-semibold text-forest">
+                    <Icon name="seal-check-fill" class="size-4 text-leaf" />
+                    Certified Admin
+                  </p>
+                )}
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,77 @@
+---
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import { BOOKING_EMBED_URL, BOOKING_EMBED_ID, FORM_EMBED_SCRIPT } from '../data/site';
+
+const promises = ['30-minute discovery call', '7-day money-back guarantee', 'No long-term lock-in'];
+---
+
+<section id="book" class="scroll-mt-4 px-2 sm:px-4">
+  <div class="on-dark relative overflow-hidden rounded-[2rem] bg-pine text-canvas">
+    <div
+      class="pointer-events-none absolute -left-44 -top-44 size-[34rem] rounded-full border-[56px] border-canvas/[0.035]"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="container-x relative grid gap-12 py-16 sm:py-20 lg:grid-cols-12 lg:gap-12 lg:py-24">
+      <div class="lg:col-span-5 lg:pt-4" data-stagger>
+        <Eyebrow tone="dark" icon="calendar-check-fill">Ready to scale?</Eyebrow>
+        <h2 class="mt-5 text-[clamp(2rem,3.6vw,3rem)] font-extrabold leading-[1.04] tracking-[-0.036em]">
+          Ready to plug certified HighLevel experts into your agency?
+        </h2>
+        <p class="mt-6 max-w-[30rem] text-lg leading-relaxed text-canvas/70">
+          Pick a time below. We'll look at your bottleneck and map where we can take the most weight off: onboarding,
+          support or custom builds.
+        </p>
+        <ul class="mt-9 grid gap-3.5">
+          {
+            promises.map((item) => (
+              <li class="flex items-center gap-3 font-semibold">
+                <span class="grid size-6 shrink-0 place-items-center rounded-full bg-sun text-ink">
+                  <Icon name="check" class="size-3.5" />
+                </span>
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="lg:col-span-7" data-reveal="right" style="--d: 200">
+        <!--
+          HighLevel's form_embed.js parks the iframe off-screen (absolute, left:-9999px) until the widget is ready,
+          so the wrapper reserves the height and the placeholder shows until the white iframe covers it.
+        -->
+        <div class="relative min-h-[720px] overflow-hidden rounded-card bg-white">
+          <div class="absolute inset-0 grid place-items-center text-sm font-semibold text-ink-soft" aria-hidden="true">
+            <span class="inline-flex items-center gap-2">
+              <Icon name="calendar-blank" class="size-5" />
+              Loading the calendar
+            </span>
+          </div>
+          <iframe
+            src={BOOKING_EMBED_URL}
+            id={BOOKING_EMBED_ID}
+            title="Book a discovery call with GHL Megaminds"
+            loading="lazy"
+            scrolling="no"
+            class="relative block min-h-[720px] w-full border-0 bg-white"></iframe>
+        </div>
+        <p class="mt-4 text-sm text-canvas/60">
+          Calendar not loading?
+          <a
+            href={BOOKING_EMBED_URL}
+            target="_blank"
+            rel="noopener"
+            class="font-semibold text-canvas underline decoration-canvas/40 underline-offset-4 hover:decoration-canvas"
+            >Open it in a new tab</a
+          >.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HighLevel's embed helper resizes the calendar iframe to fit its content. -->
+<script is:inline src={FORM_EMBED_SCRIPT} defer></script>

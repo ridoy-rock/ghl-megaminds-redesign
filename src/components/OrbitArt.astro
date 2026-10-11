@@ -1,0 +1,190 @@
+---
+// Animated hero art: the clay sphere with gears and beads orbiting it on two golden rings.
+// Layers (back to front): sun, back half of the rings, pieces behind the sphere, sphere + pedestal, front half of the
+// rings, pieces in front. Each piece travels its ring, slips behind the sphere and comes round the front a little
+// larger; gears spin as they go, and the whole scene tilts toward the pointer. Static under reduced motion.
+// Layers come from scripts/orbit-assets.mjs; the /v2 (navy) versions from scripts/recolor-art.mjs.
+import { Image, Picture } from 'astro:assets';
+import sunArt from '../assets/illustrations/hero-sun.png';
+import bodyArt from '../assets/illustrations/hero-body.png';
+import gearArt from '../assets/illustrations/hero-gear.png';
+import beadGoldArt from '../assets/illustrations/hero-bead-gold.png';
+import beadDarkArt from '../assets/illustrations/hero-bead-dark.png';
+import { art } from '../lib/theme';
+
+interface Props {
+  alt: string;
+  class?: string;
+}
+
+const { alt, class: className } = Astro.props;
+
+// Scene units match the plate (1792 x 2240). Sphere centre and radius measured from hero-body.png.
+const W = 1792;
+const H = 2240;
+const R = 525;
+const CX = 884;
+const CY = 1010;
+
+// Two tilted rings: a = half width, b = half height (in sphere radii), rot = tilt in degrees, cy = ring centre height
+// (scene units, a little above the sphere's centre), period = seconds per lap.
+const orbits = {
+  outer: { a: 1.62, b: 0.6, rot: -8, cy: 930, period: 44 },
+  inner: { a: 1.5, b: 0.44, rot: -20, cy: 930, period: 32 },
+};
+
+// Pieces: which ring, where on it (0-1 of a lap), size (fraction of the scene width) and image.
+const pieces = [
+  { orbit: 'outer', phase: 0.1, size: 0.09, img: gearArt, spin: true },
+  { orbit: 'outer', phase: 0.3, size: 0.11, img: beadGoldArt },
+  { orbit: 'outer', phase: 0.52, size: 0.075, img: beadDarkArt },
+  { orbit: 'outer', phase: 0.66, size: 0.04, img: beadGoldArt },
+  { orbit: 'outer', phase: 0.79, size: 0.062, img: beadGoldArt },
+  { orbit: 'outer', phase: 0.92, size: 0.065, img: beadDarkArt },
+  { orbit: 'inner', phase: 0.14, size: 0.145, img: gearArt, spin: true },
+  { orbit: 'inner', phase: 0.43, size: 0.064, img: beadGoldArt },
+  { orbit: 'inner', phase: 0.7, size: 0.086, img: gearArt, spin: true },
+  { orbit: 'inner', phase: 0.95, size: 0.038, img: beadGoldArt },
+] as const;
+
+// Ring halves as SVG paths: the back half (top of the ellipse) sits behind the sphere, the front half in front.
+const ringPath = (o: (typeof orbits)[keyof typeof orbits], front: boolean) => {
+  const rad = (o.rot * Math.PI) / 180;
+  const pts: string[] = [];
+  for (let i = 0; i <= 48; i++) {
+    const t = (front ? 0 : Math.PI) + (Math.PI * i) / 48;
+    const x = o.a * R * Math.cos(t), y = o.b * R * Math.sin(t);
+    pts.push(`${(CX + x * Math.cos(rad) - y * Math.sin(rad)).toFixed(1)} ${(o.cy + x * Math.sin(rad) + y * Math.cos(rad)).toFixed(1)}`);
+  }
+  return `M${pts.join(' L')}`;
+};
+
+const url = Astro.url;
+const ringStroke = 'url(#orbit-gold)';
+const scene = JSON.stringify({ W, H, R, CX, orbits });
+---
+
+<div class:list={['orbit-art relative isolate', className]} style={`aspect-ratio: ${W} / ${H}`} data-orbit-scene={scene} role="img" aria-label={alt}>
+  <div class="orbit-tilt absolute inset-0" data-orbit-tilt>
+    <!-- Soft light around the sun (measured centre 48.8% / 23.8%, disc 48.3% of the width): a little wider than the
+         disc and fading out gradually, so the sun's own halo never ends in a visible edge. -->
+    <div
+      class="pointer-events-none absolute z-0 aspect-square w-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full [background:radial-gradient(closest-side,rgb(255_205_60/0.28)_58%,rgb(255_196_48/0.12)_74%,rgb(255_190_40/0.04)_88%,transparent_100%)]"
+      style="left: 48.8%; top: 23.8%"
+      aria-hidden="true"
+    >
+    </div>
+    <Picture src={art(sunArt, url)} alt="" formats={['avif', 'webp']} fallbackFormat="webp" quality={80} widths={[440, 660, 880]} sizes="(min-width: 1024px) 440px, (min-width: 640px) 400px, 82vw" loading="eager" class="absolute inset-0 z-0 size-full" />
+
+    <svg class="absolute inset-0 z-[1] size-full overflow-visible" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <defs>
+        <linearGradient id="orbit-gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f6d77a"></stop>
+          <stop offset="0.5" stop-color="#d9a92e"></stop>
+          <stop offset="1" stop-color="#a87b16"></stop>
+        </linearGradient>
+      </defs>
+      {Object.values(orbits).map((o) => <path d={ringPath(o, false)} fill="none" stroke={ringStroke} stroke-width="12" stroke-linecap="round" />)}
+    </svg>
+
+    <Picture src={art(bodyArt, url)} alt="" formats={['avif', 'webp']} fallbackFormat="webp" quality={70} widths={[440, 660, 880]} sizes="(min-width: 1024px) 440px, (min-width: 640px) 400px, 82vw" loading="eager" fetchpriority="high" class="absolute inset-0 z-[2] size-full" />
+
+    <svg class="absolute inset-0 z-[3] size-full overflow-visible" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      {Object.values(orbits).map((o) => <path d={ringPath(o, true)} fill="none" stroke={ringStroke} stroke-width="12" stroke-linecap="round" />)}
+    </svg>
+
+    {
+      pieces.map((p) => (
+        <Image
+          src={art(p.img, url)}
+          alt=""
+          widths={[64, 128, 192]}
+          sizes="64px"
+          loading="eager"
+          class="orbit-piece absolute left-0 top-0 h-auto"
+          style={`width: ${p.size * 100}%`}
+          data-orbit={p.orbit}
+          data-phase={p.phase}
+          data-size={p.size}
+          data-spin={'spin' in p ? '' : undefined}
+        />
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  type Orbit = { a: number; b: number; rot: number; cy: number; period: number };
+  type Scene = { W: number; H: number; R: number; CX: number; orbits: Record<string, Orbit> };
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-orbit-scene]').forEach((root) => {
+    const scene: Scene = JSON.parse(root.dataset.orbitScene ?? '{}');
+    const tilt = root.querySelector<HTMLElement>('[data-orbit-tilt]');
+    const pieces = [...root.querySelectorAll<HTMLElement>('.orbit-piece')].map((el) => ({
+      el,
+      orbit: scene.orbits[el.dataset.orbit ?? 'outer'],
+      phase: Number(el.dataset.phase) * Math.PI * 2,
+      size: Number(el.dataset.size),
+      spin: el.hasAttribute('data-spin'),
+    }));
+
+    let width = root.clientWidth;
+    new ResizeObserver(() => (width = root.clientWidth)).observe(root);
+
+    // Place every piece for a moment in time (seconds).
+    const place = (time: number) => {
+      const k = width / scene.W; // scene units -> px
+      for (const p of pieces) {
+        const t = p.phase + (time / p.orbit.period) * Math.PI * 2;
+        const rad = (p.orbit.rot * Math.PI) / 180;
+        const x = p.orbit.a * scene.R * Math.cos(t), y = p.orbit.b * scene.R * Math.sin(t);
+        const px = (scene.CX + x * Math.cos(rad) - y * Math.sin(rad)) * k;
+        const py = (p.orbit.cy + x * Math.sin(rad) + y * Math.cos(rad)) * k;
+        const depth = Math.sin(t); // +1 nearest (bottom of the ring), -1 farthest
+        const scale = 0.8 + 0.2 * (depth + 1);
+        const half = (p.size * width) / 2;
+        const spin = p.spin ? ` rotate(${((t * 180) / Math.PI) * 1.6}deg)` : '';
+        p.el.style.transform = `translate3d(${px - half}px, ${py - half}px, 0) scale(${scale.toFixed(3)})${spin}`;
+        p.el.style.zIndex = depth > 0 ? '4' : '1';
+        p.el.style.filter = `brightness(${(0.82 + 0.18 * (depth + 1) * 0.5).toFixed(3)})`;
+      }
+    };
+
+    if (reduceMotion) {
+      place(0);
+      return;
+    }
+
+    // Tilt toward the pointer, eased; the orbit runs only while the art is on screen.
+    let targetX = 0, targetY = 0, tiltX = 0, tiltY = 0;
+    window.addEventListener(
+      'pointermove',
+      (event) => {
+        targetY = (event.clientX / window.innerWidth - 0.5) * 14;
+        targetX = (event.clientY / window.innerHeight - 0.5) * -8;
+      },
+      { passive: true },
+    );
+
+    let visible = true;
+    new IntersectionObserver(([entry]) => (visible = entry.isIntersecting)).observe(root);
+
+    let last = performance.now(), time = 0;
+    const frame = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (visible) {
+        time += dt;
+        place(time);
+        tiltX += (targetX - tiltX) * 0.06;
+        tiltY += (targetY - tiltY) * 0.06;
+        if (tilt) tilt.style.transform = `perspective(1100px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+      }
+      requestAnimationFrame(frame);
+    };
+    place(0);
+    requestAnimationFrame(frame);
+  });
+</script>

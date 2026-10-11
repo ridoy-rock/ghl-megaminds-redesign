@@ -1,0 +1,828 @@
+@import "tailwindcss";
+
+/*
+  GHL Megaminds design tokens.
+  Radius rule: interactive elements are pills, containers use --radius-card (24px),
+  anything nested inside a container uses --radius-inner (16px).
+  One accent: sun (gold, from the GM logo). Leaf green is semantic only (done / success).
+*/
+@theme {
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: #f4f2ec;
+  --color-paper: #fbfaf7;
+  --color-stone: #e9e6dd;
+  --color-butter: #f6e7b4;
+  --color-sage: #dce8da;
+
+  --color-ink: #14211b;
+  --color-ink-soft: #4f5b55;
+  --color-pine: #12271e;
+  --color-pine-raised: #1b3329;
+  --color-forest: #1f4a37;
+
+  --color-sun: #f3bd33;
+  --color-sun-soft: #f7cd5c;
+  --color-leaf: #2f8a55;
+
+  --radius-card: 1.5rem;
+  --radius-inner: 1rem;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 52s linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/*
+  Theme extras (not Tailwind colours): button hover fill, its glow, the portrait backdrop and the workflow node ring.
+  Classic = green + gold from the GM logo.
+*/
+:root {
+  --fill-a: #fcc72e;
+  --fill-b: #d4e157;
+  --fill-c: #66d06f;
+  --glow-a: rgb(102 208 111 / 0.7);
+  --glow-b: rgb(252 199 46 / 0.75);
+  --portrait-a: #fbfaf7;
+  --portrait-b: #ece8df;
+  --portrait-c: #e2ddd1;
+  --node-ring: rgb(226 166 20 / 0.55);
+}
+
+/*
+  /v2 "navy edition", from the logo (the rising dots): deep navy for the hero, dark panels and text, a gold-to-green
+  gradient for the main buttons (dark text), the logo yellow for highlights, and the illustrations in the
+  same navy, green and yellow. Small green text uses a deeper shade (#0b7d31) so it stays readable.
+  Pale tints: butter = yellow, sage = green, stone = navy.
+*/
+:root[data-theme="blue"] {
+  --color-canvas: #f5f7fa;
+  --color-paper: #ffffff;
+  --color-stone: #e8edf4;
+  --color-butter: #fff3c9;
+  --color-sage: #e2f6e7;
+
+  --color-ink: #0f1b2e;
+  --color-ink-soft: #4a5567;
+  --color-pine: #0f1d38;
+  --color-pine-raised: #182a4d;
+  --color-forest: #0b7d31;
+
+  --color-sun: #ffc800;
+  --color-sun-soft: #ffd84d;
+  --color-leaf: #13a33f;
+
+  --fill-a: #ffc800;
+  --fill-b: #ffd84d;
+  --fill-c: #ffe27a;
+  --glow-a: rgb(23 201 75 / 0.45);
+  --glow-b: rgb(255 200 0 / 0.6);
+  --portrait-a: #ffffff;
+  --portrait-b: #e9eef5;
+  --portrait-c: #dce4ef;
+  --node-ring: rgb(224 170 0 / 0.55);
+}
+
+/* Main buttons: a gold-to-green gradient (the GM brand colours) with dark text; on hover the gradient sweeps in
+   reversed, green to gold. The yellow buttons on dark sections use the same gradient so every CTA matches. */
+:root[data-theme="blue"] .btn-ink,
+:root[data-theme="blue"] .btn-sun {
+  --btn-bg: linear-gradient(90deg, #fcc000, #00cc00);
+  --btn-fill: linear-gradient(90deg, #00cc00, #fcc000);
+  color: var(--color-ink);
+}
+
+@layer base {
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    interpolate-size: allow-keywords;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-sun);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--color-sun);
+  }
+
+  .on-dark .bg-canvas :focus-visible {
+    outline-color: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 1240px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-x {
+      padding-inline: 2rem;
+    }
+  }
+
+  /*
+    Buttons: on hover a fill grows from the point where the pointer entered (--x/--y are set in Base.astro) and
+    shrinks toward where it leaves. Three layers, all clipped once by the button's rounded edge:
+    ::before = the base colour, the label itself, and .btn-fill on top (added by Base.astro): the fill gradient
+    holding a dark copy of the label. Where the fill has reached, the text is dark on colour; elsewhere it stays as
+    it was, so the label is readable at every moment of the sweep and no dark rim shows at the edge.
+  */
+  .btn {
+    --x: 50%;
+    --y: 50%;
+    --btn-bg: transparent;
+    --btn-fill: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 3.25rem;
+    padding-inline: 1.625rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      transform 0.25s var(--ease-out-soft),
+      box-shadow 0.4s ease;
+  }
+
+  /* Base colour as a layer that overhangs the edge, so only the button's own clip draws the rounded edge. */
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: var(--btn-bg);
+    pointer-events: none;
+  }
+
+  .btn-fill {
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: inherit;
+    background: var(--btn-fill);
+    color: var(--color-ink);
+    clip-path: circle(0% at var(--x) var(--y));
+    transition: clip-path 0.6s var(--ease-out-soft);
+    pointer-events: none;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn .btn-arrow {
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+
+  .btn-ink {
+    --btn-bg: var(--color-ink);
+    color: var(--color-canvas);
+  }
+
+  .btn-sun {
+    --btn-bg: var(--color-sun);
+    --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 55%, var(--fill-a) 100%);
+    color: var(--color-ink);
+  }
+
+  .btn-ghost {
+    --btn-fill: linear-gradient(100deg, var(--color-butter), var(--color-sage));
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 20%, transparent);
+  }
+
+  .btn-ghost-dark {
+    color: var(--color-canvas);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-canvas) 28%, transparent);
+  }
+
+  .btn:focus-visible .btn-fill {
+    clip-path: circle(150% at var(--x) var(--y));
+  }
+
+  /* Hover only where a real pointer can hover, so taps on phones don't leave the fill stuck on. */
+  @media (hover: hover) {
+    .btn:hover .btn-fill {
+      clip-path: circle(150% at var(--x) var(--y));
+    }
+
+    .btn:hover .btn-arrow {
+      transform: translateX(4px);
+    }
+
+    .btn-ink:hover,
+    .btn-sun:hover,
+    .btn-ghost-dark:hover {
+      box-shadow:
+        0 14px 28px -14px var(--glow-a),
+        0 8px 18px -12px var(--glow-b);
+    }
+
+    .btn-ghost:hover {
+      box-shadow:
+        inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 0%, transparent),
+        0 12px 24px -16px color-mix(in srgb, var(--color-forest) 45%, transparent);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-fill {
+      transition: none;
+    }
+  }
+
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 5px;
+    text-decoration-color: color-mix(in srgb, var(--color-ink) 25%, transparent);
+    transition: text-decoration-color 0.2s ease;
+  }
+
+  .link-arrow:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .link-arrow .btn-arrow {
+    transition: transform 0.3s var(--ease-out-soft);
+  }
+
+  .link-arrow:hover .btn-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  /* Hand-swiped gold marker behind a word in a headline */
+  .marker {
+    position: relative;
+    z-index: 0;
+    white-space: nowrap;
+  }
+
+  .marker::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0.5em -0.1em 0.04em -0.08em;
+    border-radius: 0.14em;
+    background-color: var(--color-sun);
+    transform: rotate(-1.4deg);
+    transform-origin: left center;
+  }
+
+  /* Full-height version for dark backgrounds: the whole word sits on the marker, so dark text stays readable. */
+  .marker-box::before {
+    inset: 0.1em -0.12em 0.02em -0.1em;
+  }
+
+  /* Fine film grain over the whole page, matching the illustrations. Fixed + inert so it never repaints on scroll. */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Shared studio backdrop behind the team portraits */
+  .portrait-bg {
+    background: radial-gradient(75% 60% at 50% 28%, var(--portrait-a) 0%, var(--portrait-b) 60%, var(--portrait-c) 100%);
+  }
+
+  /* Integrations marquee */
+  .marquee {
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  }
+
+  .marquee-track {
+    width: max-content;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* Testimonials carousel: the track bleeds to the panel edges but its cards start on the content edge */
+  .testimonial-track {
+    --edge: max(1.25rem, calc((100% - 1240px) / 2 + 1.25rem));
+    padding-inline: var(--edge);
+    scroll-padding-inline: var(--edge);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    /* Horizontal only. If the track could scroll vertically (even by a few px), it would grab wheel and
+       trackpad scrolling and the page would stop moving while the pointer is over the carousel. */
+    overflow-y: hidden;
+  }
+
+  .testimonial-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .testimonial-track {
+      --edge: max(2rem, calc((100% - 1240px) / 2 + 2rem));
+    }
+  }
+
+  .carousel-btn {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 12%, transparent);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.25s var(--ease-out-soft);
+  }
+
+  .carousel-btn:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  .carousel-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  @media (hover: hover) {
+    .carousel-btn:hover:not(:disabled) {
+      background-color: var(--color-ink);
+      color: var(--color-canvas);
+    }
+
+    .group:hover .play-btn {
+      scale: 1.1;
+    }
+  }
+
+  .play-btn {
+    box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.5);
+    transition: scale 0.35s var(--ease-out-soft);
+  }
+
+  /* Video player dialog */
+  .video-dialog {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(92vw, 1000px);
+    max-width: none;
+    max-height: none;
+    height: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .video-dialog::backdrop {
+    background-color: color-mix(in srgb, var(--color-pine) 86%, transparent);
+    backdrop-filter: blur(6px);
+  }
+
+  .video-dialog [data-player] {
+    width: 100%;
+    max-height: 80vh;
+  }
+
+  .video-dialog-close {
+    position: absolute;
+    right: 0;
+    top: -3.5rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-canvas) 12%, transparent);
+    color: var(--color-canvas);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-canvas) 25%, transparent);
+    transition: background-color 0.2s ease;
+  }
+
+  .video-dialog-close:hover {
+    background-color: color-mix(in srgb, var(--color-canvas) 24%, transparent);
+  }
+
+  /* Footer wordmark marquee */
+  .wordmark-track {
+    width: max-content;
+  }
+
+  /* FAQ accordion (native details, animated where supported) */
+  .faq summary {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq .faq-icon {
+    transition: transform 0.35s var(--ease-out-soft), background-color 0.2s ease;
+  }
+
+  .faq[open] .faq-icon {
+    transform: rotate(45deg);
+    background-color: var(--color-sun);
+  }
+
+  .faq::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.45s var(--ease-out-soft),
+      content-visibility 0.45s allow-discrete;
+  }
+
+  .faq[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* Motion. Everything below collapses to static under prefers-reduced-motion. */
+
+/* Hero headline: each word sits in a clipping box and slides up into place. */
+.word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.03em 0.14em;
+  margin: 0 -0.03em -0.14em;
+}
+
+.word > span {
+  display: inline-block;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes word-up {
+  from {
+    transform: translateY(112%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes art-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes marker-swipe {
+  from {
+    transform: rotate(-1.4deg) scaleX(0);
+  }
+  to {
+    transform: rotate(-1.4deg) scaleX(1);
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* One node lights up at a time, like an automation run moving through its steps */
+@keyframes node-run {
+  0%,
+  100% {
+    background-color: var(--color-paper);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  8%,
+  20% {
+    background-color: var(--color-butter);
+    box-shadow: inset 0 0 0 1px var(--node-ring);
+  }
+  30% {
+    background-color: var(--color-paper);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+}
+
+/* Stagger steps for [data-stagger] children (header label, title, text, extras). */
+[data-stagger] > :nth-child(2) { --sd: 90; }
+[data-stagger] > :nth-child(3) { --sd: 180; }
+[data-stagger] > :nth-child(4) { --sd: 270; }
+[data-stagger] > :nth-child(5) { --sd: 360; }
+[data-stagger] > :nth-child(6) { --sd: 450; }
+[data-stagger] > :nth-child(7) { --sd: 540; }
+[data-stagger] > :nth-child(8) { --sd: 630; }
+[data-stagger] > :nth-child(9) { --sd: 720; }
+[data-stagger] > :nth-child(10) { --sd: 810; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in {
+    animation: rise 0.9s var(--ease-out-soft) both;
+    animation-delay: calc(var(--d, 0) * 1ms);
+  }
+
+  .word > span {
+    animation: word-up 1s var(--ease-out-soft) both;
+    animation-delay: calc(120ms + var(--w, 0) * 70ms);
+  }
+
+  .art-in {
+    animation: art-in 1.2s var(--ease-out-soft) both;
+    animation-delay: 0.35s;
+  }
+
+  .marker::before {
+    animation: marker-swipe 0.8s 1s var(--ease-out-soft) both;
+  }
+
+  .float-soft {
+    animation: float-soft 7s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+
+  .marquee-track {
+    animation: var(--animate-marquee);
+  }
+
+  .node-run {
+    animation: node-run 6s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 1.2s);
+  }
+
+  /*
+    Scroll reveals. Variants: default (rise), "left", "right", "scale", "pop", "line" (draws from the left).
+    translate and box-shadow are listed so hover lifts on revealed cards still animate, with no delay.
+  */
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity 0.9s var(--ease-out-soft),
+      transform 1.05s var(--ease-out-soft),
+      translate 0.45s var(--ease-out-soft),
+      box-shadow 0.45s ease,
+      scale 0.45s var(--ease-out-soft);
+    transition-delay: calc(var(--d, 0) * 1ms), calc(var(--d, 0) * 1ms), 0s, 0s, 0s;
+  }
+
+  html.js [data-reveal="left"] {
+    transform: translateX(-56px);
+  }
+
+  html.js [data-reveal="right"] {
+    transform: translateX(56px);
+  }
+
+  html.js [data-reveal="scale"] {
+    transform: scale(0.9);
+  }
+
+  html.js [data-reveal="pop"] {
+    transform: translateY(24px) scale(0.95);
+  }
+
+  /* Opacity only: used inside horizontal scrollers, where an offset would add vertical overflow */
+  html.js [data-reveal="fade"] {
+    transform: none;
+  }
+
+  html.js [data-reveal="line"] {
+    opacity: 1;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition-duration: 0.9s, 1.6s;
+  }
+
+  html.js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  html.js [data-stagger] > * {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.85s var(--ease-out-soft),
+      transform 1s var(--ease-out-soft);
+    transition-delay: calc(var(--sd, 0) * 1ms + var(--d, 0) * 1ms);
+  }
+
+  html.js [data-stagger].is-in > * {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wordmark-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes play-pulse {
+  from {
+    box-shadow: 0 0 0 0 rgb(255 255 255 / 0.4);
+  }
+  to {
+    box-shadow: 0 0 0 18px rgb(255 255 255 / 0);
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wordmark-track {
+    animation: wordmark-scroll 55s linear infinite;
+  }
+
+  .play-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    animation: play-pulse 2.4s ease-out infinite;
+  }
+
+  .video-dialog[open] {
+    animation: dialog-in 0.35s var(--ease-out-soft);
+  }
+}
+
+/* Scroll-linked motion (progressive enhancement; browsers without scroll timelines just skip it). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-drift {
+      animation: scroll-drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 85vh;
+    }
+
+    .scroll-tilt {
+      animation: scroll-tilt linear both;
+      animation-timeline: view();
+    }
+
+    .scroll-rise {
+      animation: scroll-rise linear both;
+      animation-timeline: view();
+    }
+
+    .wordmark-rise {
+      animation: wordmark-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+
+@keyframes scroll-drift {
+  to {
+    translate: 0 18%;
+    scale: 0.92;
+    opacity: 0.35;
+  }
+}
+
+@keyframes scroll-tilt {
+  from {
+    rotate: calc(var(--tilt, 12deg) * -1);
+  }
+  to {
+    rotate: var(--tilt, 12deg);
+  }
+}
+
+@keyframes scroll-rise {
+  from {
+    translate: 0 var(--rise, 40px);
+  }
+  to {
+    translate: 0 calc(var(--rise, 40px) * -1);
+  }
+}
+
+@keyframes wordmark-rise {
+  from {
+    translate: 0 60%;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: auto;
+  }
+
+  .marquee-track [aria-hidden="true"] {
+    display: none;
+  }
+
+  .marquee-track ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 1.25rem;
+    padding-right: 0;
+  }
+
+  .marquee {
+    mask-image: none;
+  }
+}

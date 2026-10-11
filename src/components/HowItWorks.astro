@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import { steps, BOOK_HREF, BOOK_LABEL } from '../data/site';
+import { art } from '../lib/theme';
+---
+
+<section id="how-it-works" class="scroll-mt-20 py-24 lg:py-32">
+  <div class="container-x">
+    <div class="mx-auto max-w-[44rem] text-center" data-stagger>
+      <Eyebrow icon="path-fill">How it works</Eyebrow>
+      <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
+        Three steps to technical freedom.
+      </h2>
+      <p class="mx-auto mt-5 max-w-[36rem] text-lg leading-relaxed text-ink-soft">
+        From finding your bottleneck to full technical freedom, with clear communication and dedicated execution at
+        every stage.
+      </p>
+    </div>
+
+    <div class="relative mt-16">
+    <div
+      class="pointer-events-none absolute inset-x-[16.6%] top-[5.5rem] hidden border-t-2 border-dashed border-ink/15 md:block"
+      aria-hidden="true"
+      data-reveal="line"
+      style="--d: 250"
+    >
+    </div>
+    <ol class="relative grid gap-12 md:grid-cols-3 md:gap-8">
+      {
+        steps.map((step, i) => (
+          <li class="relative text-center" data-reveal="pop" style={`--d: ${i * 220}`}>
+            <div class="mx-auto grid size-44 place-items-center rounded-full bg-paper ring-1 ring-ink/[0.08]">
+              <Image
+                src={art(step.art, Astro.url)}
+                alt=""
+                widths={[200, 300]}
+                sizes="112px"
+                class="float-soft h-28 w-28 object-contain"
+                style={`--float-delay: ${i * -2.3}s`}
+              />
+            </div>
+            <p class="mt-7 inline-flex items-center gap-2 rounded-full bg-paper px-3 py-1 text-[13px] font-semibold ring-1 ring-ink/10">
+              <span class="font-display font-bold">{step.n}</span>
+              <span class="h-3 w-px bg-ink/20" aria-hidden="true" />
+              <span class="text-ink-soft">{step.meta}</span>
+            </p>
+            <h3 class="mt-4 text-2xl font-bold tracking-[-0.025em]">{step.title}</h3>
+            <p class="mx-auto mt-3 max-w-[21rem] leading-relaxed text-ink-soft">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+    </div>
+
+    <div class="mt-16 flex justify-center" data-reveal>
+      <a href={BOOK_HREF} class="btn btn-ink">
+        {BOOK_LABEL}
+        <Icon name="arrow-right" class="btn-arrow size-4" />
+      </a>
+    </div>
+  </div>
+</section>

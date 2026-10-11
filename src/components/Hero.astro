@@ -1,0 +1,73 @@
+---
+import OrbitArt from './OrbitArt.astro';
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import { BOOK_HREF, BOOK_LABEL, PLANS_HREF, PLANS_LABEL } from '../data/site';
+
+// Headline words animate in one after another; --w is each word's position in the sequence.
+const lineOne = ['You', 'sign', 'the', 'client.'];
+const lineTwo = ['We', 'handle'];
+const marked = ['the', 'rest.'];
+---
+
+<section class="relative overflow-hidden">
+  <div
+    class="container-x grid items-center gap-10 pb-16 pt-8 sm:pt-12 lg:grid-cols-12 lg:gap-8 lg:pb-20 lg:pt-12"
+  >
+    <div class="lg:col-span-7">
+      <Eyebrow class="hero-in">
+        Done-for-you HighLevel support<span class="hidden sm:inline">&nbsp;by certified admins</span>
+      </Eyebrow>
+
+      <h1 class="mt-6 text-[clamp(2.75rem,6vw,4.6rem)] font-extrabold leading-[0.98] tracking-[-0.036em]">
+        {
+          lineOne.map((word, i) => (
+            <>
+              <span class="word">
+                <span style={`--w: ${i}`}>{word}</span>
+              </span>{' '}
+            </>
+          ))
+        }<br class="hidden sm:block" />{
+          lineTwo.map((word, i) => (
+            <>
+              <span class="word">
+                <span style={`--w: ${i + lineOne.length}`}>{word}</span>
+              </span>{' '}
+            </>
+          ))
+        }<span class="marker">{
+            marked.map((word, i) => (
+              <>
+                <span class="word">
+                  <span style={`--w: ${i + lineOne.length + lineTwo.length}`}>{word}</span>
+                </span>
+                {i < marked.length - 1 ? ' ' : ''}
+              </>
+            ))
+          }</span>
+      </h1>
+
+      <p class="hero-in mt-7 max-w-[33rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 520">
+        We handle onboarding, setup and daily white-label support, so you can scale your agency without wrestling
+        with the tech.
+      </p>
+
+      <div class="hero-in mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" style="--d: 640">
+        <a href={BOOK_HREF} class="btn btn-ink">
+          {BOOK_LABEL}
+          <Icon name="arrow-right" class="btn-arrow size-4" />
+        </a>
+        <a href={PLANS_HREF} class="btn btn-ghost">{PLANS_LABEL}</a>
+      </div>
+    </div>
+
+    <!-- Art scales in on load, then drifts down and fades a little as the page scrolls away (scroll-drift). -->
+    <div class="scroll-drift relative lg:col-span-5">
+      <div class="art-in relative mx-auto w-full max-w-[400px] lg:max-w-[440px]">
+        <div class="absolute inset-[14%] rounded-full bg-sun/30 blur-3xl" aria-hidden="true"></div>
+        <OrbitArt alt="Clay illustration of a green sphere on a plinth, orbited by small golden gears and beads" class="float-soft relative w-full" />
+      </div>
+    </div>
+  </div>
+</section>

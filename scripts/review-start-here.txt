@@ -1,0 +1,48 @@
+GHL MEGAMINDS: HOMEPAGE REDESIGN (REVIEW COPY)
+
+WHAT THIS IS
+The redesigned homepage for ghlmegaminds.com. This is phase 1: once the
+homepage direction is approved, the same design is rolled out to the
+other pages.
+
+VIEW IT ONLINE
+https://ghl-megaminds-redesign.vercel.app
+(the same page as below, works on phone and desktop)
+
+HOW TO VIEW IT FROM THIS FOLDER
+1. Unzip this folder.
+2. Open the "site" folder and double-click index.html. It opens in your
+   browser (Chrome, Safari, Edge and Firefox all work).
+3. Scroll slowly from top to bottom: sections, numbers and illustrations
+   animate as they come into view. Hover over the buttons and cards too.
+4. Make the browser window narrow to see the mobile layout.
+
+Prefer pictures? The "screenshots" folder has the full page on desktop
+and mobile, plus frames showing the animations.
+
+PLEASE NOTE
+- Only the homepage is built so far. Menu and footer links to other pages
+  (About, Contact, Blog and so on) do not open in this copy.
+- The booking calendar at the bottom is your live HighLevel calendar and
+  needs an internet connection. Any booking made there is a real
+  appointment.
+- Analytics and the chat widget are switched off in this review copy.
+- The video testimonials are placeholders: stock sample clips marked
+  "Sample" and "Client name". They are not real clients and will not go
+  on the live site. Send us your real client videos (with each client's
+  name, role and permission) and they will replace them.
+
+CONTENT CHANGES TO CONFIRM
+- New FAQ section. The answers are based on your current site; please
+  check they are accurate.
+- The testimonial is shortened to its two strongest sentences.
+- Install counts are shown only for the two apps with 100+ installs.
+- "llms.txt Generators app" is renamed "llms.txt Generator".
+
+WHAT TO REVIEW
+- Overall look and feel: colours, fonts, illustrations, animation
+- Copy: headlines, wording, prices, FAQ answers
+- Section order, and anything missing or unnecessary
+
+Reply with comments per section (or mark up the screenshots) and we will
+make the changes.

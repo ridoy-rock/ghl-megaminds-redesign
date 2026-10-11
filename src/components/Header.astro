@@ -1,0 +1,134 @@
+---
+import { pageHref } from '../lib/theme';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { nav, BOOK_HREF, BOOK_LABEL, PLANS_HREF, PLANS_LABEL } from '../data/site';
+
+interface Props {
+  /** Dark navy header (the /v2 page, whose hero is dark too). */
+  dark?: boolean;
+}
+
+const { dark = false } = Astro.props;
+---
+
+<div class:list={['on-dark text-canvas', dark ? 'bg-pine-raised' : 'bg-pine']}>
+  <div class="container-x flex h-10 items-center justify-center gap-3 text-[13.5px] sm:text-sm">
+    <p class="truncate">
+      <span class="font-semibold text-sun">Launch offer:</span> 40% off all three monthly plans.
+    </p>
+    <a
+      href={PLANS_HREF}
+      class="hidden shrink-0 items-center gap-1 font-semibold underline decoration-canvas/30 underline-offset-4 transition hover:decoration-canvas sm:inline-flex"
+    >
+      {PLANS_LABEL}
+      <Icon name="arrow-right" class="size-3.5" />
+    </a>
+  </div>
+</div>
+
+<header
+  id="site-header"
+  class:list={[
+    'sticky top-0 z-40 border-b transition-[background-color,border-color] duration-300',
+    dark
+      ? 'on-dark border-canvas/[0.08] bg-pine text-canvas data-scrolled:bg-pine/90 data-scrolled:backdrop-blur-md'
+      : 'border-transparent data-scrolled:border-ink/10 data-scrolled:bg-canvas/85 data-scrolled:backdrop-blur-md',
+  ]}
+>
+  <div class="container-x flex h-[72px] items-center justify-between gap-6">
+    <a href={pageHref('/', Astro.url)} aria-label="GHL Megaminds home" class="shrink-0 rounded-[12px]">
+      <Logo tone={dark ? 'light' : 'ink'} />
+    </a>
+
+    <nav aria-label="Primary" class="hidden items-center gap-0.5 lg:flex">
+      {
+        nav.map((item) => (
+          <a
+            href={pageHref(item.href, Astro.url)}
+            class:list={[
+              'rounded-full px-3.5 py-2 text-[15px] font-medium transition',
+              dark ? 'text-canvas/75 hover:bg-canvas/10 hover:text-canvas' : 'text-ink/75 hover:bg-ink/5 hover:text-ink',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={BOOK_HREF} class="btn btn-ink hidden h-11 px-5 text-[15px] sm:inline-flex">
+        {BOOK_LABEL}
+        <Icon name="arrow-right" class="btn-arrow size-4" />
+      </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class:list={[
+          'grid size-11 place-items-center rounded-full ring-1 transition lg:hidden',
+          dark ? 'ring-canvas/20 hover:bg-canvas/10' : 'ring-ink/15 hover:bg-ink/5',
+        ]}
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Open menu"
+      >
+        <span data-icon-open><Icon name="list" class="size-5" /></span>
+        <span data-icon-close class="hidden"><Icon name="x" class="size-5" /></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class:list={['hidden border-t lg:hidden', dark ? 'border-canvas/10 bg-pine' : 'border-ink/10 bg-canvas']}>
+    <nav aria-label="Mobile" class="container-x flex flex-col pb-6 pt-2">
+      {
+        nav.map((item) => (
+          <a href={pageHref(item.href, Astro.url)} class:list={['border-b py-4 text-lg font-medium', dark ? 'border-canvas/10' : 'border-ink/10']} data-close-menu>
+            {item.label}
+          </a>
+        ))
+      }
+      <a href={BOOK_HREF} class="btn btn-ink mt-6 w-full" data-close-menu>
+        {BOOK_LABEL}
+        <Icon name="arrow-right" class="btn-arrow size-4" />
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- -mb-px: the sentinel takes no space, so no 1px strip of page background shows under a dark header. -->
+<div id="scroll-sentinel" class="pointer-events-none -mb-px h-px w-full" aria-hidden="true"></div>
+
+<script>
+  const header = document.getElementById('site-header');
+  const sentinel = document.getElementById('scroll-sentinel');
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  // Solid header once the page has scrolled past the top (no scroll listener needed).
+  if (header && sentinel && 'IntersectionObserver' in window) {
+    new IntersectionObserver(
+      ([entry]) => header.toggleAttribute('data-scrolled', !entry.isIntersecting),
+      { rootMargin: '-73px 0px 0px 0px' },
+    ).observe(sentinel);
+  }
+
+  const setMenu = (open: boolean) => {
+    if (!toggle || !menu) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    toggle.querySelector('[data-icon-open]')?.classList.toggle('hidden', open);
+    toggle.querySelector('[data-icon-close]')?.classList.toggle('hidden', !open);
+    menu.classList.toggle('hidden', !open);
+    header?.toggleAttribute('data-menu-open', open);
+  };
+
+  toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu?.querySelectorAll('[data-close-menu]').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setMenu(false);
+      toggle.focus();
+    }
+  });
+</script>

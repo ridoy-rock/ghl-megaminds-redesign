@@ -1,0 +1,125 @@
+---
+// /v2 hero: a dark navy stage (like the HighLevel family of sites) that also carries the track-record stats and the
+// integrations strip, so the proof sits right under the headline.
+import OrbitArt from '../OrbitArt.astro';
+import Icon from '../Icon.astro';
+import Eyebrow from '../Eyebrow.astro';
+import CountUp from '../CountUp.astro';
+import BrandLogo from '../BrandLogo.astro';
+import { heroStats, integrations, BOOK_HREF, BOOK_LABEL, PLANS_HREF, PLANS_LABEL } from '../../data/site';
+
+const lineOne = ['You', 'sign', 'the', 'client.'];
+const lineTwo = ['We', 'handle'];
+const marked = ['the', 'rest.'];
+---
+
+<section class="on-dark relative overflow-hidden rounded-b-[2.5rem] bg-pine text-canvas">
+  <!-- Texture: a faint dot grid fading out from the art, and two soft glows in the logo green and yellow. -->
+  <div
+    class="pointer-events-none absolute inset-0 [background-image:radial-gradient(rgb(255_255_255/0.08)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_60%_at_75%_35%,black,transparent)]"
+    aria-hidden="true"
+  >
+  </div>
+  <div class="pointer-events-none absolute -right-32 -top-24 size-[34rem] rounded-full bg-[#17c94b]/[0.13] blur-[120px]" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute -bottom-40 -left-40 size-[30rem] rounded-full bg-sun/[0.08] blur-[120px]" aria-hidden="true"></div>
+
+  <div class="container-x relative grid items-center gap-10 pb-12 pt-10 sm:pt-14 lg:grid-cols-12 lg:gap-8 lg:pb-14 lg:pt-16">
+    <div class="lg:col-span-7">
+      <Eyebrow tone="dark" class="hero-in">
+        Done-for-you HighLevel support<span class="hidden sm:inline">&nbsp;by certified admins</span>
+      </Eyebrow>
+
+      <h1 class="mt-6 text-[clamp(2.75rem,6vw,4.6rem)] font-extrabold leading-[0.98] tracking-[-0.036em]">
+        {
+          lineOne.map((word, i) => (
+            <>
+              <span class="word">
+                <span style={`--w: ${i}`}>{word}</span>
+              </span>{' '}
+            </>
+          ))
+        }<br class="hidden sm:block" />{
+          lineTwo.map((word, i) => (
+            <>
+              <span class="word">
+                <span style={`--w: ${i + lineOne.length}`}>{word}</span>
+              </span>{' '}
+            </>
+          ))
+        }<span class="marker marker-box text-ink">{
+            marked.map((word, i) => (
+              <>
+                <span class="word">
+                  <span style={`--w: ${i + lineOne.length + lineTwo.length}`}>{word}</span>
+                </span>
+                {i < marked.length - 1 ? ' ' : ''}
+              </>
+            ))
+          }</span>
+      </h1>
+
+      <p class="hero-in mt-7 max-w-[33rem] text-lg leading-relaxed text-canvas/70 sm:text-xl" style="--d: 520">
+        We handle onboarding, setup and daily white-label support, so you can scale your agency without wrestling
+        with the tech.
+      </p>
+
+      <div class="hero-in mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" style="--d: 640">
+        <a href={BOOK_HREF} class="btn btn-ink">
+          {BOOK_LABEL}
+          <Icon name="arrow-right" class="btn-arrow size-4" />
+        </a>
+        <a href={PLANS_HREF} class="btn btn-ghost-dark">{PLANS_LABEL}</a>
+      </div>
+    </div>
+
+    <div class="scroll-drift relative lg:col-span-5">
+      <div class="art-in relative mx-auto w-full max-w-[400px] lg:max-w-[440px]">
+        <div class="absolute inset-[16%] rounded-full bg-sun/[0.12] blur-3xl" aria-hidden="true"></div>
+        <OrbitArt alt="Clay illustration of a navy sphere on a plinth, orbited by small golden gears and beads" class="float-soft relative w-full" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Track record: glass tiles on the dark stage -->
+  <div class="container-x relative">
+    <ul class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+      {
+        heroStats.map((stat, i) => (
+          <li
+            class="rounded-inner bg-canvas/[0.05] p-5 ring-1 ring-canvas/10 backdrop-blur-sm sm:p-6"
+            data-reveal
+            style={`--d: ${i * 80}`}
+          >
+            <p class="font-display text-[2rem] font-extrabold leading-none tracking-[-0.035em] sm:text-[2.4rem]">
+              <CountUp value={stat.value} />
+            </p>
+            <p class="mt-2.5 text-[14.5px] leading-snug text-canvas/60">{stat.label}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- Integrations strip -->
+  <div class="container-x relative">
+    <div class="mt-10 flex flex-col gap-5 border-t border-canvas/10 py-8 lg:flex-row lg:items-center lg:gap-10">
+      <p class="shrink-0 text-sm font-semibold text-canvas/55 lg:w-44">We plug into the stack you already run</p>
+      <div class="marquee relative min-w-0 grow overflow-hidden">
+        <div class="marquee-track flex">
+          {
+            [false, true].map((duplicate) => (
+              <ul class="flex shrink-0 items-center gap-12 pr-12" aria-hidden={duplicate ? 'true' : undefined}>
+                {integrations.map((item) => (
+                  <li class="flex items-center gap-2.5 whitespace-nowrap text-canvas/60 transition-colors hover:text-canvas">
+                    <BrandLogo logo={item.logo} height={item.logo === 'highlevel' ? 20 : 22} />
+                    <span class="font-display text-[17px] font-semibold tracking-[-0.015em]">{item.name}</span>
+                  </li>
+                ))}
+              </ul>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

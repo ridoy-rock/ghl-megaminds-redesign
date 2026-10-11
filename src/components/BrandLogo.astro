@@ -1,0 +1,51 @@
+---
+// Single-colour brand marks. Simple Icons where the brand is listed there, Phosphor's brand set
+// for Slack and Teams (both brands asked Simple Icons to remove them), and the official HighLevel
+// arrows extracted from highlevel.svg (the wordmark text paths are dropped).
+import { siStripe, siQuickbooks, siGoogle, siN8n, siTelegram } from 'simple-icons';
+import ph from '@iconify-json/ph/icons.json';
+import highlevel from '../assets/logos/highlevel-icon.json';
+
+interface Props {
+  logo: 'highlevel' | 'stripe' | 'quickbooks' | 'google' | 'slack' | 'teams' | 'n8n' | 'telegram';
+  /** Rendered height in px; width follows the mark's own aspect ratio. */
+  height?: number;
+  class?: string;
+  label?: string;
+}
+
+const { logo, height = 24, class: className, label } = Astro.props;
+const phIcons = (ph as unknown as { icons: Record<string, { body: string }> }).icons;
+
+const simple = { stripe: siStripe, quickbooks: siQuickbooks, google: siGoogle, n8n: siN8n, telegram: siTelegram } as const;
+
+let viewBox = '0 0 24 24';
+let body = '';
+
+if (logo === 'highlevel') {
+  viewBox = '0 0 37.5 30.1';
+  body = highlevel.paths.map((d: string) => `<path d="${d}"/>`).join('');
+} else if (logo === 'slack' || logo === 'teams') {
+  viewBox = '0 0 256 256';
+  body = phIcons[logo === 'slack' ? 'slack-logo-fill' : 'microsoft-teams-logo-fill'].body;
+} else {
+  body = `<path d="${simple[logo].path}"/>`;
+}
+
+const [, , vbWidth, vbHeight] = viewBox.split(' ').map(Number);
+const width = Math.round((height * vbWidth) / vbHeight);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={viewBox}
+  width={width}
+  height={height}
+  class={className}
+  fill="currentColor"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+  set:html={body}
+/>
