@@ -27,10 +27,7 @@ import sergioPoster from '../assets/testimonials/sergio-prado.jpg';
 import jamesPoster from '../assets/testimonials/james-barton.jpg';
 import bernhardPoster from '../assets/testimonials/bernhard-buhlmann.jpg';
 
-import crmDesktop from '../assets/projects/crm-desktop.jpg';
-import crmMobile from '../assets/projects/crm-mobile.jpg';
-import automarkDesktop from '../assets/projects/automark-desktop.jpg';
-import automarkMobile from '../assets/projects/automark-mobile.jpg';
+import automarkHero from '../assets/projects/automark-hero.jpg';
 
 // HighLevel embeds on the white-label domain (same calendar and form the live site uses).
 export const BOOKING_EMBED_URL = 'https://links.ghlmegaminds.com/widget/booking/b40dt1YgHIrDlJDWZd1D';
@@ -236,14 +233,14 @@ export type Project = {
   visual:
     | {
         kind: 'shot';
-        /** Desktop screenshot (16:10) shown in a browser window, plus a phone screenshot (9:19.5) beside it. */
-        desktop: ImageMetadata;
-        mobile: ImageMetadata;
-        /** Address shown in the browser bar. */
+        /** Top of the live site (wide crop), shown in a window that rises out of the bottom of the card. */
+        image: ImageMetadata;
+        /** Address shown in the window bar. */
         url: string;
         alt: string;
         tint: 'sage' | 'stone' | 'butter';
       }
+    | { kind: 'table'; tint: 'sage' | 'stone' | 'butter' }
     | { kind: 'logo'; logo: 'n8n' | 'telegram' }
     | { kind: 'glyph'; glyph: string; mono?: boolean };
 };
@@ -265,14 +262,7 @@ export const projects: Project[] = [
     href: 'https://hlcomparisontable.ghlmegaminds.com/',
     cta: 'Live demo',
     tags: ['Download image', 'Share link', 'Embed'],
-    visual: {
-      kind: 'shot',
-      desktop: crmDesktop,
-      mobile: crmMobile,
-      url: 'hlcomparisontable.ghlmegaminds.com',
-      alt: 'HL Comparison Table builder: a live preview of the comparison table next to its feature settings, on desktop and phone',
-      tint: 'sage',
-    },
+    visual: { kind: 'table', tint: 'sage' },
   },
   {
     type: 'Headless template',
@@ -283,10 +273,9 @@ export const projects: Project[] = [
     tags: ['Astro 6', 'Tailwind CSS', '10+ pages'],
     visual: {
       kind: 'shot',
-      desktop: automarkDesktop,
-      mobile: automarkMobile,
+      image: automarkHero,
       url: 'automark-astro.vercel.app',
-      alt: 'Automark, the Astro and GoHighLevel website template, on desktop and phone',
+      alt: 'Automark, the Astro and GoHighLevel website template: hero with the headline "The All-In-One Growth Software for Local Business Owners"',
       tint: 'stone',
     },
   },

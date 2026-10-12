@@ -1,0 +1,64 @@
+---
+// The HL Comparison Table product, redrawn in this site's style for its project card: what each feature would cost as
+// separate tools, and the "Included" column a SaaS reseller shows prospects. Rows follow the app's default table.
+import Icon from './Icon.astro';
+
+const rows = [
+  { feature: 'CRM & Pipeline', tools: ['HubSpot', 'ActiveCampaign'], price: 99 },
+  { feature: 'Sales Funnels', tools: ['ClickFunnels', 'Leadpages'], price: 297 },
+  { feature: 'Website Builder', tools: ['WordPress', 'Squarespace', 'Wix'], price: 29 },
+  { feature: 'Email Marketing', tools: ['Mailchimp', 'Constant Contact'], price: 99 },
+  { feature: 'Workflow Automations', tools: ['Keap', 'ActiveCampaign'], price: 169 },
+];
+---
+
+<div
+  class="@container mx-auto w-full max-w-[700px] rounded-t-[20px] bg-paper p-2.5 pb-0 shadow-[0_28px_60px_-30px_rgb(20_33_27/0.5)] ring-1 ring-ink/[0.07] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5 sm:p-3 sm:pb-0"
+  role="img"
+  aria-label="Preview of a comparison table: CRM, sales funnels, website builder, email marketing and workflow automations, each listed with the tools it replaces, their monthly price, and marked Included"
+>
+  <div class="cmp-row px-3 pb-2.5 pt-2 text-[10.5px] font-bold uppercase tracking-[0.09em] text-ink-soft" aria-hidden="true">
+    <span>Features</span>
+    <span class="cmp-replaces">Replaces</span>
+    <span class="text-right">Other tools</span>
+    <span class="text-right">Your SaaS</span>
+  </div>
+  <ul class="grid gap-1.5" data-stagger aria-hidden="true">
+    {
+      rows.map((row) => (
+        <li class="cmp-row items-center rounded-[12px] bg-canvas px-3 py-2.5">
+          <span class="font-display text-[13.5px] font-bold leading-tight tracking-[-0.01em]">{row.feature}</span>
+          <span class="cmp-replaces flex flex-wrap gap-1">
+            {row.tools.map((tool) => (
+              <span class="rounded-full bg-paper px-2 py-0.5 text-[11.5px] font-semibold text-ink-soft ring-1 ring-ink/[0.07]">{tool}</span>
+            ))}
+          </span>
+          <span class="text-right font-display text-[14px] font-bold tabular-nums">${row.price}</span>
+          <span class="flex justify-end">
+            <span class="inline-flex items-center gap-1 rounded-full bg-pine py-1 pl-2 pr-2.5 text-[11.5px] font-bold text-canvas">
+              <Icon name="check-bold" class="size-3 text-sun" />
+              Included
+            </span>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .cmp-row {
+    display: grid;
+    grid-template-columns: 1.25fr 1.7fr 0.75fr 0.95fr;
+    gap: 0.75rem;
+  }
+  /* Narrow cards (phones): drop the "Replaces" column so the price and Included column keep their room. */
+  @container (max-width: 470px) {
+    .cmp-row {
+      grid-template-columns: 1.5fr 0.8fr 1fr;
+    }
+    .cmp-replaces {
+      display: none;
+    }
+  }
+</style>

@@ -4,11 +4,12 @@ import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import Eyebrow from './Eyebrow.astro';
 import BrandLogo from './BrandLogo.astro';
+import ComparisonPreview from './ComparisonPreview.astro';
 import { projects, projectStats, BOOK_HREF, BOOK_LABEL } from '../data/site';
 
 // Small cells rotate through the palette tints so the grid never reads as cream-on-cream.
 const tints = ['bg-butter', 'bg-sage', 'bg-stone'];
-const shotTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
+const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
 ---
 
 <section id="projects" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32">
@@ -39,109 +40,117 @@ const shotTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
     <div class="mt-10 grid grid-flow-row-dense gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
       {
         projects.map((project, i) => {
-          const wide = project.visual.kind === 'shot';
           const tint = tints[i % tints.length];
+          const cta = (
+            <a href={project.href} target="_blank" rel="noopener" class="link-arrow text-[15px]">
+              {project.cta}
+              <Icon name="arrow-up-right" class="btn-arrow size-4" />
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          );
+
+          // Wide cards (web products): text on top, the product rising out of the bottom of the card.
+          if (project.visual.kind === 'shot' || project.visual.kind === 'table') {
+            const visual = project.visual;
+            return (
+              <article
+                class="group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)] md:col-span-2"
+                data-reveal="pop"
+                style={`--d: ${(i % 3) * 110}`}
+              >
+                <div class="grid gap-x-10 gap-y-3 p-6 sm:p-8 lg:grid-cols-[1fr_1.1fr] lg:px-9 lg:pb-8 lg:pt-9">
+                  <div>
+                    <p class="text-[13px] font-semibold text-ink-soft">{project.type}</p>
+                    <h3 class="mt-3 text-2xl font-bold leading-snug tracking-[-0.02em] sm:text-[1.7rem]">{project.title}</h3>
+                  </div>
+                  <div class="lg:pt-8">
+                    <p class="text-[15px] leading-relaxed text-ink-soft">{project.body}</p>
+                    <div class="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+                      {project.tags && (
+                        <ul class="flex flex-wrap gap-2" aria-label="Highlights">
+                          {project.tags.map((tag) => (
+                            <li class="rounded-full bg-canvas px-3 py-1 text-[13px] font-semibold text-ink/80 ring-1 ring-ink/[0.08]">{tag}</li>
+                          ))}
+                        </ul>
+                      )}
+                      {cta}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class:list={[
+                    'relative mt-auto overflow-hidden px-4 pt-7 sm:h-[290px] sm:px-10 sm:pt-9',
+                    // The table is cut by the card edge at every width; the site crop sits flush on the edge on phones.
+                    visual.kind === 'table' ? 'h-[250px]' : 'h-auto',
+                    panelTints[visual.tint],
+                  ]}
+                >
+                  <div class="pointer-events-none absolute -top-24 left-1/2 h-48 w-[70%] -translate-x-1/2 rounded-full bg-paper/50 blur-3xl" aria-hidden="true" />
+                  {visual.kind === 'table' ? (
+                    <ComparisonPreview />
+                  ) : (
+                    <figure class="relative mx-auto w-full max-w-[700px] overflow-hidden rounded-t-[16px] bg-paper shadow-[0_28px_60px_-30px_rgb(20_33_27/0.55)] ring-1 ring-ink/[0.07] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5">
+                      <div class="flex h-8 items-center gap-1.5 px-3.5" aria-hidden="true">
+                        <span class="size-2.5 rounded-full bg-ink/15" />
+                        <span class="size-2.5 rounded-full bg-ink/15" />
+                        <span class="size-2.5 rounded-full bg-ink/15" />
+                        <span class="mx-auto flex h-5 items-center gap-1 rounded-full bg-canvas px-3 text-[11px] font-medium text-ink-soft">
+                          <Icon name="lock-simple-fill" class="size-2.5" />
+                          {visual.url}
+                        </span>
+                        <span class="w-12" />
+                      </div>
+                      <Image
+                        src={visual.image}
+                        alt={visual.alt}
+                        widths={[480, 720, 960, 1400]}
+                        sizes="(min-width: 1024px) 700px, 88vw"
+                        class="block h-auto w-full"
+                      />
+                    </figure>
+                  )}
+                </div>
+              </article>
+            );
+          }
+
           return (
             <article
-              class:list={[
-                'group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]',
-                wide && 'md:col-span-2 lg:grid lg:grid-cols-[0.78fr_1.22fr]',
-              ]}
+              class="group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]"
               data-reveal="pop"
               style={`--d: ${(i % 3) * 110}`}
             >
-              {project.visual.kind === 'shot' ? (
-                <div
-                  class:list={[
-                    'relative flex flex-col justify-center overflow-hidden px-6 pb-12 pt-8 sm:px-9 sm:pb-14 sm:pt-10 lg:order-last',
-                    shotTints[project.visual.tint],
-                  ]}
-                >
-                  <div class="pointer-events-none absolute -right-20 -top-24 size-80 rounded-full bg-paper/45 blur-3xl" aria-hidden="true" />
-                  <!-- Desktop screenshot in a browser window, the phone version overlapping its corner -->
-                  <div class="relative">
-                    <figure class="w-[88%] overflow-hidden rounded-[12px] bg-[#111311] shadow-[0_26px_50px_-26px_rgb(20_33_27/0.6)] ring-1 ring-black/10 transition-transform duration-500 ease-out-soft group-hover:-translate-y-1">
-                      <div class="flex h-7 items-center gap-1.5 px-3" aria-hidden="true">
-                        <span class="size-2 shrink-0 rounded-full bg-white/25" />
-                        <span class="size-2 shrink-0 rounded-full bg-white/25" />
-                        <span class="size-2 shrink-0 rounded-full bg-white/25" />
-                        <span class="mx-auto flex h-[18px] min-w-0 max-w-[70%] items-center gap-1 truncate rounded-full bg-white/[0.08] px-3 text-[10px] font-medium text-white/60">
-                          <Icon name="lock-simple-fill" class="size-2.5 shrink-0" />
-                          <span class="truncate">{project.visual.url}</span>
-                        </span>
-                        <span class="w-[42px] shrink-0" />
-                      </div>
-                      <Image
-                        src={project.visual.desktop}
-                        alt={project.visual.alt}
-                        widths={[480, 720, 960, 1280]}
-                        sizes="(min-width: 1024px) 400px, (min-width: 768px) 76vw, 82vw"
-                        class="block aspect-[16/10] w-full object-cover object-top"
-                      />
-                    </figure>
-                    <figure class="absolute -bottom-7 right-0 w-[25%] rounded-[16px] bg-[#111311] p-[3px] shadow-[0_26px_40px_-18px_rgb(20_33_27/0.65)] ring-1 ring-black/10 transition-transform duration-500 ease-out-soft group-hover:-translate-y-2 sm:p-1">
-                      <Image
-                        src={project.visual.mobile}
-                        alt=""
-                        widths={[160, 240, 360]}
-                        sizes="(min-width: 1024px) 120px, 24vw"
-                        class="block aspect-[9/19.5] w-full rounded-[13px] object-cover object-top"
-                      />
-                    </figure>
-                  </div>
-                </div>
-              ) : (
-                <div class:list={['flex h-44 items-center justify-center gap-3', tint]} aria-hidden="true">
-                  <span class="grid size-16 place-items-center rounded-[18px] bg-paper text-ink shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--color-ink)_30%,transparent)]">
-                    <BrandLogo logo="highlevel" height={24} />
-                  </span>
-                  <span class="flex items-center text-ink/35">
-                    <span class="w-5 border-t-2 border-dashed border-current" />
-                    <Icon name="link-simple" class="mx-1 size-5 text-ink/55" />
-                    <span class="w-5 border-t-2 border-dashed border-current" />
-                  </span>
-                  <span class="grid size-16 place-items-center rounded-[18px] bg-paper text-ink shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--color-ink)_30%,transparent)]">
-                    {project.visual.kind === 'logo' ? (
-                      <BrandLogo logo={project.visual.logo} height={28} />
-                    ) : project.visual.mono ? (
-                      <span class="font-mono text-[12px] font-bold tracking-tight">{project.visual.glyph}</span>
-                    ) : (
-                      <span class="font-display text-3xl font-bold leading-none">{project.visual.glyph}</span>
-                    )}
-                  </span>
-                </div>
-              )}
+              <div class:list={['flex h-44 items-center justify-center gap-3', tint]} aria-hidden="true">
+                <span class="grid size-16 place-items-center rounded-[18px] bg-paper text-ink shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--color-ink)_30%,transparent)]">
+                  <BrandLogo logo="highlevel" height={24} />
+                </span>
+                <span class="flex items-center text-ink/35">
+                  <span class="w-5 border-t-2 border-dashed border-current" />
+                  <Icon name="link-simple" class="mx-1 size-5 text-ink/55" />
+                  <span class="w-5 border-t-2 border-dashed border-current" />
+                </span>
+                <span class="grid size-16 place-items-center rounded-[18px] bg-paper text-ink shadow-[0_8px_20px_-10px_color-mix(in_srgb,var(--color-ink)_30%,transparent)]">
+                  {project.visual.kind === 'logo' ? (
+                    <BrandLogo logo={project.visual.logo} height={28} />
+                  ) : project.visual.mono ? (
+                    <span class="font-mono text-[12px] font-bold tracking-tight">{project.visual.glyph}</span>
+                  ) : (
+                    <span class="font-display text-3xl font-bold leading-none">{project.visual.glyph}</span>
+                  )}
+                </span>
+              </div>
 
-              <div class:list={['flex grow flex-col p-6 sm:p-7', wide && 'lg:p-9']}>
+              <div class="flex grow flex-col p-6 sm:p-7">
                 <div class="flex flex-wrap items-center justify-between gap-2 text-[13px]">
                   <span class="font-semibold text-ink-soft">{project.type}</span>
                   {project.installs && (
                     <span class="rounded-full bg-butter px-2.5 py-1 font-bold">{project.installs} installs</span>
                   )}
                 </div>
-                <h3
-                  class:list={[
-                    'mt-3 font-bold leading-snug tracking-[-0.02em]',
-                    wide ? 'text-2xl' : 'text-xl',
-                  ]}
-                >
-                  {project.title}
-                </h3>
+                <h3 class="mt-3 text-xl font-bold leading-snug tracking-[-0.02em]">{project.title}</h3>
                 <p class="mt-2.5 text-[15px] leading-relaxed text-ink-soft">{project.body}</p>
-                {project.tags && (
-                  <ul class="mt-5 flex flex-wrap gap-2" aria-label="Highlights">
-                    {project.tags.map((tag) => (
-                      <li class="rounded-full bg-canvas px-3 py-1 text-[13px] font-semibold text-ink/80 ring-1 ring-ink/[0.08]">{tag}</li>
-                    ))}
-                  </ul>
-                )}
-                <div class="mt-auto pt-6">
-                  <a href={project.href} target="_blank" rel="noopener" class="link-arrow text-[15px]">
-                    {project.cta}
-                    <Icon name="arrow-up-right" class="btn-arrow size-4" />
-                    <span class="sr-only">(opens in a new tab)</span>
-                  </a>
-                </div>
+                <div class="mt-auto pt-6">{cta}</div>
               </div>
             </article>
           );
