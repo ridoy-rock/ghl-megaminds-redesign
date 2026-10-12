@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import CountUp from './CountUp.astro';
-import Icon from './Icon.astro';
 import Eyebrow from './Eyebrow.astro';
 import certifiedBadge from '../assets/badges/highlevel-certified-admin.png';
 import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
@@ -37,7 +36,7 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
       </dl>
     </div>
 
-    <ul class="mt-14 grid gap-5 sm:grid-cols-3 sm:gap-6 lg:mt-16 lg:gap-8">
+    <ul class="mt-14 grid gap-5 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:mt-16 lg:gap-x-8 lg:gap-y-12">
       {
         team.map((member, i) => (
           <li class="group flex items-center gap-5 sm:block" data-reveal="pop" style={`--d: ${(i % 3) * 110}`}>
@@ -66,18 +65,6 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
             <div class="min-w-0 flex-1 sm:mt-6">
               <h3 class="font-display text-lg font-bold tracking-[-0.02em] sm:text-[1.4rem]">{member.name}</h3>
               <p class="mt-0.5 text-[15px] text-ink-soft">{member.role}</p>
-              <div class="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-ink/10 pt-4 text-[13.5px]">
-                <p>
-                  <span class="text-ink-soft">Experience</span>
-                  <span class="ml-1 font-semibold">{member.years.replace('yrs', 'years')}</span>
-                </p>
-                {member.certified && (
-                  <p class="inline-flex items-center gap-1.5 font-semibold text-forest">
-                    <Icon name="seal-check-fill" class="size-4 text-leaf" />
-                    Certified Admin
-                  </p>
-                )}
-              </div>
             </div>
           </li>
         ))
