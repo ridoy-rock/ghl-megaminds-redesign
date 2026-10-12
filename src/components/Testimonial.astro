@@ -97,6 +97,7 @@ const toPlayer = (url: string) => {
                     widths={[320, 560]}
                     sizes="280px"
                     class="absolute inset-0 size-full object-cover transition-[scale] duration-700 ease-out-soft group-hover:scale-105"
+                    style={t.posterFocus ? `object-position: ${t.posterFocus}` : undefined}
                   />
                 )}
                 {/* UGC look: full-bleed footage, translucent play button, gold name label */}

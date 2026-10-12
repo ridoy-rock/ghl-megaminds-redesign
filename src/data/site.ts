@@ -21,14 +21,11 @@ import redwanurPhoto from '../assets/team/redwanur-rahman-portrait.png';
 
 // SAMPLE video testimonials: stock clips used as placeholders (public/videos/sample-client-N.mp4).
 // They are flagged sample: true, so they only render locally and on review builds, never on the live site.
-import sampleClient1 from '../assets/testimonials/sample-client-1.jpg';
-import sampleClient2 from '../assets/testimonials/sample-client-2.jpg';
-import sampleClient3 from '../assets/testimonials/sample-client-3.jpg';
-import sampleClient4 from '../assets/testimonials/sample-client-4.jpg';
-import sampleClient5 from '../assets/testimonials/sample-client-5.jpg';
-import sampleClient6 from '../assets/testimonials/sample-client-6.jpg';
-import sampleClient7 from '../assets/testimonials/sample-client-7.jpg';
-import sampleClient8 from '../assets/testimonials/sample-client-8.jpg';
+import leoPoster from '../assets/testimonials/leo-rastogi.jpg';
+import barryPoster from '../assets/testimonials/barry-stamos.jpg';
+import sergioPoster from '../assets/testimonials/sergio-prado.jpg';
+import jamesPoster from '../assets/testimonials/james-barton.jpg';
+import bernhardPoster from '../assets/testimonials/bernhard-buhlmann.jpg';
 
 import myCrmShot from '../assets/projects/my-crm-pricing.jpg';
 import astroTemplateShot from '../assets/projects/astro-ghl-template.jpg';
@@ -371,17 +368,18 @@ export type Testimonial =
       poster?: ImageMetadata;
       quote?: string;
       aspect?: '16/9' | '9/16';
+      /** Where the poster's subject sits (CSS object-position), so the portrait card crop keeps the face in view. */
+      posterFocus?: string;
     };
 
 export const testimonials: Testimonial[] = [
   {
     kind: 'video',
-    name: 'Client name',
-    role: 'Founder, Agency name',
-    video: '/videos/sample-client-1.mp4',
-    poster: sampleClient1,
+    name: 'Leo Rastogi',
+    role: 'CEO, SoulSpring',
+    video: '/videos/review-leo-rastogi.mp4',
+    poster: leoPoster,
     aspect: '9/16',
-    sample: true,
   },
   {
     kind: 'text',
@@ -393,66 +391,37 @@ export const testimonials: Testimonial[] = [
   },
   {
     kind: 'video',
-    name: 'Client name',
-    role: 'Agency owner, Company',
-    video: '/videos/sample-client-2.mp4',
-    poster: sampleClient2,
-    aspect: '9/16',
-    sample: true,
+    name: 'Barry Stamos',
+    role: 'CEO, Supernova',
+    video: '/videos/review-barry-stamos.mp4',
+    poster: barryPoster,
+    aspect: '16/9',
   },
   {
     kind: 'video',
-    name: 'Client name',
-    role: 'Marketing director, Company',
-    video: '/videos/sample-client-3.mp4',
-    poster: sampleClient3,
-    aspect: '9/16',
-    sample: true,
+    name: 'Sergio Prado',
+    role: 'CEO, Embedded Labworks',
+    video: '/videos/review-sergio-prado.mp4',
+    poster: sergioPoster,
+    aspect: '16/9',
   },
   {
     kind: 'video',
-    name: 'Client name',
-    role: 'Operations lead, Company',
-    video: '/videos/sample-client-4.mp4',
-    poster: sampleClient4,
-    aspect: '9/16',
-    sample: true,
+    name: 'James Barton',
+    role: 'CEO, Pascom',
+    video: '/videos/review-james-barton.mp4',
+    poster: jamesPoster,
+    aspect: '16/9',
+    posterFocus: '69% 50%',
   },
   {
     kind: 'video',
-    name: 'Client name',
-    role: 'Head of growth, Company',
-    video: '/videos/sample-client-5.mp4',
-    poster: sampleClient5,
-    aspect: '9/16',
-    sample: true,
-  },
-  {
-    kind: 'video',
-    name: 'Client name',
-    role: 'CEO, Company',
-    video: '/videos/sample-client-6.mp4',
-    poster: sampleClient6,
-    aspect: '9/16',
-    sample: true,
-  },
-  {
-    kind: 'video',
-    name: 'Client name',
-    role: 'Founder, Company',
-    video: '/videos/sample-client-7.mp4',
-    poster: sampleClient7,
-    aspect: '9/16',
-    sample: true,
-  },
-  {
-    kind: 'video',
-    name: 'Client name',
-    role: 'Partner, Agency name',
-    video: '/videos/sample-client-8.mp4',
-    poster: sampleClient8,
-    aspect: '9/16',
-    sample: true,
+    name: 'Bernhard Bühlmann',
+    role: 'CEO, Eliza',
+    video: '/videos/review-bernhard-buhlmann.mp4',
+    poster: bernhardPoster,
+    aspect: '16/9',
+    posterFocus: '39% 50%',
   },
 ];
 
