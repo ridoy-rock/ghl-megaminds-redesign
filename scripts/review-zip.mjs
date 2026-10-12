@@ -40,8 +40,9 @@ writeFileSync(htmlPath, html);
 for (const file of readdirSync(assetsDir).filter((f) => f.endsWith('.css'))) {
   const cssPath = path.join(assetsDir, file);
   let css = readFileSync(cssPath, 'utf8').replace(/url\(\/_astro\//g, 'url(./');
-  // Embed the Latin subsets (the only ones this page uses); other subsets keep their relative URLs.
-  css = css.replace(/url\(\.\/((?:bricolage-grotesque|figtree)-latin-(?:opsz|wght)-normal\.[\w-]+\.woff2)\)/g, (match, font) => {
+  // Embed the Latin subsets (the only ones this page uses) and the Satoshi title weights; other subsets keep their
+  // relative URLs.
+  css = css.replace(/url\(\.\/((?:(?:bricolage-grotesque|figtree)-latin-(?:opsz|wght)-normal|Satoshi-\d{3})\.[\w-]+\.woff2)\)/g, (match, font) => {
     const data = readFileSync(path.join(assetsDir, font)).toString('base64');
     return `url(data:font/woff2;base64,${data})`;
   });

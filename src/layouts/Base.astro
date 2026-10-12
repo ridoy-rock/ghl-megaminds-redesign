@@ -4,6 +4,7 @@ import '@fontsource-variable/figtree';
 import '../styles/global.css';
 import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
 import bodyFont from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
+import titleFont from '../assets/fonts/Satoshi-900.woff2?url';
 import { site, faqs, socials, GTM_ID } from '../data/site';
 import { themeOf } from '../lib/theme';
 
@@ -79,6 +80,7 @@ const jsonLd = {
 
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={titleFont} as="font" type="font/woff2" crossorigin />
 
     <script is:inline>
       document.documentElement.classList.add('js');
