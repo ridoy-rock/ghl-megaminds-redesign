@@ -8,6 +8,8 @@
 */
 @theme {
   --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  /* The logo lettering always stays Bricolage Grotesque, whatever font a theme uses for titles. */
+  --font-brand: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: #f4f2ec;
@@ -56,6 +58,26 @@
   --node-ring: rgb(226 166 20 / 0.55);
 }
 
+/* Satoshi (Indian Type Foundry, via Fontshare; free for commercial use): the title font on /v2. */
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-700.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-900.woff2") format("woff2");
+  font-weight: 800 900;
+  font-display: swap;
+}
+
 /*
   /v2 "navy edition", from the logo (the rising dots): deep navy for the hero, dark panels and text, a gold-to-green
   gradient for the main buttons (dark text), the logo yellow for highlights, and the illustrations in the
@@ -63,6 +85,7 @@
   Pale tints: butter = yellow, sage = green, stone = navy.
 */
 :root[data-theme="blue"] {
+  --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --color-canvas: #f5f7fa;
   --color-paper: #ffffff;
   --color-stone: #e8edf4;
