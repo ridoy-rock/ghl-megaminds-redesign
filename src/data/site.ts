@@ -27,8 +27,10 @@ import sergioPoster from '../assets/testimonials/sergio-prado.jpg';
 import jamesPoster from '../assets/testimonials/james-barton.jpg';
 import bernhardPoster from '../assets/testimonials/bernhard-buhlmann.jpg';
 
-import myCrmShot from '../assets/projects/my-crm-pricing.jpg';
-import astroTemplateShot from '../assets/projects/astro-ghl-template.jpg';
+import crmDesktop from '../assets/projects/crm-desktop.jpg';
+import crmMobile from '../assets/projects/crm-mobile.jpg';
+import automarkDesktop from '../assets/projects/automark-desktop.jpg';
+import automarkMobile from '../assets/projects/automark-mobile.jpg';
 
 // HighLevel embeds on the white-label domain (same calendar and form the live site uses).
 export const BOOKING_EMBED_URL = 'https://links.ghlmegaminds.com/widget/booking/b40dt1YgHIrDlJDWZd1D';
@@ -229,7 +231,21 @@ export type Project = {
   href: string;
   cta: string;
   installs?: number;
-  visual: { kind: 'shot'; image: ImageMetadata; alt: string } | { kind: 'logo'; logo: 'n8n' | 'telegram' } | { kind: 'glyph'; glyph: string; mono?: boolean };
+  /** Short facts shown as chips under the description (wide cards). */
+  tags?: string[];
+  visual:
+    | {
+        kind: 'shot';
+        /** Desktop screenshot (16:10) shown in a browser window, plus a phone screenshot (9:19.5) beside it. */
+        desktop: ImageMetadata;
+        mobile: ImageMetadata;
+        /** Address shown in the browser bar. */
+        url: string;
+        alt: string;
+        tint: 'sage' | 'stone' | 'butter';
+      }
+    | { kind: 'logo'; logo: 'n8n' | 'telegram' }
+    | { kind: 'glyph'; glyph: string; mono?: boolean };
 };
 
 export const projects: Project[] = [
@@ -244,11 +260,19 @@ export const projects: Project[] = [
   },
   {
     type: 'Web application',
-    title: 'My CRM Pricing',
+    title: 'HL Comparison Table',
     body: 'Show prospects how many subscriptions your CRM replaces and what they save every month. Interactive comparison tables for SaaS resellers.',
-    href: 'https://mycrmpricing.vercel.app/',
+    href: 'https://hlcomparisontable.ghlmegaminds.com/',
     cta: 'Live demo',
-    visual: { kind: 'shot', image: myCrmShot, alt: 'My CRM Pricing landing page screenshot' },
+    tags: ['Download image', 'Share link', 'Embed'],
+    visual: {
+      kind: 'shot',
+      desktop: crmDesktop,
+      mobile: crmMobile,
+      url: 'hlcomparisontable.ghlmegaminds.com',
+      alt: 'HL Comparison Table builder: a live preview of the comparison table next to its feature settings, on desktop and phone',
+      tint: 'sage',
+    },
   },
   {
     type: 'Headless template',
@@ -256,7 +280,15 @@ export const projects: Project[] = [
     body: 'Native HighLevel sites are slow. Get full design control with Astro while HighLevel powers your backend.',
     href: 'https://automark-astro.vercel.app/',
     cta: 'Live demo',
-    visual: { kind: 'shot', image: astroTemplateShot, alt: 'Astro and GoHighLevel website template screenshot' },
+    tags: ['Astro 6', 'Tailwind CSS', '10+ pages'],
+    visual: {
+      kind: 'shot',
+      desktop: automarkDesktop,
+      mobile: automarkMobile,
+      url: 'automark-astro.vercel.app',
+      alt: 'Automark, the Astro and GoHighLevel website template, on desktop and phone',
+      tint: 'stone',
+    },
   },
   {
     type: 'HighLevel Marketplace app',

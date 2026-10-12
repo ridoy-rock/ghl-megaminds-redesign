@@ -8,6 +8,7 @@ import { projects, projectStats, BOOK_HREF, BOOK_LABEL } from '../data/site';
 
 // Small cells rotate through the palette tints so the grid never reads as cream-on-cream.
 const tints = ['bg-butter', 'bg-sage', 'bg-stone'];
+const shotTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
 ---
 
 <section id="projects" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32">
@@ -50,14 +51,44 @@ const tints = ['bg-butter', 'bg-sage', 'bg-stone'];
               style={`--d: ${(i % 3) * 110}`}
             >
               {project.visual.kind === 'shot' ? (
-                <div class="relative overflow-hidden bg-stone/70 pl-6 pt-6 sm:pl-8 sm:pt-8 lg:order-last">
-                  <Image
-                    src={project.visual.image}
-                    alt={project.visual.alt}
-                    widths={[480, 720, 960]}
-                    sizes="(min-width: 1024px) 420px, (min-width: 768px) 80vw, 92vw"
-                    class="h-full min-h-[220px] w-full rounded-tl-[14px] object-cover object-left-top shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--color-ink)_35%,transparent)] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1"
-                  />
+                <div
+                  class:list={[
+                    'relative flex flex-col justify-center overflow-hidden px-6 pb-12 pt-8 sm:px-9 sm:pb-14 sm:pt-10 lg:order-last',
+                    shotTints[project.visual.tint],
+                  ]}
+                >
+                  <div class="pointer-events-none absolute -right-20 -top-24 size-80 rounded-full bg-paper/45 blur-3xl" aria-hidden="true" />
+                  <!-- Desktop screenshot in a browser window, the phone version overlapping its corner -->
+                  <div class="relative">
+                    <figure class="w-[88%] overflow-hidden rounded-[12px] bg-[#111311] shadow-[0_26px_50px_-26px_rgb(20_33_27/0.6)] ring-1 ring-black/10 transition-transform duration-500 ease-out-soft group-hover:-translate-y-1">
+                      <div class="flex h-7 items-center gap-1.5 px-3" aria-hidden="true">
+                        <span class="size-2 shrink-0 rounded-full bg-white/25" />
+                        <span class="size-2 shrink-0 rounded-full bg-white/25" />
+                        <span class="size-2 shrink-0 rounded-full bg-white/25" />
+                        <span class="mx-auto flex h-[18px] min-w-0 max-w-[70%] items-center gap-1 truncate rounded-full bg-white/[0.08] px-3 text-[10px] font-medium text-white/60">
+                          <Icon name="lock-simple-fill" class="size-2.5 shrink-0" />
+                          <span class="truncate">{project.visual.url}</span>
+                        </span>
+                        <span class="w-[42px] shrink-0" />
+                      </div>
+                      <Image
+                        src={project.visual.desktop}
+                        alt={project.visual.alt}
+                        widths={[480, 720, 960, 1280]}
+                        sizes="(min-width: 1024px) 400px, (min-width: 768px) 76vw, 82vw"
+                        class="block aspect-[16/10] w-full object-cover object-top"
+                      />
+                    </figure>
+                    <figure class="absolute -bottom-7 right-0 w-[25%] rounded-[16px] bg-[#111311] p-[3px] shadow-[0_26px_40px_-18px_rgb(20_33_27/0.65)] ring-1 ring-black/10 transition-transform duration-500 ease-out-soft group-hover:-translate-y-2 sm:p-1">
+                      <Image
+                        src={project.visual.mobile}
+                        alt=""
+                        widths={[160, 240, 360]}
+                        sizes="(min-width: 1024px) 120px, 24vw"
+                        class="block aspect-[9/19.5] w-full rounded-[13px] object-cover object-top"
+                      />
+                    </figure>
+                  </div>
                 </div>
               ) : (
                 <div class:list={['flex h-44 items-center justify-center gap-3', tint]} aria-hidden="true">
@@ -97,6 +128,13 @@ const tints = ['bg-butter', 'bg-sage', 'bg-stone'];
                   {project.title}
                 </h3>
                 <p class="mt-2.5 text-[15px] leading-relaxed text-ink-soft">{project.body}</p>
+                {project.tags && (
+                  <ul class="mt-5 flex flex-wrap gap-2" aria-label="Highlights">
+                    {project.tags.map((tag) => (
+                      <li class="rounded-full bg-canvas px-3 py-1 text-[13px] font-semibold text-ink/80 ring-1 ring-ink/[0.08]">{tag}</li>
+                    ))}
+                  </ul>
+                )}
                 <div class="mt-auto pt-6">
                   <a href={project.href} target="_blank" rel="noopener" class="link-arrow text-[15px]">
                     {project.cta}
