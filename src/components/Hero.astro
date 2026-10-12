@@ -1,5 +1,5 @@
 ---
-import OrbitArt from './OrbitArt.astro';
+import WorkflowArt from './WorkflowArt.astro';
 import Icon from './Icon.astro';
 import Eyebrow from './Eyebrow.astro';
 import { BOOK_HREF, BOOK_LABEL, PLANS_HREF, PLANS_LABEL } from '../data/site';
@@ -66,7 +66,10 @@ const marked = ['the', 'rest.'];
     <div class="scroll-drift relative lg:col-span-5">
       <div class="art-in relative mx-auto w-full max-w-[400px] lg:max-w-[440px]">
         <div class="absolute inset-[14%] rounded-full bg-sun/30 blur-3xl" aria-hidden="true"></div>
-        <OrbitArt alt="Clay illustration of a green sphere on a plinth, orbited by small golden gears and beads" class="float-soft relative w-full" />
+        <WorkflowArt
+          alt="Clay illustration of a CRM automation workflow: a new lead flows through a follow-up message and a decision step into a booked call or a won deal"
+          class="float-soft relative w-full"
+        />
       </div>
     </div>
   </div>

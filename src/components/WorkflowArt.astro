@@ -1,0 +1,290 @@
+---
+// Animated hero art: a clay CRM automation workflow (new lead -> SMS + email -> decision -> booked call or won deal)
+// in front of a golden sun. Gold beads (leads) run down the tubes and disappear into each tile; the tile pulses as a
+// bead arrives and the matching counter chip ticks up. The scene tilts toward the pointer. Static under reduced motion.
+// The plate is one clay render (src/assets/crm/workflow.png); the beads ride above it, masked out wherever a tile is, so
+// they slip into a tile and come out of the other side.
+import { Picture, getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import plateArt from '../assets/crm/workflow.png';
+import sunArt from '../assets/crm/sun.png';
+import beadArt from '../assets/illustrations/hero-bead-gold.png';
+
+interface Props {
+  alt: string;
+  class?: string;
+}
+
+const { alt, class: className } = Astro.props;
+
+// Scene units match the plate (1792 x 2240); every shape below was measured from it.
+const W = 1792;
+const H = 2240;
+const BEAD = 35; // bead radius (the tubes are ~78 wide)
+const TRAIL = 190; // length of the lit stretch of tube behind each bead
+
+// Tiles, as the rounded rectangles that hide the beads (and that pulse when a bead arrives).
+const tiles = {
+  lead: { x: 680, y: 122, w: 431, h: 438, r: 110 },
+  message: { x: 688, y: 705, w: 414, h: 399, r: 105 },
+  decision: { x: 752, y: 1284, w: 288, h: 288, r: 87, rotate: 45 },
+  booked: { x: 293, y: 1808, w: 372, h: 363, r: 95 },
+  won: { x: 1127, y: 1808, w: 374, h: 363, r: 95 },
+};
+
+// Tube centre lines from tile to tile. Each starts and ends inside a tile, so the bead appears and vanishes behind it.
+const paths = {
+  message: 'M896 520 V745',
+  decision: 'M896 1064 V1330',
+  booked: 'M896 1520 V1655 Q896 1715 836 1715 H535 Q475 1715 475 1775 V1850',
+  won: 'M896 1520 V1655 Q896 1715 956 1715 H1260 Q1320 1715 1320 1775 V1850',
+};
+
+// Counter chips beside the tiles (position in % of the scene). Values are illustrative and tick up as beads arrive.
+const chips = [
+  { key: 'lead', label: 'New leads', value: 126, icon: 'user-plus-fill', tone: 'bg-sage text-forest', pos: 'left: 64.5%; top: 9.5%' },
+  { key: 'message', label: 'Follow-ups sent', value: 342, icon: 'chat-circle-dots-fill', tone: 'bg-butter text-ink', pos: 'right: 64.5%; top: 36%' },
+  { key: 'booked', label: 'Calls booked', value: 48, icon: 'calendar-check-fill', tone: 'bg-sage text-forest', pos: 'left: 1.5%; top: 63.5%' },
+  { key: 'won', label: 'Deals won', value: 17, icon: 'trophy-fill', tone: 'bg-sun text-ink', pos: 'right: 1.5%; top: 63.5%' },
+];
+
+const bead = await getImage({ src: beadArt, width: 96, format: 'webp' });
+const sunSize = 1000 / W; // sun width as a fraction of the scene; centred behind the decision diamond
+---
+
+<div
+  class:list={['workflow-art relative isolate [container-type:inline-size]', className]}
+  style={`aspect-ratio: ${W} / ${H}`}
+  data-workflow
+  role="img"
+  aria-label={alt}
+>
+  <div class="absolute inset-0" data-workflow-tilt>
+    <div class="absolute z-0" style={`left: 50%; top: ${(1432 / H) * 100}%; width: ${sunSize * 100}%; translate: -50% -50%`} data-workflow-sun>
+      <Picture src={sunArt} alt="" formats={['avif', 'webp']} fallbackFormat="webp" quality={78} widths={[260, 400, 520]} sizes="(min-width: 1024px) 250px, 46vw" loading="eager" class="block h-auto w-full" />
+    </div>
+
+    <Picture src={plateArt} alt="" formats={['avif', 'webp']} fallbackFormat="webp" quality={72} widths={[440, 660, 880]} sizes="(min-width: 1024px) 440px, (min-width: 640px) 400px, 82vw" loading="eager" fetchpriority="high" class="absolute inset-0 z-[1] size-full" />
+
+    <svg class="absolute inset-0 z-[2] size-full overflow-visible" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" data-trail={TRAIL}>
+      <defs>
+        <radialGradient id="wf-glow">
+          <stop offset="0" stop-color="#ffd76a" stop-opacity="0.75"></stop>
+          <stop offset="0.45" stop-color="#ffc83d" stop-opacity="0.28"></stop>
+          <stop offset="1" stop-color="#ffc83d" stop-opacity="0"></stop>
+        </radialGradient>
+        <linearGradient id="wf-trail" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={H}>
+          <stop offset="0" stop-color="#ffd76a"></stop>
+          <stop offset="1" stop-color="#ffc83d"></stop>
+        </linearGradient>
+        <mask id="wf-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+          <rect width={W} height={H} fill="#fff"></rect>
+          {
+            Object.values(tiles).map((t) => (
+              <rect
+                x={t.x}
+                y={t.y}
+                width={t.w}
+                height={t.h}
+                rx={t.r}
+                fill="#000"
+                transform={'rotate' in t ? `rotate(${t.rotate} ${t.x + t.w / 2} ${t.y + t.h / 2})` : undefined}
+              />
+            ))
+          }
+        </mask>
+      </defs>
+
+      {Object.entries(paths).map(([key, d]) => <path d={d} fill="none" stroke="none" data-path={key} />)}
+
+      <g mask="url(#wf-mask)">
+        {
+          [0, 1, 2].map(() => (
+            <path class="wf-trail" d="M0 0" fill="none" stroke="url(#wf-trail)" stroke-width="30" stroke-linecap="round" opacity="0" />
+          ))
+        }
+        {
+          [0, 1, 2].map(() => (
+            <g class="wf-bead" opacity="0">
+              <circle r={BEAD * 2.4} fill="url(#wf-glow)" />
+              <image href={bead.src} x={-BEAD} y={-BEAD} width={BEAD * 2} height={BEAD * 2} />
+            </g>
+          ))
+        }
+      </g>
+
+      {
+        Object.entries(tiles).map(([key, t]) => (
+          <g transform={'rotate' in t ? `rotate(${t.rotate} ${t.x + t.w / 2} ${t.y + t.h / 2})` : undefined}>
+            <rect class="wf-pulse" x={t.x} y={t.y} width={t.w} height={t.h} rx={t.r} fill="none" stroke="#f3bd33" stroke-width="8" opacity="0" data-pulse={key} />
+          </g>
+        ))
+      }
+    </svg>
+
+    {
+      chips.map((c) => (
+        <div class="wf-chip absolute z-[3] flex items-center gap-[0.6em] rounded-[1.1em] bg-paper py-[0.55em] pl-[0.55em] pr-[0.95em] shadow-[0_10px_28px_-12px_rgb(20_33_27/0.35)] ring-1 ring-ink/[0.06]" style={c.pos} data-chip={c.key} aria-hidden="true">
+          <span class:list={['grid size-[2.1em] shrink-0 place-items-center rounded-full', c.tone]}>
+            <Icon name={c.icon} class="size-[1.15em]" />
+          </span>
+          <span class="leading-tight">
+            <span class="block whitespace-nowrap text-[0.78em] font-medium text-ink-soft">{c.label}</span>
+            <span class="block font-display text-[1.2em] font-bold tracking-[-0.02em] text-ink tabular-nums" data-chip-value>{c.value}</span>
+          </span>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .wf-chip {
+    font-size: clamp(10px, 2.9cqw, 12.5px);
+  }
+  .wf-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+</style>
+
+<script>
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // One lead's trip, in seconds after it appears in the top tile.
+  const DWELL = 0.3; // time inside a tile
+  const LEG = { message: 0.75, decision: 0.8, outcome: 1.75 };
+  const START = { message: DWELL, decision: DWELL * 2 + LEG.message, outcome: DWELL * 3 + LEG.message + LEG.decision };
+  const TRIP = START.outcome + LEG.outcome;
+  const EVERY = 2.1; // a new lead every ... seconds
+  const outcomeOf = (n: number) => (n % 3 === 2 ? 'won' : 'booked'); // two booked calls for every won deal
+
+  const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+
+  document.querySelectorAll<HTMLElement>('[data-workflow]').forEach((root) => {
+    const tilt = root.querySelector<HTMLElement>('[data-workflow-tilt]');
+    const sun = root.querySelector<HTMLElement>('[data-workflow-sun]');
+    const paths = Object.fromEntries(
+      [...root.querySelectorAll<SVGPathElement>('[data-path]')].map((p) => [p.dataset.path, { el: p, len: p.getTotalLength() }]),
+    );
+    const beads = [...root.querySelectorAll<SVGGElement>('.wf-bead')];
+    const trails = [...root.querySelectorAll<SVGPathElement>('.wf-trail')];
+    const trailLength = Number(root.querySelector<SVGElement>('[data-trail]')?.dataset.trail ?? 0);
+    const pulses = Object.fromEntries([...root.querySelectorAll<SVGRectElement>('[data-pulse]')].map((r) => [r.dataset.pulse, r]));
+    const chips = Object.fromEntries(
+      [...root.querySelectorAll<HTMLElement>('[data-chip]')].map((c) => [
+        c.dataset.chip,
+        { el: c, value: c.querySelector<HTMLElement>('[data-chip-value]')! },
+      ]),
+    );
+
+    // Put bead `slot` at `t` (0-1) along a path, with the lit stretch of tube behind it fading as the bead slows.
+    const putBead = (slot: number, path: string, t: number, glow = 1) => {
+      const p = paths[path];
+      const at = p.len * t;
+      const pt = p.el.getPointAtLength(at);
+      beads[slot].setAttribute('transform', `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
+      beads[slot].setAttribute('opacity', '1');
+      const trail = trails[slot];
+      if (trail.dataset.path !== path) {
+        trail.setAttribute('d', p.el.getAttribute('d') ?? '');
+        trail.dataset.path = path;
+      }
+      const lit = Math.min(trailLength, at);
+      trail.setAttribute('stroke-dasharray', `${lit.toFixed(1)} ${p.len + trailLength}`);
+      trail.setAttribute('stroke-dashoffset', (lit - at).toFixed(1));
+      trail.setAttribute('opacity', (0.5 * glow).toFixed(2));
+    };
+    const hide = (slot: number) => {
+      beads[slot].setAttribute('opacity', '0');
+      trails[slot].setAttribute('opacity', '0');
+    };
+
+    if (reduceMotion) {
+      putBead(0, 'message', 0.5);
+      putBead(1, 'booked', 0.62);
+      return;
+    }
+
+    // Where a lead is at `age` seconds: which leg and how far along it (or null while it sits inside a tile).
+    const legAt = (n: number, age: number): [string, number, number] | null => {
+      for (const [leg, path] of [['message', 'message'], ['decision', 'decision'], ['outcome', outcomeOf(n)]] as const) {
+        const start = START[leg];
+        const t = (age - start) / LEG[leg];
+        if (t >= 0 && t <= 1) return [path, ease(t), Math.sin(Math.PI * t)];
+      }
+      return null;
+    };
+
+    const pulse = (key: string) => {
+      pulses[key]?.animate(
+        [
+          { opacity: 0.75, transform: 'scale(1.01)' },
+          { opacity: 0, transform: 'scale(1.18)' },
+        ],
+        { duration: 1000, easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' },
+      );
+    };
+    const tick = (key: string) => {
+      const chip = chips[key];
+      if (!chip) return;
+      chip.value.textContent = String(Number(chip.value.textContent) + 1);
+      chip.el.animate(
+        [{ transform: 'scale(1)' }, { transform: 'scale(1.06)', offset: 0.35 }, { transform: 'scale(1)' }],
+        { duration: 520, easing: 'ease-out' },
+      );
+    };
+
+    // Events in a lead's trip: it appears, reaches the message tile, the decision, then its outcome tile.
+    const events = (n: number): [number, () => void][] => [
+      [0, () => (pulse('lead'), tick('lead'))],
+      [START.message + LEG.message, () => (pulse('message'), tick('message'))],
+      [START.decision + LEG.decision, () => pulse('decision')],
+      [TRIP, () => (pulse(outcomeOf(n)), tick(outcomeOf(n)))],
+    ];
+
+    // Tilt toward the pointer, eased; the sun lags behind a little for depth.
+    let targetX = 0, targetY = 0, tiltX = 0, tiltY = 0;
+    window.addEventListener(
+      'pointermove',
+      (event) => {
+        targetY = (event.clientX / window.innerWidth - 0.5) * 12;
+        targetX = (event.clientY / window.innerHeight - 0.5) * -7;
+      },
+      { passive: true },
+    );
+
+    let visible = true;
+    new IntersectionObserver(([entry]) => (visible = entry.isIntersecting)).observe(root);
+
+    // The first lead is already part-way down when the page opens, so the scene never starts empty.
+    let time = 1.2, last = performance.now();
+    const frame = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (visible) {
+        const prev = time;
+        time += dt;
+        const newest = Math.floor(time / EVERY);
+        let slot = 0;
+        for (let n = Math.max(0, Math.floor((time - TRIP) / EVERY)); n <= newest; n++) {
+          const age = time - n * EVERY;
+          const prevAge = prev - n * EVERY;
+          for (const [at, fire] of events(n)) if (prevAge < at && age >= at) fire();
+          const leg = legAt(n, age);
+          const s = slot++ % beads.length;
+          if (leg) putBead(s, leg[0], leg[1], leg[2]);
+          else hide(s);
+        }
+        for (; slot < beads.length; slot++) hide(slot);
+
+        tiltX += (targetX - tiltX) * 0.06;
+        tiltY += (targetY - tiltY) * 0.06;
+        if (tilt) tilt.style.transform = `perspective(1100px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+        if (sun) sun.style.transform = `translate3d(${(-tiltY * 0.9).toFixed(2)}px, ${(tiltX * 0.9).toFixed(2)}px, 0)`;
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  });
+</script>

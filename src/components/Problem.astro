@@ -3,8 +3,7 @@ import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import AppIcon from './AppIcon.astro';
 import Eyebrow from './Eyebrow.astro';
-import tangleArt from '../assets/illustrations/tangle.png';
-import { art } from '../lib/theme';
+import brokenArt from '../assets/crm/broken-workflow.png';
 import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/site';
 ---
 
@@ -29,14 +28,14 @@ import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/
           </p>
         </div>
         <div class="flex justify-center lg:col-span-5" data-reveal="scale" style="--d: 150">
-          <!-- The knot tilts as it passes through the viewport -->
+          <!-- The broken workflow tilts as it passes through the viewport -->
           <div class="scroll-tilt" style="--tilt: 9deg">
           <Image
-            src={art(tangleArt, Astro.url)}
-            alt="Clay illustration of a tangled knot of cables with a loose plug"
-            widths={[280, 420, 560]}
-            sizes="(min-width: 1024px) 300px, 240px"
-            class="float-soft h-auto w-[240px] lg:w-[300px]"
+            src={brokenArt}
+            alt="Clay illustration of a broken automation workflow: toppling app tiles, tangled tubes, a snapped cable and an unplugged plug"
+            widths={[200, 300, 420]}
+            sizes="(min-width: 1024px) 220px, 190px"
+            class="float-soft h-auto w-[190px] lg:w-[220px]"
           />
           </div>
         </div>
