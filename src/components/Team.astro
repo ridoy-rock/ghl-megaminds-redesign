@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import CountUp from './CountUp.astro';
 import Icon from './Icon.astro';
 import Eyebrow from './Eyebrow.astro';
+import certifiedBadge from '../assets/badges/highlevel-certified-admin.png';
 import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
 ---
 
@@ -41,7 +42,7 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
         team.map((member, i) => (
           <li class="group flex items-center gap-5 sm:block" data-reveal="pop" style={`--d: ${(i % 3) * 110}`}>
             <!-- Compact row on phones, portrait card from sm up. Portraits share one framing and backdrop. -->
-            <div class="portrait-bg w-28 shrink-0 overflow-hidden rounded-inner ring-1 ring-ink/[0.06] sm:w-auto sm:rounded-card">
+            <div class="portrait-bg relative w-28 shrink-0 overflow-hidden rounded-inner ring-1 ring-ink/[0.06] sm:w-auto sm:rounded-card">
               <Image
                 src={member.photo}
                 alt={member.alt}
@@ -49,6 +50,18 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
                 sizes="(min-width: 1240px) 360px, (min-width: 640px) 30vw, 112px"
                 class="block h-auto w-full origin-bottom transition-[scale] duration-700 ease-out-soft group-hover:scale-[1.04]"
               />
+              {/* HighLevel Certified Admin badge, linked to the member's entry in the official directory. */}
+              {member.certified && 'profile' in member && (
+                <a
+                  href={member.profile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`View ${member.name}'s HighLevel Certified Admin profile (opens in a new tab)`}
+                  class="absolute bottom-1.5 right-1.5 rounded-lg bg-white/90 p-0.5 shadow-[0_6px_16px_-8px_rgb(20_33_27/0.45)] ring-1 ring-ink/[0.06] transition-[background-color,translate] hover:-translate-y-0.5 hover:bg-white sm:bottom-3 sm:right-3 sm:rounded-xl sm:p-1"
+                >
+                  <Image src={certifiedBadge} alt="HighLevel Certified Admin badge" widths={[72, 112, 168]} sizes="(min-width: 640px) 56px, 36px" class="block size-9 sm:size-14" />
+                </a>
+              )}
             </div>
             <div class="min-w-0 flex-1 sm:mt-6">
               <h3 class="font-display text-lg font-bold tracking-[-0.02em] sm:text-[1.4rem]">{member.name}</h3>
