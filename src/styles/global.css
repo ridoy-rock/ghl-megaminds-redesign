@@ -58,23 +58,12 @@
   --node-ring: rgb(226 166 20 / 0.55);
 }
 
-/* Satoshi (Indian Type Foundry, via Fontshare; free for commercial use): the title font. */
+/* Satoshi (Indian Type Foundry, via Fontshare; free for commercial use): the title font. One variable file covers every
+   weight, so big titles can sit at 800 (font-extrabold), a step lighter than the Black cut. */
 @font-face {
   font-family: "Satoshi";
-  src: url("../assets/fonts/Satoshi-500.woff2") format("woff2");
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Satoshi";
-  src: url("../assets/fonts/Satoshi-700.woff2") format("woff2");
-  font-weight: 700;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Satoshi";
-  src: url("../assets/fonts/Satoshi-900.woff2") format("woff2");
-  font-weight: 800 900;
+  src: url("../assets/fonts/Satoshi-Variable.woff2") format("woff2");
+  font-weight: 300 900;
   font-display: swap;
 }
 
