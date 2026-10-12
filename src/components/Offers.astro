@@ -31,8 +31,8 @@ import { art } from '../lib/theme';
           >
             <div class="overflow-hidden rounded-[18px]">
               <Image
-                src={art(offer.art, Astro.url)}
-                alt={offer.artAlt}
+                src={offer.homeArt}
+                alt={offer.homeArtAlt}
                 widths={[400, 600, 800, 1168]}
                 sizes="(min-width: 1240px) 380px, (min-width: 1024px) 30vw, 92vw"
                 class="aspect-[16/10] w-full object-cover transition-[scale] duration-700 ease-out-soft group-hover:scale-105 md:aspect-[12/5] lg:aspect-[16/10]"

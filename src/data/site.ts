@@ -3,6 +3,9 @@ import type { ImageMetadata } from 'astro';
 import onboardingArt from '../assets/illustrations/offer-onboarding.png';
 import supportArt from '../assets/illustrations/offer-support.png';
 import engineeringArt from '../assets/illustrations/offer-engineering.png';
+import onboardingHomeArt from '../assets/services/onboarding.png';
+import supportHomeArt from '../assets/services/support.png';
+import engineeringHomeArt from '../assets/services/engineering.png';
 import stepCallArt from '../assets/illustrations/step-call.png';
 import stepPlugArt from '../assets/illustrations/step-plug.png';
 import stepScaleArt from '../assets/illustrations/step-scale.png';
@@ -12,6 +15,9 @@ import mehediPhoto from '../assets/team/mehedi-sharif-portrait.png';
 import farhadPhoto from '../assets/team/farhad-hossen-portrait.png';
 import somratPhoto from '../assets/team/somrat-sorkar-portrait.png';
 import sharifulPhoto from '../assets/team/shariful-islam.jpg';
+import tuhinPhoto from '../assets/team/tariquzzaman-tuhin-portrait.png';
+import muradPhoto from '../assets/team/murad-uzzaman-portrait.png';
+import redwanurPhoto from '../assets/team/redwanur-rahman-portrait.png';
 
 // SAMPLE video testimonials: stock clips used as placeholders (public/videos/sample-client-N.mp4).
 // They are flagged sample: true, so they only render locally and on review builds, never on the live site.
@@ -120,6 +126,9 @@ export type Offer = {
   items: string[];
   art: ImageMetadata;
   artAlt: string;
+  /** Homepage illustration; /v2 keeps `art` (and its recoloured versions). */
+  homeArt: ImageMetadata;
+  homeArtAlt: string;
 };
 
 export const offers: Offer[] = [
@@ -143,6 +152,8 @@ export const offers: Offer[] = [
     ],
     art: onboardingArt,
     artAlt: 'Clay illustration of a small green house with a glowing doorway and a golden key',
+    homeArt: onboardingHomeArt,
+    homeArtAlt: 'Clay illustration of a laptop showing a completed setup checklist, with a small golden rocket lifting off',
   },
   {
     id: 'support',
@@ -163,6 +174,8 @@ export const offers: Offer[] = [
     ],
     art: supportArt,
     artAlt: 'Clay illustration of two speech bubbles with a checkmark',
+    homeArt: supportHomeArt,
+    homeArtAlt: 'Clay illustration of a support headset next to a chat bubble with a checkmark',
   },
   {
     id: 'engineering',
@@ -183,6 +196,8 @@ export const offers: Offer[] = [
     ],
     art: engineeringArt,
     artAlt: 'Clay illustration of interlocking puzzle pieces joined by a cable',
+    homeArt: engineeringHomeArt,
+    homeArtAlt: 'Clay illustration of a smartphone with app tiles, a code block and a golden gear',
   },
 ];
 
@@ -208,13 +223,6 @@ export const steps = [
     body: 'You close clients. We run onboarding, build custom apps and manage support behind the scenes.',
     art: stepScaleArt,
   },
-];
-
-export const projectStats = [
-  { value: '322', label: 'installs of our Marketplace apps' },
-  { value: '4', label: 'custom apps live on the Marketplace' },
-  { value: '6', label: 'products shipped for HighLevel agencies' },
-  { value: '28+ yrs', label: 'combined engineering experience' },
 ];
 
 export type Project = {
@@ -305,6 +313,41 @@ export const team = [
     photo: somratPhoto,
     alt: 'Somrat Sorkar, Senior Software Engineer at GHL Megaminds',
   },
+  {
+    name: 'Tariquzzaman Tuhin',
+    role: 'Delivery & Client Success Lead',
+    years: '7+ yrs',
+    certified: false,
+    photo: tuhinPhoto,
+    alt: 'Tariquzzaman Tuhin, Delivery & Client Success Lead at GHL Megaminds',
+  },
+  {
+    name: 'Murad Uzzaman',
+    role: 'Frontend & Automation Engineer',
+    years: '4+ yrs',
+    certified: false,
+    photo: muradPhoto,
+    alt: 'Murad Uzzaman, Frontend & Automation Engineer at GHL Megaminds',
+  },
+  {
+    name: 'Redwanur Rahman',
+    role: 'Systems & Content Specialist',
+    years: '2+ yrs',
+    certified: false,
+    photo: redwanurPhoto,
+    alt: 'Redwanur Rahman, Systems & Content Specialist at GHL Megaminds',
+  },
+];
+
+// Team totals, worked out from the list above so the numbers stay right as people join.
+export const combinedTeamYears = team.reduce((sum, member) => sum + parseInt(member.years, 10), 0);
+export const certifiedAdmins = team.filter((member) => member.certified).length;
+
+export const projectStats = [
+  { value: '322', label: 'installs of our Marketplace apps' },
+  { value: '4', label: 'custom apps live on the Marketplace' },
+  { value: '6', label: 'products shipped for HighLevel agencies' },
+  { value: `${combinedTeamYears}+ yrs`, label: 'combined engineering experience' },
 ];
 
 /*
