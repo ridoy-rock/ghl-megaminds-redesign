@@ -107,6 +107,27 @@
   --portrait-c: #1b2c23;
 }
 
+/* Dark panels (.on-dark: problem, closing CTA, private-project card) keep their light-theme colours in dark mode, so
+   text-canvas stays light on pine and cards inside them stay light. */
+:root[data-theme="dark"] .on-dark {
+  --color-canvas: #f4f2ec;
+  --color-paper: #fbfaf7;
+  --color-ink: #14211b;
+  --color-ink-soft: #4f5b55;
+  --color-forest: #1f4a37;
+  --color-leaf: #2f8a55;
+  --color-sage: #dce8da;
+  --color-butter: #f6e7b4;
+  --color-stone: #e9e6dd;
+}
+
+/* Button hover fill (gold to green) needs dark text in both themes; ink turns light in dark mode. */
+:root[data-theme="dark"] .btn-ink .btn-fill,
+:root[data-theme="dark"] .btn-sun .btn-fill,
+:root[data-theme="dark"] .btn-sun {
+  color: var(--color-on-brand);
+}
+
 :root[data-theme="dark"] .marker {
   color: #f4f2ec;
 }
