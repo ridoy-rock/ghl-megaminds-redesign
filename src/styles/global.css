@@ -8,8 +8,6 @@
 */
 @theme {
   --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
-  /* The logo lettering always stays Bricolage Grotesque, whatever font a theme uses for titles. */
-  --font-brand: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: #f4f2ec;
@@ -27,6 +25,19 @@
   --color-sun: #f3bd33;
   --color-sun-soft: #f7cd5c;
   --color-leaf: #2f8a55;
+
+  /* Semantic tokens that flip with the light/dark theme (dark values below, :root[data-theme="dark"]). */
+  --color-deep: #e9e6dd;
+  --color-surface: #fbfaf7;
+  --color-card: #fbfaf7;
+  --color-hair: #dcded4;
+  --color-muted: #4f5b55;
+  --color-dim: #657068;
+  --color-gold: #866300;
+  --color-green: #2f8a55;
+  /* Text on sun-coloured fills: dark in both themes. */
+  --color-on-brand: #14211b;
+  --color-tint: #14211b;
 
   --radius-card: 1.5rem;
   --radius-inner: 1rem;
@@ -65,6 +76,43 @@
   src: url("../assets/fonts/Satoshi-Variable.woff2") format("woff2");
   font-weight: 300 900;
   font-display: swap;
+}
+
+/*
+  Dark theme. The visitor picks Light, Dark or System in the footer (System follows the OS); Base.astro sets
+  data-theme before first paint. Only the tokens change, so every section adapts without its own dark styles.
+*/
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-canvas: #111e18;
+  --color-paper: #1b2c23;
+  --color-stone: #293b30;
+  --color-butter: #403b22;
+  --color-sage: #263e2e;
+  --color-ink: #f4f2ec;
+  --color-ink-soft: #bdc8c0;
+  --color-forest: #b8dabd;
+  --color-leaf: #9dd29c;
+  --color-deep: #14271d;
+  --color-surface: #1b2c23;
+  --color-card: #203329;
+  --color-hair: #3a4d40;
+  --color-muted: #bdc8c0;
+  --color-dim: #a7b5ac;
+  --color-gold: #f3bd33;
+  --color-green: #9dd29c;
+  --color-tint: #f4f2ec;
+  --portrait-a: #344638;
+  --portrait-b: #293b30;
+  --portrait-c: #1b2c23;
+}
+
+:root[data-theme="dark"] .marker {
+  color: #f4f2ec;
+}
+
+:root[data-theme="dark"] .marker::before {
+  background: #72581c;
 }
 
 /*

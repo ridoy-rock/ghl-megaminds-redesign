@@ -1,6 +1,6 @@
 ---
-// App-icon version of the mark (the rising dots on a pine rounded tile): avatars and the favicon.
-// tone="light" puts the dots on a canvas tile for dark backgrounds. The tile follows the page theme.
+// App-icon version of the mark (the Workflow mark on a pine rounded tile, white line): avatars and small badges.
+// tone="light" puts it on a canvas tile with a dark line, for dark backgrounds.
 import LogoMark from './LogoMark.astro';
 
 interface Props {
@@ -11,6 +11,9 @@ interface Props {
 const { tone = 'pine', class: className } = Astro.props;
 ---
 
-<span class:list={['relative inline-block overflow-hidden rounded-[25%]', tone === 'pine' ? 'bg-pine' : 'bg-canvas', className]} aria-hidden="true">
+<span
+  class:list={['relative inline-block overflow-hidden rounded-[25%]', tone === 'pine' ? 'bg-pine text-white' : 'bg-canvas text-ink', className]}
+  aria-hidden="true"
+>
   <LogoMark class="absolute inset-[14%] size-[72%]" />
 </span>

@@ -1,87 +1,96 @@
 ---
-import { pageHref } from '../lib/theme';
+import { pageHref, themeOf } from '../lib/theme';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { footerColumns, socials, SUBSCRIBE_URL, SUBSCRIBE_DUMMY } from '../data/site';
+import { footerColumns, BOOK_HREF, BOOK_LABEL, DISCOVERY_HREF } from '../data/site';
 
-interface Props {
-  /** Dark navy footer (the /v2 page). */
-  dark?: boolean;
-}
-
-const { dark = false } = Astro.props;
 const year = new Date().getFullYear();
-// Colour sets for the light (default) and dark footer.
-const c = dark
-  ? { soft: 'text-canvas/65', hover: 'hover:text-canvas', line: 'border-canvas/10', field: 'bg-canvas/[0.06] ring-canvas/15 focus-within:ring-canvas/40', input: 'text-canvas placeholder:text-canvas/40', mark: 'text-canvas/[0.06]', social: 'text-canvas/70 ring-canvas/15 hover:bg-canvas hover:text-ink hover:ring-canvas' }
-  : { soft: 'text-ink-soft', hover: 'hover:text-ink', line: 'border-ink/10', field: 'bg-paper ring-ink/10 focus-within:ring-ink/40', input: 'placeholder:text-ink-soft/70', mark: 'text-ink/[0.07]', social: 'text-ink/70 ring-ink/10 hover:bg-ink hover:text-canvas hover:ring-ink' };
-// Dummy social links only show locally and on review builds, never on the live site.
-const reviewBuild = import.meta.env.PUBLIC_REVIEW_BUILD === 'true';
-const socialLinks = socials.filter((s) => (s.href && !s.dummy) || import.meta.env.DEV || reviewBuild);
-if (import.meta.env.PROD && !reviewBuild && (!SUBSCRIBE_URL || SUBSCRIBE_DUMMY)) {
-  console.warn('[footer] SUBSCRIBE_URL is a dummy: the newsletter form will not collect sign-ups.');
-}
+// /v2 keeps its fixed blue theme (no theme switch) and books on its own embedded calendar.
+const blue = themeOf(Astro.url) === 'blue';
+const themes = [
+  { value: 'system', label: 'System', path: 'M4 5h16v11H4zM9 20h6M12 16v4' },
+  {
+    value: 'light',
+    label: 'Light',
+    path: 'M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+  },
+  { value: 'dark', label: 'Dark', path: 'M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z' },
+];
 ---
 
-<footer class:list={['overflow-hidden pb-10 pt-20 lg:pt-24', dark && 'on-dark mt-6 bg-pine text-canvas']}>
-  <div class="container-x">
-    <div class="grid gap-12 lg:grid-cols-12 lg:gap-10">
-      <div class="lg:col-span-4">
-        <Logo tone={dark ? 'light' : 'ink'} />
-        <p class:list={['mt-5 max-w-[21rem] leading-relaxed', c.soft]}>
+<footer class="relative overflow-hidden bg-canvas">
+  <div class="container-x pt-16 lg:pt-24">
+    <div class="grid gap-12 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-16">
+      <div class="flex flex-col items-start gap-5 sm:col-span-3 lg:col-span-1">
+        <Logo />
+        <p class="max-w-sm text-[15px] leading-relaxed text-muted">
           White-label HighLevel support by certified admins and software engineers.
         </p>
-        <form class="mt-8 max-w-[25rem]" data-subscribe data-endpoint={SUBSCRIBE_URL}>
-          <!-- Visually hidden: the field still needs a name for screen readers. -->
-          <label for="footer-email" class="sr-only">Get HighLevel tips in your inbox</label>
-          <div class:list={['flex items-center gap-1.5 rounded-full p-1.5 ring-1 transition-shadow focus-within:ring-2', c.field]}>
-            <input
-              id="footer-email"
-              name="email"
-              type="email"
-              required
-              autocomplete="email"
-              placeholder="you@agency.com"
-              class:list={['h-11 min-w-0 flex-1 bg-transparent pl-4 text-[15px] outline-none', c.input]}
-            />
-            <button type="submit" class="btn btn-ink h-11 shrink-0 px-5 text-[15px]">Subscribe</button>
-          </div>
-          <p class:list={['mt-3 flex items-center gap-1.5 text-[13px]', c.soft]} aria-live="polite" data-subscribe-note>
-            No spam. Unsubscribe anytime.
-          </p>
-        </form>
+        <a href={blue ? BOOK_HREF : DISCOVERY_HREF} class="btn btn-ink mt-1">
+          {BOOK_LABEL}
+          <Icon name="arrow-right" class="btn-arrow size-4" />
+        </a>
       </div>
-
-      <div class="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:col-span-8">
-        {
-          footerColumns.map((column) => (
-            <nav aria-label={column.title}>
-              <p class="text-sm font-bold">{column.title}</p>
-              <ul class="mt-4 grid gap-2.5">
-                {column.links.map((link) => (
-                  <li>
-                    <a href={pageHref(link.href, Astro.url)} class:list={['text-[15px] transition', c.soft, c.hover]}>
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))
-        }
-      </div>
+      {
+        footerColumns.map((column) => (
+          <nav aria-label={column.title} class="flex flex-col gap-3.5 text-[15px]">
+            <p class="text-xs font-semibold uppercase tracking-widest text-muted">{column.title}</p>
+            {column.links.map((link) => (
+              <a href={pageHref(link.href, Astro.url)} class="self-start text-ink/85 transition hover:text-ink">
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        ))
+      }
     </div>
 
+    <div class="mt-14 flex flex-col-reverse items-start justify-between gap-4 border-t border-hair py-6 text-[13px] text-muted sm:flex-row sm:items-center">
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <p>&copy; {year} GHL Megaminds. All rights reserved.</p>
+        <a href="/privacy" class="transition hover:text-ink">Privacy Policy</a>
+        <a href="/terms" class="transition hover:text-ink">Terms of Service</a>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
+        {
+          !blue && (
+            <div class="theme-switch inline-flex items-center gap-1 rounded-full border border-hair bg-tint/[0.03] p-1" role="radiogroup" aria-label="Colour theme">
+              {themes.map((theme) => (
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={theme.value === 'system' ? 'true' : 'false'}
+                  data-theme-option={theme.value}
+                  class="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-muted transition hover:text-ink aria-checked:bg-card aria-checked:text-ink aria-checked:shadow-sm aria-checked:ring-1 aria-checked:ring-hair"
+                >
+                  <svg viewBox="0 0 24 24" class="size-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d={theme.path} />
+                  </svg>
+                  {theme.label}
+                </button>
+              ))}
+            </div>
+          )
+        }
+        <a href="#" class="inline-flex items-center gap-1.5 transition hover:text-ink">
+          Back to top
+          <svg viewBox="0 0 24 24" class="size-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 19V5M6 11l6-6 6 6" />
+          </svg>
+        </a>
+      </div>
+    </div>
   </div>
 
-  <!-- Full-width wordmark that drifts right to left forever (two identical halves make the loop seamless) -->
-  <div class="wordmark-rise mt-16 select-none overflow-hidden" aria-hidden="true">
-    <div class="wordmark-track flex">
+  <!-- Full-width wordmark that drifts right to left forever (two identical halves make the loop seamless). Set in
+       Satoshi Black, like the logo. -->
+  <div class="wordmark-rise mt-10 select-none overflow-hidden" aria-hidden="true">
+    <div class="wordmark-track flex w-max">
       {
         [0, 1].map(() => (
           <div class="flex shrink-0 items-center">
             {[0, 1, 2].map(() => (
-              <span class={`flex items-center whitespace-nowrap pb-[0.08em] font-brand text-[clamp(4rem,12vw,11rem)] font-extrabold leading-[0.95] tracking-[-0.055em] ${c.mark}`}>
+              <span class="flex items-center whitespace-nowrap pb-[0.08em] font-display text-[clamp(4rem,12vw,11rem)] font-black leading-[0.95] tracking-[-0.045em] text-ink/[0.08]">
                 GHL Megaminds
                 <Icon name="sparkle-fill" class="mx-[0.3em] size-[0.42em] shrink-0" />
               </span>
@@ -91,66 +100,18 @@ if (import.meta.env.PROD && !reviewBuild && (!SUBSCRIBE_URL || SUBSCRIBE_DUMMY))
       }
     </div>
   </div>
-
-  <div class="container-x">
-    <div
-      class:list={['mt-6 flex flex-col gap-5 border-t pt-8 text-sm lg:grid lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-6', c.line, c.soft]}
-    >
-      <p>&copy; {year} GHL Megaminds. All rights reserved.</p>
-      {
-        socialLinks.length > 0 && (
-          <ul class="flex gap-2" aria-label="GHL Megaminds on social media">
-            {socialLinks.map((s) => (
-              <li>
-                <a
-                  href={s.href || undefined}
-                  target={s.href ? '_blank' : undefined}
-                  rel={s.href ? 'noopener' : undefined}
-                  aria-label={s.label}
-                  class:list={['grid size-10 place-items-center rounded-full ring-1 transition', c.social]}
-                >
-                  <Icon name={s.icon} class="size-[18px]" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
-      <div class="flex gap-6 lg:justify-self-end">
-        <a href="/privacy" class:list={['transition', c.hover]}>Privacy Policy</a>
-        <a href="/terms" class:list={['transition', c.hover]}>Terms of Service</a>
-      </div>
-    </div>
-  </div>
 </footer>
 
 <script>
-  // Newsletter form: POST the email to the configured endpoint (form-encoded, so no CORS preflight), then thank them.
-  const form = document.querySelector<HTMLFormElement>('[data-subscribe]');
-  const note = form?.querySelector<HTMLElement>('[data-subscribe-note]');
-  const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
-  if (form && note && button) {
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const email = String(new FormData(form).get('email') ?? '').trim();
-      const endpoint = form.dataset.endpoint;
-      button.disabled = true;
-      try {
-        if (endpoint) {
-          await fetch(endpoint, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: new URLSearchParams({ email, source: 'Website footer' }),
-          });
-        }
-        note.textContent = "Thanks! You're on the list.";
-        note.classList.add('font-semibold', 'text-forest');
-        form.reset();
-      } catch {
-        note.textContent = 'Something went wrong. Please try again.';
-      } finally {
-        button.disabled = false;
-      }
-    });
-  }
+  // Theme switch: the choice is stored and applied by window.setTheme (Base.astro); keep aria-checked in sync.
+  const options = document.querySelectorAll<HTMLButtonElement>('[data-theme-option]');
+  const sync = () => {
+    const pref = document.documentElement.dataset.themePref ?? 'system';
+    options.forEach((option) => option.setAttribute('aria-checked', String(option.dataset.themeOption === pref)));
+  };
+  options.forEach((option) =>
+    option.addEventListener('click', () => (window as unknown as { setTheme: (p: string) => void }).setTheme(option.dataset.themeOption ?? 'system')),
+  );
+  new MutationObserver(sync).observe(document.documentElement, { attributeFilter: ['data-theme-pref'] });
+  sync();
 </script>

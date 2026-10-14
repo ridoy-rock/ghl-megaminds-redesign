@@ -1,0 +1,49 @@
+---
+// Closing call to action on the homepage: one button to the booking page (the embedded calendar stays on /v2's
+// BookCall section).
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Eyebrow from './Eyebrow.astro';
+import towerArt from '../assets/illustrations/tower.png';
+import { BOOKING_URL, BOOK_LABEL } from '../data/site';
+
+const promises = ['30 Minute Discovery Call', '7-Day Money-Back Guarantee', 'No Long-Term Lock-in'];
+---
+
+<section id="book" class="scroll-mt-24 px-2 pb-4 sm:px-4">
+  <div class="on-dark relative overflow-hidden rounded-[2rem] bg-pine text-canvas">
+    <div
+      class="pointer-events-none absolute -right-40 -top-40 size-[34rem] rounded-full border-[56px] border-canvas/[0.035]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="container-x relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-12 lg:py-24">
+      <div class="lg:col-span-8" data-stagger>
+        <Eyebrow tone="dark" icon="calendar-check-fill">Ready to Scale?</Eyebrow>
+        <h2 class="mt-6 max-w-[46rem] text-[clamp(2.2rem,4.4vw,3.6rem)] font-extrabold leading-[1.06] tracking-[-0.038em]">
+          Ready to plug certified HighLevel experts into your agency?
+        </h2>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-canvas/70">
+          Partner with GHL Megaminds to handle implementation and daily support. Scale with confidence.
+        </p>
+        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-sun mt-8">
+          {BOOK_LABEL}
+          <Icon name="arrow-right" class="btn-arrow size-4" />
+        </a>
+        <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-canvas/75">
+          {
+            promises.map((item) => (
+              <li class="flex items-center gap-2">
+                <Icon name="check-circle-fill" class="size-4 text-sun" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="hidden justify-center lg:col-span-4 lg:flex" data-reveal="scale">
+        <Image src={towerArt} alt="" widths={[280, 420, 470]} sizes="280px" class="float-soft w-[280px]" />
+      </div>
+    </div>
+  </div>
+</section>

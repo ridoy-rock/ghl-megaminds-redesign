@@ -2,8 +2,11 @@
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import Eyebrow from './Eyebrow.astro';
-import { steps, BOOK_HREF, BOOK_LABEL } from '../data/site';
-import { art } from '../lib/theme';
+import { steps, BOOK_HREF, BOOK_LABEL, BOOKING_URL } from '../data/site';
+import { art, themeOf } from '../lib/theme';
+
+// The homepage sends this button to the booking page; /v2 scrolls to its embedded calendar.
+const blue = themeOf(Astro.url) === 'blue';
 ---
 
 <section id="how-it-works" class="scroll-mt-20 py-24 lg:py-32">
@@ -11,10 +14,10 @@ import { art } from '../lib/theme';
     <div class="mx-auto max-w-[44rem] text-center" data-stagger>
       <Eyebrow icon="path-fill">How it works</Eyebrow>
       <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
-        Three steps to technical freedom.
+        3 steps to technical freedom.
       </h2>
       <p class="mx-auto mt-5 max-w-[36rem] text-lg leading-relaxed text-ink-soft">
-        From finding your bottleneck to full technical freedom, with clear communication and dedicated execution at
+        From identifying bottlenecks to full technical freedom, with clear communication and dedicated execution at
         every stage.
       </p>
     </div>
@@ -55,8 +58,8 @@ import { art } from '../lib/theme';
     </div>
 
     <div class="mt-16 flex justify-center" data-reveal>
-      <a href={BOOK_HREF} class="btn btn-ink">
-        {BOOK_LABEL}
+      <a href={blue ? BOOK_HREF : BOOKING_URL} class="btn btn-ink">
+        {blue ? BOOK_LABEL : 'Start with step 1'}
         <Icon name="arrow-right" class="btn-arrow size-4" />
       </a>
     </div>

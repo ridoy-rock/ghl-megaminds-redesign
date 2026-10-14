@@ -5,26 +5,23 @@ import Icon from './Icon.astro';
 import Eyebrow from './Eyebrow.astro';
 import BrandLogo from './BrandLogo.astro';
 import ComparisonPreview from './ComparisonPreview.astro';
-import { projects, projectStats, BOOK_HREF, BOOK_LABEL } from '../data/site';
+import { projects, projectStats, privateProject, DISCOVERY_HREF } from '../data/site';
 
 // Small cells rotate through the palette tints so the grid never reads as cream-on-cream.
 const tints = ['bg-butter', 'bg-sage', 'bg-stone'];
 const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
 ---
 
-<section id="projects" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32">
+<section id="projects" class="scroll-mt-20 border-t border-ink/10 py-24 lg:py-32" aria-labelledby="projects-title">
   <div class="container-x">
     <div class="max-w-[46rem]" data-stagger>
       <Eyebrow icon="code-fill">Projects we built</Eyebrow>
-      <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
-        Built for HighLevel agencies.
+      <h2 id="projects-title" class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
+        Built for GoHighLevel agencies.
       </h2>
-      <p class="mt-5 max-w-[36rem] text-lg leading-relaxed text-ink-soft">
-        Marketplace apps, middleware and templates we have shipped for the HighLevel ecosystem.
-      </p>
     </div>
 
-    <ul class="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-ink/10 py-8 sm:grid-cols-4">
+    <ul class="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-y border-ink/10 py-8 sm:grid-cols-4" aria-label="Project track record">
       {
         projectStats.map((stat) => (
           <li>
@@ -37,12 +34,12 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
       }
     </ul>
 
-    <div class="mt-10 grid grid-flow-row-dense gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+    <div id="project-grid" class="mt-10 grid grid-flow-row-dense gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
       {
         projects.map((project, i) => {
           const tint = tints[i % tints.length];
           const cta = (
-            <a href={project.href} target="_blank" rel="noopener" class="link-arrow text-[15px]">
+            <a href={project.href} target="_blank" rel="noopener noreferrer" class="link-arrow text-[15px]">
               {project.cta}
               <Icon name="arrow-up-right" class="btn-arrow size-4" />
               <span class="sr-only">(opens in a new tab)</span>
@@ -54,7 +51,7 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
             const visual = project.visual;
             return (
               <article
-                class="group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)] md:col-span-2"
+                class="project-item group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)] md:col-span-2"
                 data-reveal="pop"
                 style={`--d: ${(i % 3) * 110}`}
               >
@@ -65,16 +62,7 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
                   </div>
                   <div class="lg:pt-8">
                     <p class="text-[15px] leading-relaxed text-ink-soft">{project.body}</p>
-                    <div class="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-                      {project.tags && (
-                        <ul class="flex flex-wrap gap-2" aria-label="Highlights">
-                          {project.tags.map((tag) => (
-                            <li class="rounded-full bg-canvas px-3 py-1 text-[13px] font-semibold text-ink/80 ring-1 ring-ink/[0.08]">{tag}</li>
-                          ))}
-                        </ul>
-                      )}
-                      {cta}
-                    </div>
+                    <div class="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">{cta}</div>
                   </div>
                 </div>
 
@@ -117,7 +105,7 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
 
           return (
             <article
-              class="group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]"
+              class="project-item group flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]"
               data-reveal="pop"
               style={`--d: ${(i % 3) * 110}`}
             >
@@ -158,20 +146,17 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
       }
 
       <article
-        class="on-dark flex flex-col rounded-card bg-pine p-7 text-canvas hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-26px_color-mix(in_srgb,var(--color-pine)_60%,transparent)] sm:p-8 md:col-span-2 lg:col-span-1"
+        class="project-item on-dark flex flex-col rounded-card bg-pine p-7 text-canvas hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-26px_color-mix(in_srgb,var(--color-pine)_60%,transparent)] sm:p-8 md:col-span-2 lg:col-span-1"
         data-reveal="pop"
         style="--d: 220"
       >
         <Icon name="puzzle-piece-fill" class="size-9 text-sun" />
-        <h3 class="mt-6 text-[1.6rem] font-extrabold leading-tight tracking-[-0.03em]">
-          Need something HighLevel can't do yet?
-        </h3>
-        <p class="mt-3 leading-relaxed text-canvas/70">
-          We build private apps, middleware and client portals. Bring us the gap and we'll scope the fix.
-        </p>
+        <p class="mt-6 text-[13px] font-semibold text-canvas/70">{privateProject.type}</p>
+        <h3 class="mt-3 text-[1.6rem] font-extrabold leading-tight tracking-[-0.03em]">{privateProject.title}</h3>
+        <p class="mt-3 leading-relaxed text-canvas/70">{privateProject.body}</p>
         <div class="mt-auto pt-8">
-          <a href={BOOK_HREF} class="btn btn-sun w-full">
-            {BOOK_LABEL}
+          <a href={DISCOVERY_HREF} class="btn btn-sun w-full">
+            {privateProject.cta}
             <Icon name="arrow-right" class="btn-arrow size-4" />
           </a>
         </div>

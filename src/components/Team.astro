@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import CountUp from './CountUp.astro';
 import Eyebrow from './Eyebrow.astro';
+import Icon from './Icon.astro';
 import certifiedBadge from '../assets/badges/highlevel-certified-admin.png';
 import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
 ---
@@ -14,6 +15,10 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
         <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
           You're in experienced hands.
         </h2>
+        <p class="mt-6 max-w-xl text-lg text-ink-soft">
+          Your client accounts are configured by certified admins, extended by software engineers, and launched by
+          technical builders and marketers.
+        </p>
       </div>
 
       <!-- Credentials strip: figures, not boxes -->
@@ -47,7 +52,7 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
                 alt={member.alt}
                 widths={[240, 380, 560, 760]}
                 sizes="(min-width: 1240px) 360px, (min-width: 640px) 30vw, 112px"
-                class="block h-auto w-full origin-bottom transition-[scale] duration-700 ease-out-soft group-hover:scale-[1.04]"
+                class="block aspect-[760/880] w-full object-cover object-top origin-bottom transition-[scale] duration-700 ease-out-soft group-hover:scale-[1.04]"
               />
               {/* HighLevel Certified Admin badge, linked to the member's entry in the official directory. */}
               {member.certified && 'profile' in member && (
@@ -58,13 +63,36 @@ import { team, combinedTeamYears, certifiedAdmins } from '../data/site';
                   aria-label={`View ${member.name}'s HighLevel Certified Admin profile (opens in a new tab)`}
                   class="absolute bottom-1.5 right-1.5 rounded-lg bg-white/90 p-0.5 shadow-[0_6px_16px_-8px_rgb(20_33_27/0.45)] ring-1 ring-ink/[0.06] transition-[background-color,translate] hover:-translate-y-0.5 hover:bg-white sm:bottom-3 sm:right-3 sm:rounded-xl sm:p-1"
                 >
-                  <Image src={certifiedBadge} alt="HighLevel Certified Admin badge" widths={[72, 112, 168]} sizes="(min-width: 640px) 56px, 36px" class="block size-9 sm:size-14" />
+                  <Image src={certifiedBadge} alt="HighLevel Certified Admin" widths={[72, 112, 168]} sizes="(min-width: 640px) 56px, 36px" class="block size-9 object-contain sm:size-14" />
                 </a>
               )}
             </div>
             <div class="min-w-0 flex-1 sm:mt-6">
               <h3 class="font-display text-lg font-bold tracking-[-0.02em] sm:text-[1.4rem]">{member.name}</h3>
               <p class="mt-0.5 text-[15px] text-ink-soft">{member.role}</p>
+              {member.certified && 'profile' in member && (
+                <a
+                  href={member.profile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-forest underline underline-offset-4"
+                >
+                  View certified profile <span aria-hidden="true">↗</span>
+                  <span class="sr-only">for {member.name} (opens in a new tab)</span>
+                </a>
+              )}
+              <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13.5px]">
+                <p>
+                  <span class="text-ink-soft">Experience</span>
+                  <span class="ml-1 font-semibold">{member.years.replace('yrs', 'years')}</span>
+                </p>
+                {member.certified && (
+                  <p class="inline-flex items-center gap-1.5 font-semibold text-forest">
+                    <Icon name="seal-check-fill" class="size-4 text-leaf" />
+                    Certified Admin
+                  </p>
+                )}
+              </div>
             </div>
           </li>
         ))

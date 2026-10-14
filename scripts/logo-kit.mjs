@@ -1,9 +1,12 @@
 // Builds the full logo kit for the chosen "Workflow" mark (T8): every version as SVG (outlined), PDF (vector) and
-// PNG, editable SVGs with live text, a layered master file, favicons, social avatars, colours and the font.
-// usage: node scripts/logo-kit.mjs <fontDir>   (fontDir holds BricolageGrotesque[opsz,wdth,wght].ttf + OFL.txt)
+// PNG, editable SVGs with live text, a layered master file, favicons, social avatars and colours.
+// The name is set in Satoshi, the website's heading font (src/assets/fonts/Satoshi-Variable.woff2). Static Bold/Black
+// instances are cut from it with Python fontTools (fontkit can't lay out a variation of this woff2).
+// usage: node scripts/logo-kit.mjs
 // Output: review/GHL-Megaminds-Logo-Kit-<date>/ and a zip next to it.
 import { spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -12,7 +15,6 @@ const require = createRequire(import.meta.url);
 const fontkit = require('fontkit');
 const sharp = require('sharp');
 const root = fileURLToPath(new URL('..', import.meta.url));
-const fontDir = process.argv[2];
 const date = new Date().toISOString().slice(0, 10);
 const NAME = `GHL-Megaminds-Logo-Kit-${date}`;
 const OUT = path.join(root, 'review', NAME);
@@ -20,14 +22,25 @@ const OUT = path.join(root, 'review', NAME);
 // ---------- Brand ----------
 const COLOR = { yellow: '#FFC800', blue: '#2896FB', green: '#17C94B', ink: '#14211B', navy: '#0B1220', white: '#FFFFFF', black: '#000000' };
 const SIZE = 64; // icon box; the name is set at 0.58 x this
-const FS = SIZE * 0.58;
+const FS = SIZE * 0.6;
 const GAP = SIZE * 0.3; // icon to name
-const WORD_GAP = FS * 0.26; // GHL to Megaminds
+const WORD_GAP = FS * 0.24; // GHL to Megaminds
 
-// "GHL" is Bricolage Grotesque SemiBold at optical size 14; "Megaminds" is ExtraBold at optical size 96.
-const f600 = fontkit.openSync(`${root}node_modules/@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-600-normal.woff2`);
-const f800 = fontkit.openSync(`${root}node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2`);
-const TRACK = { ghl: -0.004, mega: -0.012 };
+// "GHL" is Satoshi Bold (700), "Megaminds" Satoshi Black (900), both tracked in slightly like the site's headings.
+const WEIGHT = { ghl: 700, mega: 900 };
+const TRACK = { ghl: -0.015, mega: -0.025 };
+const fontTmp = mkdtempSync(path.join(tmpdir(), 'satoshi-'));
+const cut = spawnSync('python3', ['-c', `
+import sys
+from fontTools.ttLib import TTFont
+from fontTools.varLib import instancer
+for w in sys.argv[2:]:
+    f = TTFont(sys.argv[1]); f.flavor = None
+    instancer.instantiateVariableFont(f, {'wght': int(w)}).save(f'${fontTmp}/Satoshi-{w}.ttf')
+`, `${root}src/assets/fonts/Satoshi-Variable.woff2`, String(WEIGHT.ghl), String(WEIGHT.mega)], { stdio: 'inherit' });
+if (cut.status !== 0) throw new Error('fontTools could not cut the Satoshi instances');
+const f600 = fontkit.openSync(path.join(fontTmp, `Satoshi-${WEIGHT.ghl}.ttf`));
+const f800 = fontkit.openSync(path.join(fontTmp, `Satoshi-${WEIGHT.mega}.ttf`));
 
 const textPath = (text, font, fontSize, tracking) => {
   const scale = fontSize / font.unitsPerEm, run = font.layout(text);
@@ -65,12 +78,12 @@ const SCHEMES = {
   white: { label: 'One colour, white', line: COLOR.white, dots: [COLOR.white, COLOR.white, COLOR.white], text: COLOR.white },
 };
 
-// Name: outlined paths, or live text (editable; needs Bricolage Grotesque installed).
+// Name: outlined paths, or live text (editable; needs Satoshi installed).
 const wordmark = (x, base, fill, editable) =>
   editable
-    ? `<text id="name" x="${x.toFixed(2)}" y="${base.toFixed(2)}" fill="${fill}" font-family="'Bricolage Grotesque', sans-serif" font-size="${FS.toFixed(2)}">` +
-      `<tspan id="name-ghl" font-weight="600" letter-spacing="${(TRACK.ghl * FS).toFixed(3)}" style="font-variation-settings:'opsz' 14">GHL</tspan>` +
-      `<tspan id="name-megaminds" x="${(x + ghl.width + WORD_GAP).toFixed(2)}" font-weight="800" letter-spacing="${(TRACK.mega * FS).toFixed(3)}" style="font-variation-settings:'opsz' 96">Megaminds</tspan>` +
+    ? `<text id="name" x="${x.toFixed(2)}" y="${base.toFixed(2)}" fill="${fill}" font-family="Satoshi, sans-serif" font-size="${FS.toFixed(2)}">` +
+      `<tspan id="name-ghl" font-weight="${WEIGHT.ghl}" letter-spacing="${(TRACK.ghl * FS).toFixed(3)}">GHL</tspan>` +
+      `<tspan id="name-megaminds" x="${(x + ghl.width + WORD_GAP).toFixed(2)}" font-weight="${WEIGHT.mega}" letter-spacing="${(TRACK.mega * FS).toFixed(3)}">Megaminds</tspan>` +
       `</text>`
     : `<g id="name"><path id="name-ghl" transform="translate(${x.toFixed(2)} ${base.toFixed(2)})" d="${ghl.d}" fill="${fill}"/>` +
       `<path id="name-megaminds" transform="translate(${(x + ghl.width + WORD_GAP).toFixed(2)} ${base.toFixed(2)})" d="${mega.d}" fill="${fill}"/></g>`;
@@ -183,7 +196,7 @@ for (const scheme of ['color', 'color-on-dark', 'black', 'white']) {
 const master = (editable) => {
   const W = 1600, rows = [];
   let y = 120;
-  const label = (x, yy, t) => `<text x="${x}" y="${yy}" font-family="'Bricolage Grotesque', sans-serif" font-size="18" font-weight="600" fill="#5B6472">${t}</text>`;
+  const label = (x, yy, t) => `<text x="${x}" y="${yy}" font-family="Satoshi, sans-serif" font-size="18" font-weight="700" fill="#5B6472">${t}</text>`;
   const place = (id, title, inner, w, h, bg, x, yy, scale) =>
     `<g id="${id}">` + (bg ? `<rect id="${id}-background" x="${x - 40}" y="${yy - 40}" width="${w * scale + 80}" height="${h * scale + 80}" rx="24" fill="${bg}"/>` : '') +
     `<g transform="translate(${x} ${yy}) scale(${scale})">${inner}</g>` + label(x - 40, yy - 56, title) + `</g>`;
@@ -211,7 +224,7 @@ const master = (editable) => {
     .map(([n, c], i) => `<g id="swatch-${n.toLowerCase()}"><rect x="${100 + i * 280}" y="${y}" width="240" height="90" rx="16" fill="${c}"/>${label(100 + i * 280, y + 122, `${n} ${c}`)}</g>`).join('');
   const H = y + 180;
   return svg(W, H, `<rect id="artboard" width="${W}" height="${H}" fill="#FFFFFF"/>` +
-    `<text x="60" y="64" font-family="'Bricolage Grotesque', sans-serif" font-size="30" font-weight="800" fill="${COLOR.ink}">GHL Megaminds · logo master</text>` +
+    `<text x="60" y="64" font-family="Satoshi, sans-serif" font-size="30" font-weight="900" fill="${COLOR.ink}">GHL Megaminds · logo master</text>` +
     rows.join('\n') + `<g id="colours">${sw}</g>`, 'GHL Megaminds logo master');
 };
 write('00 Editable source/GHL-Megaminds-logo-master-EDITABLE.svg', master(true));
@@ -231,9 +244,9 @@ One-colour versions (black or white) are for stamps, embroidery, fax-like printi
 places where colour isn't possible.
 
 TYPEFACE
-Bricolage Grotesque (free, SIL Open Font License; included in /Fonts)
-  "GHL"        SemiBold (600), optical size 14, letter-spacing -0.4%
-  "Megaminds"  ExtraBold (800), optical size 96, letter-spacing -1.2%
+Satoshi by Indian Type Foundry, the website's heading font (free from fontshare.com/fonts/satoshi)
+  "GHL"        Bold (700), letter-spacing -1.5%
+  "Megaminds"  Black (900), letter-spacing -2.5%
 `);
 
 // ---------- PDFs (vector, via headless Chrome) ----------
@@ -262,9 +275,9 @@ Bricolage Grotesque (free, SIL Open Font License; included in /Fonts)
   chrome.kill('SIGKILL');
 }
 
-// Fonts + README
-mkdirSync(path.join(OUT, 'Fonts'), { recursive: true });
-for (const f of readdirSync(fontDir)) copyFileSync(path.join(fontDir, f), path.join(OUT, 'Fonts', f));
+rmSync(fontTmp, { recursive: true, force: true });
+
+// README
 write('README.txt', `GHL MEGAMINDS · LOGO KIT ("Workflow" mark)
 
 The mark: three steps of an automation (trigger, action, result) linked by a rising line,
@@ -273,7 +286,7 @@ in yellow, blue and green, next to the name GHL Megaminds.
 FOLDERS
 00 Editable source   Live-text SVGs (retype or change the name) and the master sheet with
                      every version on one artboard, in named layers. Opens in Figma,
-                     Illustrator, Inkscape, Affinity. Install the font in /Fonts first.
+                     Illustrator, Inkscape, Affinity. Install Satoshi first (see below).
                      GHL-Megaminds-logo-master.pdf is the same sheet fully outlined.
 01 Logo - horizontal Main logo. SVG (vector), PDF (vector), PNG (transparent, 2400 px).
 02 Logo - stacked    Icon above the name, for square spaces. SVG, PDF, PNG (1400 px).
@@ -284,7 +297,6 @@ FOLDERS
                      android-chrome 192/512.
 06 Social avatar     Square navy avatar, the mark inside the circle-safe area. 400/800/1080.
 07 Brand             Colour codes and typeface details.
-Fonts                Bricolage Grotesque (SIL Open Font License, free for commercial use).
 
 VERSIONS (in every logo folder)
   color          full colour for light backgrounds (dark line and name)
@@ -297,11 +309,11 @@ WHICH FILE?
   Editing the logo:           00 Editable source (live text) or the PDFs in Illustrator
 
 The name in the normal SVG/PDF/PNG files is converted to outlines, so it looks exactly right
-without any font installed. In the EDITABLE files the name is live text: install
-"Bricolage Grotesque" from /Fonts first. "GHL" is SemiBold at optical size 14 and
-"Megaminds" is ExtraBold at optical size 96 (in Figma: select the text > Variable font
-settings > Optical size). Keep clear space around the logo of at least the height of the
-blue dot on every side, and don't recolour, stretch or rotate it.
+without any font installed. In the EDITABLE files the name is live text: install Satoshi
+first (free for personal and commercial use from https://www.fontshare.com/fonts/satoshi).
+"GHL" is Satoshi Bold and "Megaminds" is Satoshi Black. Keep clear
+space around the logo of at least the height of the blue dot on every side, and don't
+recolour, stretch or rotate it.
 `);
 
 // Zip

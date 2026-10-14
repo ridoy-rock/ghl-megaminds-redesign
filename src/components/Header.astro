@@ -2,7 +2,7 @@
 import { pageHref } from '../lib/theme';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { nav, BOOK_HREF, BOOK_LABEL, PLANS_HREF, PLANS_LABEL } from '../data/site';
+import { nav, BOOK_HREF, BOOK_LABEL, DISCOVERY_HREF, PLANS_HREF, PLANS_LABEL } from '../data/site';
 
 interface Props {
   /** Dark navy header (the /v2 page, whose hero is dark too). */
@@ -10,9 +10,13 @@ interface Props {
 }
 
 const { dark = false } = Astro.props;
+// The homepage books on the discovery page; /v2 (dark) scrolls to its own embedded calendar.
+const bookHref = dark ? BOOK_HREF : DISCOVERY_HREF;
 ---
 
-<div class:list={['on-dark text-canvas', dark ? 'bg-pine-raised' : 'bg-pine']}>
+{/* Launch-offer bar: /v2 only (the homepage dropped it). */}
+{dark && (
+<div class="on-dark bg-pine-raised text-canvas">
   <div class="container-x flex h-10 items-center justify-center gap-3 text-[13.5px] sm:text-sm">
     <p class="truncate">
       <span class="font-semibold text-sun">Launch offer:</span> 40% off all three monthly plans.
@@ -26,6 +30,7 @@ const { dark = false } = Astro.props;
     </a>
   </div>
 </div>
+)}
 
 <header
   id="site-header"
@@ -33,10 +38,10 @@ const { dark = false } = Astro.props;
     'sticky top-0 z-40 border-b transition-[background-color,border-color] duration-300',
     dark
       ? 'on-dark border-canvas/[0.08] bg-pine text-canvas data-scrolled:bg-pine/90 data-scrolled:backdrop-blur-md'
-      : 'border-transparent data-scrolled:border-ink/10 data-scrolled:bg-canvas/85 data-scrolled:backdrop-blur-md',
+      : 'bg-canvas/95 border-transparent data-scrolled:border-ink/10 data-scrolled:bg-canvas/85 data-scrolled:backdrop-blur-md',
   ]}
 >
-  <div class="container-x flex h-[72px] items-center justify-between gap-6">
+  <div class="container-x flex h-[72px] items-center justify-between gap-4 whitespace-nowrap">
     <a href={pageHref('/', Astro.url)} aria-label="GHL Megaminds home" class="shrink-0 rounded-[12px]">
       <Logo tone={dark ? 'light' : 'ink'} />
     </a>
@@ -47,7 +52,7 @@ const { dark = false } = Astro.props;
           <a
             href={pageHref(item.href, Astro.url)}
             class:list={[
-              'rounded-full px-3.5 py-2 text-[15px] font-medium transition',
+              'rounded-full px-2.5 py-2 text-[15px] font-medium transition xl:px-3.5',
               dark ? 'text-canvas/75 hover:bg-canvas/10 hover:text-canvas' : 'text-ink/75 hover:bg-ink/5 hover:text-ink',
             ]}
           >
@@ -58,7 +63,7 @@ const { dark = false } = Astro.props;
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href={BOOK_HREF} class="btn btn-ink hidden h-11 px-5 text-[15px] sm:inline-flex">
+      <a href={bookHref} class="btn btn-ink hidden h-11 px-5 text-[15px] sm:inline-flex">
         {BOOK_LABEL}
         <Icon name="arrow-right" class="btn-arrow size-4" />
       </a>
@@ -88,7 +93,7 @@ const { dark = false } = Astro.props;
           </a>
         ))
       }
-      <a href={BOOK_HREF} class="btn btn-ink mt-6 w-full" data-close-menu>
+      <a href={bookHref} class="btn btn-ink mt-6 w-full" data-close-menu>
         {BOOK_LABEL}
         <Icon name="arrow-right" class="btn-arrow size-4" />
       </a>

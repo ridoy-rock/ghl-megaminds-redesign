@@ -4,7 +4,7 @@ import Icon from './Icon.astro';
 import AppIcon from './AppIcon.astro';
 import Eyebrow from './Eyebrow.astro';
 import brokenArt from '../assets/crm/broken-workflow.png';
-import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/site';
+import { usualOptions, megamindsPoints, PLANS_HREF } from '../data/site';
 ---
 
 <section id="why-us" class="scroll-mt-20 px-2 pt-20 sm:px-4 lg:pt-28">
@@ -20,11 +20,12 @@ import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/
         <div class="lg:col-span-7" data-stagger>
           <Eyebrow tone="dark" icon="warning-circle-fill">The problem</Eyebrow>
           <h2 class="mt-5 text-[clamp(2.1rem,4.4vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.038em]">
-            Stop babysitting VAs and wrestling with complex tech.
+            Stop wasting time babysitting VAs or wrestling with complex tech.
           </h2>
           <p class="mt-6 max-w-[36rem] text-lg leading-relaxed text-canvas/70">
-            You started your agency to sign high-ticket clients and grow revenue. Not to spend hours fixing broken
-            workflows or micro-managing inexperienced assistants.
+            You started your agency to build a scalable business, acquire high-ticket clients, and generate revenue.
+            You did not start it to spend hours fixing broken workflows or micro-managing inexperienced virtual
+            assistants.
           </p>
         </div>
         <div class="flex justify-center lg:col-span-5" data-reveal="scale" style="--d: 150">
@@ -32,7 +33,7 @@ import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/
           <div class="scroll-tilt" style="--tilt: 9deg">
           <Image
             src={brokenArt}
-            alt="Clay illustration of a broken automation workflow: toppling app tiles, tangled tubes, a snapped cable and an unplugged plug"
+            alt="Clay illustration of a broken automation workflow with toppling app tiles and tangled cables"
             widths={[200, 300, 420]}
             sizes="(min-width: 1024px) 220px, 190px"
             class="float-soft h-auto w-[190px] lg:w-[220px]"
@@ -69,7 +70,7 @@ import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/
         </div>
 
         <div class="flex flex-col lg:col-span-6">
-          <p class="mb-4 text-sm font-semibold text-sun">The GHL Megaminds way</p>
+          <p class="mb-4 text-sm font-semibold text-sun">GHL Megaminds</p>
           <div class="grow rounded-card bg-canvas p-7 text-ink sm:p-9 lg:p-10" data-reveal="right" style="--d: 120">
             <AppIcon class="size-11" />
             <h3 class="mt-6 text-[1.85rem] font-extrabold leading-[1.08] tracking-[-0.032em]">
@@ -88,7 +89,7 @@ import { usualOptions, megamindsPoints, PLANS_HREF, PLANS_LABEL } from '../data/
               }
             </ul>
             <a href={PLANS_HREF} class="link-arrow mt-9">
-              {PLANS_LABEL}
+              See what's included
               <Icon name="arrow-right" class="btn-arrow size-4" />
             </a>
           </div>

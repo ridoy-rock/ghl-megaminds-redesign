@@ -1,27 +1,32 @@
 ---
-// The HL Comparison Table product, redrawn in this site's style for its project card: what each feature would cost as
+// The My CRM Pricing product, redrawn in this site's style for its project card: what each feature would cost as
 // separate tools, and the "Included" column a SaaS reseller shows prospects. Rows follow the app's default table.
 import Icon from './Icon.astro';
 
 const rows = [
-  { feature: 'CRM & Pipeline', tools: ['HubSpot', 'ActiveCampaign'], price: 99 },
-  { feature: 'Sales Funnels', tools: ['ClickFunnels', 'Leadpages'], price: 297 },
+  { feature: 'CRM & Pipeline Management', tools: ['HubSpot', 'ActiveCampaign'], price: 99 },
+  { feature: 'Unlimited Sales Funnels', tools: ['ClickFunnels', 'Leadpages'], price: 297 },
   { feature: 'Website Builder', tools: ['WordPress', 'Squarespace', 'Wix'], price: 29 },
-  { feature: 'Email Marketing', tools: ['Mailchimp', 'Constant Contact'], price: 99 },
-  { feature: 'Workflow Automations', tools: ['Keap', 'ActiveCampaign'], price: 169 },
+  { feature: 'Ecommerce', tools: ['Shopify', 'Woo'], price: 39 },
+  { feature: 'Surveys & Forms', tools: ['Jotform', 'Typeform', 'Wufoo'], price: 79 },
+  { feature: 'Email Marketing', tools: ['Mailchimp', 'Constant Contact', 'HubSpot'], price: 99 },
+  { feature: '2-Way SMS Marketing', tools: ['Skipio', 'Podium', 'Sendlane'], price: 99 },
+  { feature: 'Booking & Appointments', tools: ['Calendly', 'Acuity'], price: 29 },
+  { feature: 'Workflow Automations', tools: ['Keap', 'ActiveCampaign', 'HubSpot'], price: 169 },
+  { feature: 'AI Voice Agent', tools: ['AIR', 'Synthflow'], price: 199 },
 ];
 ---
 
 <div
   class="@container mx-auto w-full max-w-[700px] rounded-t-[20px] bg-paper p-2.5 pb-0 shadow-[0_28px_60px_-30px_rgb(20_33_27/0.5)] ring-1 ring-ink/[0.07] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5 sm:p-3 sm:pb-0"
   role="img"
-  aria-label="Preview of a comparison table: CRM, sales funnels, website builder, email marketing and workflow automations, each listed with the tools it replaces, their monthly price, and marked Included"
+  aria-label="My CRM Pricing comparison table preview with included features and replacement tool prices"
 >
   <div class="cmp-row px-3 pb-2.5 pt-2 text-[10.5px] font-bold uppercase tracking-[0.09em] text-ink-soft" aria-hidden="true">
     <span>Features</span>
     <span class="cmp-replaces">Replaces</span>
     <span class="text-right">Other tools</span>
-    <span class="text-right">Your SaaS</span>
+    <span class="text-right">My SaaS</span>
   </div>
   <ul class="grid gap-1.5" data-stagger aria-hidden="true">
     {

@@ -1,11 +1,9 @@
 ---
-import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import '@fontsource-variable/figtree';
 import '../styles/global.css';
-import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
 import bodyFont from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
 import titleFont from '../assets/fonts/Satoshi-Variable.woff2?url';
-import { site, faqs, socials, GTM_ID } from '../data/site';
+import { site, socials, GTM_ID } from '../data/site';
 import { themeOf } from '../lib/theme';
 
 interface Props {
@@ -45,14 +43,6 @@ const jsonLd = {
       name: site.name,
       publisher: { '@id': `${site.url}/#org` },
     },
-    {
-      '@type': 'FAQPage',
-      mainEntity: faqs.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
   ],
 };
 ---
@@ -78,13 +68,46 @@ const jsonLd = {
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary" />
 
-    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={titleFont} as="font" type="font/woff2" crossorigin />
 
     <script is:inline>
       document.documentElement.classList.add('js');
     </script>
+    {
+      !blue && (
+        /* Theme: "light" | "dark" | "system" (default), chosen in the footer. Runs before paint so the page never
+           flashes the wrong theme. */
+        <script is:inline>
+          (() => {
+            const root = document.documentElement;
+            const media = matchMedia('(prefers-color-scheme: light)');
+            const pref = () => {
+              try {
+                return localStorage.getItem('theme') || 'system';
+              } catch {
+                return 'system';
+              }
+            };
+            const apply = (p = pref()) => {
+              const theme = p === 'system' ? (media.matches ? 'light' : 'dark') : p;
+              root.dataset.theme = theme;
+              root.dataset.themePref = p;
+              document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f2ec' : '#111e18');
+            };
+            window.setTheme = (p) => {
+              try {
+                localStorage.setItem('theme', p);
+              } catch {}
+              apply(p);
+            };
+            media.addEventListener('change', () => pref() === 'system' && apply());
+            apply();
+            addEventListener('DOMContentLoaded', () => apply());
+          })();
+        </script>
+      )
+    }
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 

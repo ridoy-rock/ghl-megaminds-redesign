@@ -14,7 +14,6 @@ import stepScaleArt from '../assets/illustrations/step-scale.png';
 import mehediPhoto from '../assets/team/mehedi-sharif-portrait.png';
 import farhadPhoto from '../assets/team/farhad-hossen-portrait.png';
 import somratPhoto from '../assets/team/somrat-sorkar-portrait.png';
-import sharifulPhoto from '../assets/team/shariful-islam.jpg';
 import tuhinPhoto from '../assets/team/tariquzzaman-tuhin-portrait.png';
 import muradPhoto from '../assets/team/murad-uzzaman-portrait.png';
 import redwanurPhoto from '../assets/team/redwanur-rahman-portrait.png';
@@ -35,7 +34,14 @@ export const BOOKING_EMBED_ID = 'b40dt1YgHIrDlJDWZd1D_1790652759354';
 export const FORM_EMBED_SCRIPT = 'https://links.ghlmegaminds.com/js/form_embed.js';
 export const GTM_ID = 'GTM-WV2CRCZ7';
 
-// Every "Book a discovery call" button scrolls to the embedded calendar.
+// HighLevel booking page for the discovery call (opens in a new tab).
+export const BOOKING_URL = 'https://api.leadconnectorhq.com/widget/booking/b40dt1YgHIrDlJDWZd1D';
+// The live site has its own /discovery and /contact pages. This repo only holds the homepage, so review builds send
+// the /discovery buttons straight to the booking page instead of a 404.
+const reviewBuild = import.meta.env.PUBLIC_REVIEW_BUILD === 'true';
+export const DISCOVERY_HREF = reviewBuild ? BOOKING_URL : '/discovery';
+export const CONTACT_HREF = '/contact';
+// /v2 still scrolls to its embedded calendar.
 export const BOOK_HREF = '#book';
 export const BOOK_LABEL = 'Book a discovery call';
 export const PLANS_HREF = '#offers';
@@ -64,6 +70,13 @@ export const heroStats = [
   { value: '322', label: 'installs of our HighLevel Marketplace apps' },
 ];
 
+// Homepage hero: three facts under the headline.
+export const heroFacts = [
+  { value: 'Certified Admins', label: 'HighLevel expertise with full-stack depth.' },
+  { value: '40+ years', label: 'Combined development experience.' },
+  { value: 'One engineering bench', label: 'Architecture, build, QA, and support.' },
+];
+
 export type Integration = { name: string; logo: 'highlevel' | 'stripe' | 'quickbooks' | 'google' | 'slack' | 'teams' | 'n8n' | 'telegram' };
 
 export const integrations: Integration[] = [
@@ -79,34 +92,34 @@ export const integrations: Integration[] = [
 
 export const usualOptions = [
   {
-    title: 'Hire offshore, inexperienced VAs',
+    title: 'Hire offshore inexperienced VAs',
     tag: 'Hand-holding',
-    body: 'Low cost, but they need constant hand-holding, lack real engineering experience and stall when native HighLevel features hit a limit.',
+    body: 'Low cost, but requires constant hand-holding, lacks real engineering experience, and breaks down when native GoHighLevel features hit a limit.',
   },
   {
     title: 'Hire expensive full-time employees',
     tag: 'High overhead',
-    body: 'Long recruiting cycles and salaries that eat into your margins while slowing your agency down.',
+    body: 'High overhead, long recruiting cycles, and expensive salaries that eat into your profit margins while slowing down your agency agility.',
   },
   {
     title: 'Hire massive white-label agencies',
     tag: 'Ticket queue',
-    body: 'You become one ticket among hundreds: canned replies, slow turnaround and low-priority treatment.',
+    body: "They juggle hundreds of clients, so you're just another ticket number in their queue. You get canned replies, slow turnaround, and low-priority treatment.",
   },
 ];
 
 export const megamindsPoints = [
   'Certified HighLevel admins backed by 10+ years of software engineering',
-  'Advanced workflows, webhooks and APIs built without hand-holding',
-  'Flat monthly pricing: no salaries, payroll taxes or recruiting',
+  'Advanced workflows, webhooks, and APIs built without hand-holding',
+  'Flat monthly pricing: no salaries, payroll taxes, or recruiting',
   'Capped client intake, so you get direct partner access',
-  "Delivered under your agency's brand. Clients never see us",
+  "Delivered under your agency's brand; clients never see us",
   '7-day, 100% money-back guarantee',
 ];
 
 export const workflowSteps = [
   { label: 'Form submitted', icon: 'note-pencil' },
-  { label: 'Webhook to middleware', icon: 'flow-arrow' },
+  { label: 'Webhook → middleware', icon: 'flow-arrow' },
   { label: 'Enrich via API', icon: 'database' },
   { label: 'Update GHL contact', icon: 'user-circle-check' },
 ];
@@ -117,8 +130,12 @@ export type Offer = {
   title: string;
   blurb: string;
   price: string;
-  was: string;
+  /** Regular price, struck through. Leave out for quote-only offers. */
+  was?: string;
+  /** Small pill next to the price. */
+  badge?: string;
   terms: string;
+  cta: { label: string; href: string };
   items: string[];
   art: ImageMetadata;
   artAlt: string;
@@ -135,16 +152,18 @@ export const offers: Offer[] = [
     blurb: 'Turn new client sign-ups into fully integrated accounts in under 48 hours.',
     price: '$900',
     was: '$1,500',
+    badge: 'Start here',
     terms: '50 hours/mo. 2-month minimum. Single setup available at $497/client.',
+    cta: { label: BOOK_LABEL, href: DISCOVERY_HREF },
     items: [
-      'Sub-account & intake setup',
-      'Staff permissions configuration',
-      'Stripe, QBO and GMB integrations',
-      'Snapshot loading & custom fields',
-      'Domain setup & SSL',
-      'A2P 10DLC compliance',
-      'SMTP & domain authentication',
-      '1-on-1 white-label walkthrough',
+      'Sub-Account & Intake Setup',
+      'Staff Permissions Configuration',
+      'Stripe, QBO, GMB Integrations',
+      'Snapshot Loading & Custom Fields',
+      'Domain Setup & SSL',
+      'A2P 10DLC Compliance',
+      'SMTP & Domain Authentication',
+      '1-on-1 White-Label Walkthrough',
     ],
     art: onboardingArt,
     artAlt: 'Clay illustration of a small green house with a glowing doorway and a golden key',
@@ -159,14 +178,15 @@ export const offers: Offer[] = [
     price: '$600',
     was: '$1,000',
     terms: '50 hours/mo support coverage. 2-month minimum commitment.',
+    cta: { label: BOOK_LABEL, href: DISCOVERY_HREF },
     items: [
-      'White-label help desk management',
-      'Direct troubleshooting',
-      'Daily system monitoring',
-      'Workflow health audits',
-      'Trigger & update repair',
-      'Escalation management',
-      'Weekly performance reports',
+      'White-Label Help Desk Mgmt',
+      'Direct Troubleshooting',
+      'Daily System Monitoring',
+      'Workflow Health Audits',
+      'Trigger & Updates Repair',
+      'Escalation Management',
+      'Weekly Performance Reports',
     ],
     art: supportArt,
     artAlt: 'Clay illustration of two speech bubbles with a checkmark',
@@ -177,18 +197,18 @@ export const offers: Offer[] = [
     id: 'engineering',
     kicker: 'Engineering',
     title: 'Custom App & Wrapper Dev',
-    blurb: 'Build private HighLevel marketplace apps, middleware and custom portals.',
-    price: '$1,200',
-    was: '$2,000',
-    terms: '50 hours/mo senior dev bandwidth. Single builds priced on scope.',
+    blurb: 'Build private HighLevel marketplace apps, middleware, and custom portals.',
+    price: 'Custom quote',
+    terms: 'Custom app and wrapper projects are priced based on scope. Contact us to discuss your requirements.',
+    cta: { label: 'Contact us for a quote', href: CONTACT_HREF },
     items: [
-      'Marketplace & private apps',
-      'White-label client portals',
-      'Internal operations dashboards',
-      'Custom webhooks & middleware',
-      'Third-party API bridges',
-      'Legacy system integrations',
-      'Custom JavaScript, CSS and UI tweaks',
+      'Marketplace & Private Apps',
+      'White-Label Client Portals',
+      'Internal Operations Dashboards',
+      'Custom Webhooks & Middleware',
+      'Third-Party API Bridges',
+      'Legacy System Integrations',
+      'Custom JavaScript, CSS, and UI tweaks',
     ],
     art: engineeringArt,
     artAlt: 'Clay illustration of interlocking puzzle pieces joined by a cable',
@@ -202,21 +222,21 @@ export const steps = [
     n: '01',
     meta: '30 min',
     title: 'Book a scoping call',
-    body: "We review your agency's current bottleneck, client volume and technical requirements.",
+    body: "We review your agency's current bottleneck, client volume, and technical requirements.",
     art: stepCallArt,
   },
   {
     n: '02',
     meta: 'Integration',
     title: 'Plug us in',
-    body: 'We join your Slack, Teams or ticketing tool under your custom brand identity.',
+    body: 'We integrate with your Slack, Teams, or ticketing tool under your custom brand identity.',
     art: stepPlugArt,
   },
   {
     n: '03',
     meta: 'Ongoing',
     title: 'Hand off & scale',
-    body: 'You close clients. We run onboarding, build custom apps and manage support behind the scenes.',
+    body: 'You close clients. We execute onboarding, build custom apps, and manage support behind the scenes.',
     art: stepScaleArt,
   },
 ];
@@ -247,74 +267,82 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    type: 'HighLevel Marketplace app',
+    type: 'GoHighLevel Custom App',
     title: 'Integration middleware for GHL & n8n',
-    body: 'Connect self-hosted n8n to GoHighLevel in minutes, with 40 pre-built actions and 32 triggers that remove manual API calls.',
+    body: 'Connect self-hosted n8n to GoHighLevel in minutes. Packed with 40 pre-built actions and 32 triggers to eliminate manual API calls.',
     href: 'https://marketplace.gohighlevel.com/integration/69eef1cd71a26a0956e537b8',
     cta: 'View on GHL Marketplace',
     installs: 196,
     visual: { kind: 'logo', logo: 'n8n' },
   },
   {
-    type: 'Web application',
-    title: 'HL Comparison Table',
-    body: 'Show prospects how many subscriptions your CRM replaces and what they save every month. Interactive comparison tables for SaaS resellers.',
+    type: 'Web Application',
+    title: 'My CRM Pricing',
+    body: 'Show prospects how many subscriptions your CRM replaces and exactly what they save every month. Interactive comparison tables built for SaaS resellers.',
     href: 'https://hlcomparisontable.ghlmegaminds.com/',
-    cta: 'Live demo',
-    tags: ['Download image', 'Share link', 'Embed'],
+    cta: 'Live Demo',
     visual: { kind: 'table', tint: 'sage' },
   },
   {
-    type: 'Headless template',
-    title: 'Astro + GoHighLevel website template',
-    body: 'Native HighLevel sites are slow. Get full design control with Astro while HighLevel powers your backend.',
-    href: 'https://automark-astro.vercel.app/',
-    cta: 'Live demo',
-    tags: ['Astro 6', 'Tailwind CSS', '10+ pages'],
-    visual: {
-      kind: 'shot',
-      image: automarkHero,
-      url: 'automark-astro.vercel.app',
-      alt: 'Automark, the Astro and GoHighLevel website template: hero with the headline "The All-In-One Growth Software for Local Business Owners"',
-      tint: 'stone',
-    },
-  },
-  {
-    type: 'HighLevel Marketplace app',
-    title: 'llms.txt Generator for GHL websites',
-    body: 'We closed the llms.txt gap for HighLevel long before native rollouts. Clean markdown files that prepare client sites for AI crawlers.',
+    type: 'GoHighLevel Custom App',
+    title: 'llms.txt Generators app for GHL websites',
+    body: 'We solved the missing llms.txt gap for HighLevel long before native rollouts. Generates clean markdown files to prepare client sites for AI crawlers.',
     href: 'https://marketplace.gohighlevel.com/integration/69e86cb705f1a96f1879c857',
     cta: 'View on GHL Marketplace',
     installs: 116,
     visual: { kind: 'glyph', glyph: 'llms.txt', mono: true },
   },
   {
-    type: 'HighLevel Marketplace app',
+    type: 'GoHighLevel Custom App',
     title: 'Telegram Bridge',
-    body: 'HighLevel does not support Telegram natively yet. Connect multiple Telegram bots and manage real-time conversations in one place.',
+    body: 'HighLevel does not support Telegram natively yet. Use this app to connect multiple Telegram bots and manage real-time conversations from one place.',
     href: 'https://marketplace.gohighlevel.com/integration/6a58a65894c6752231c8b84a/',
     cta: 'View on GHL Marketplace',
+    installs: 3,
     visual: { kind: 'logo', logo: 'telegram' },
   },
   {
-    type: 'HighLevel Marketplace app',
+    type: 'GoHighLevel Custom App',
     title: 'Local currency payments for Bangladesh',
-    body: 'Global gateways do not fit every region. This integration lets Bangladeshi businesses accept local payments directly in GHL checkouts.',
+    body: 'HighLevel defaults to global gateways that do not fit every region. We built this custom integration to let Bangladeshi businesses accept local payments directly in GHL checkouts.',
     href: 'https://marketplace.gohighlevel.com/integration/6a4364d3054791173e2b5f5a/',
     cta: 'View on GHL Marketplace',
+    installs: 7,
     visual: { kind: 'glyph', glyph: '৳' },
   },
+  {
+    type: 'Headless Template',
+    title: 'Astro + GoHighLevel Website Template',
+    body: 'Native HighLevel sites are slow. We built this template to prove you never have to settle for sluggish pages. Get full design control with Astro while HighLevel powers your backend.',
+    href: 'https://automark-astro.vercel.app/',
+    cta: 'Live Demo',
+    visual: {
+      kind: 'shot',
+      image: automarkHero,
+      url: 'automark-astro.vercel.app',
+      alt: 'Astro + GoHighLevel Website Template screenshot',
+      tint: 'stone',
+    },
+  },
 ];
+
+// Closing card of the projects grid: the agency platform still in the works.
+export const privateProject = {
+  type: 'Private Project',
+  title: 'Custom GoHighLevel Agency Ops & Client Portal',
+  body: 'You cannot run your whole agency and client delivery inside GHL alone. We are building a single dashboard to connect all your external tools, delivery workflows, and client views in one place.',
+  cta: 'Book a call',
+};
 
 export const team = [
   {
     name: 'Mehedi Sharif',
-    role: 'Founder & Software Engineer',
+    role: 'Founder & Strategist',
     years: '13+ yrs',
     certified: true,
     profile: 'https://directory.gohighlevel.com/bangladesh/dhaka/certified-admins/mehedi-sharif',
     photo: mehediPhoto,
-    alt: 'Mehedi Sharif, Certified GoHighLevel Admin and Founder at GHL Megaminds',
+    alt: 'Mehedi Sharif - Founder & Strategist and Certified GoHighLevel Admin at GHL Megaminds',
   },
   {
     name: 'Farhad Hossen',
@@ -323,7 +351,7 @@ export const team = [
     certified: true,
     profile: 'https://directory.gohighlevel.com/bangladesh/dhaka/certified-admins/farhad-hossen',
     photo: farhadPhoto,
-    alt: 'Farhad Hossen, Certified GoHighLevel Admin and Marketing Engineer at GHL Megaminds',
+    alt: 'Farhad Hossen - Certified GoHighLevel Admin & Marketing Engineer at GHL Megaminds',
   },
   {
     name: 'Somrat Sorkar',
@@ -331,7 +359,7 @@ export const team = [
     years: '9+ yrs',
     certified: false,
     photo: somratPhoto,
-    alt: 'Somrat Sorkar, Senior Software Engineer at GHL Megaminds',
+    alt: 'Somrat Sorkar - Senior Software Engineer at GHL Megaminds',
   },
   {
     name: 'Tariquzzaman Tuhin',
@@ -339,7 +367,7 @@ export const team = [
     years: '7+ yrs',
     certified: false,
     photo: tuhinPhoto,
-    alt: 'Tariquzzaman Tuhin, Delivery & Client Success Lead at GHL Megaminds',
+    alt: 'Tariquzzaman Tuhin - Delivery & Client Success Lead at GHL Megaminds',
   },
   {
     name: 'Murad Uzzaman',
@@ -347,7 +375,7 @@ export const team = [
     years: '4+ yrs',
     certified: false,
     photo: muradPhoto,
-    alt: 'Murad Uzzaman, Frontend & Automation Engineer at GHL Megaminds',
+    alt: 'Murad Uzzaman - Frontend & Automation Engineer at GHL Megaminds',
   },
   {
     name: 'Redwanur Rahman',
@@ -355,7 +383,7 @@ export const team = [
     years: '2+ yrs',
     certified: false,
     photo: redwanurPhoto,
-    alt: 'Redwanur Rahman, Systems & Content Specialist at GHL Megaminds',
+    alt: 'Redwanur Rahman - Systems & Content Specialist at GHL Megaminds',
   },
 ];
 
@@ -364,10 +392,10 @@ export const combinedTeamYears = team.reduce((sum, member) => sum + parseInt(mem
 export const certifiedAdmins = team.filter((member) => member.certified).length;
 
 export const projectStats = [
-  { value: '322', label: 'installs of our Marketplace apps' },
+  { value: '322', label: 'installs of our GHL Marketplace apps' },
   { value: '4', label: 'custom apps live on the Marketplace' },
   { value: '6', label: 'products shipped for HighLevel agencies' },
-  { value: `${combinedTeamYears}+ yrs`, label: 'combined engineering experience' },
+  { value: `${combinedTeamYears}+ yrs`, label: `combined engineering experience, ${certifiedAdmins} certified admins` },
 ];
 
 /*
@@ -401,14 +429,6 @@ export const testimonials: Testimonial[] = [
     video: '/videos/review-leo-rastogi.mp4',
     poster: leoPoster,
     aspect: '9/16',
-  },
-  {
-    kind: 'text',
-    quote:
-      'GHL MegaMinds is the team I always call when I need tech help. We worked together before they started this company. They have years of experience and know how to build complex solutions.',
-    name: 'Shariful',
-    role: 'Founder & CEO, GHL Video',
-    photo: sharifulPhoto,
   },
   {
     kind: 'video',
@@ -475,15 +495,6 @@ export const faqs = [
 
 export const footerColumns = [
   {
-    title: 'Solutions',
-    links: [
-      { label: 'For Business Owners', href: '/business-owners' },
-      { label: 'For Resellers', href: '/resellers' },
-      { label: 'Case Studies', href: '/case-studies' },
-      { label: 'Apps & Tools', href: '/tools' },
-    ],
-  },
-  {
     title: 'Services',
     links: [
       { label: 'Client Onboarding & Setup', href: '/#offers' },
@@ -492,13 +503,17 @@ export const footerColumns = [
     ],
   },
   {
+    title: 'Solutions',
+    links: [
+      { label: 'For Business Owners', href: '/business-owners' },
+      { label: 'For Resellers', href: '/resellers' },
+      { label: 'Apps & Tools', href: '/tools' },
+    ],
+  },
+  {
     title: 'Company',
     links: [
       { label: 'About', href: '/about' },
-      { label: 'Why us', href: '/#why-us' },
-      { label: 'How it works', href: '/#how-it-works' },
-      { label: 'Projects', href: '/#projects' },
-      { label: 'Team', href: '/#team' },
       { label: 'Blog', href: '/blog' },
       { label: 'Contact', href: '/contact' },
     ],
