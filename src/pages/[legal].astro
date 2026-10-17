@@ -77,7 +77,7 @@ const schema = [
 
     <div class="container-x border-t border-ink/10 pb-24 pt-12 lg:pb-32 lg:pt-16">
       <div class="mx-auto grid max-w-[68rem] gap-10 lg:grid-cols-12 lg:gap-12">
-        <aside class="lg:col-span-4 xl:col-span-3">
+        <aside class="lg:col-span-4">
           <div class="lg:sticky lg:top-28">
             <nav aria-label="On this page" data-toc>
               <details class="toc rounded-inner bg-paper p-5 ring-1 ring-ink/[0.08] lg:bg-transparent lg:p-0 lg:ring-0" open>
@@ -102,15 +102,15 @@ const schema = [
             <div class="mt-8 hidden rounded-card bg-paper p-6 ring-1 ring-ink/[0.08] lg:block">
               <p class="font-display text-lg font-bold tracking-[-0.02em]">Questions?</p>
               <p class="mt-1.5 text-[14.5px] leading-relaxed text-ink-soft">We answer every email, usually within a working day.</p>
-              <a href={`mailto:${contactEmail}`} class="mt-3 inline-flex items-center gap-1.5 text-[14.5px] font-semibold text-forest underline decoration-forest/35 underline-offset-4 hover:decoration-forest">
-                <Icon name="envelope-simple" class="size-4" />
-                {contactEmail}
+              <a href={`mailto:${contactEmail}`} class="mt-3 flex min-w-0 items-start gap-1.5 text-[14.5px] font-semibold text-forest">
+                <Icon name="envelope-simple" class="mt-[3px] size-4 shrink-0" />
+                <span class="min-w-0 underline decoration-forest/35 underline-offset-4 [overflow-wrap:anywhere] hover:decoration-forest">{contactEmail}</span>
               </a>
             </div>
           </div>
         </aside>
 
-        <article class="min-w-0 lg:col-span-8 xl:col-span-9">
+        <article class="min-w-0 lg:col-span-8">
           <div class="prose-blog prose-legal max-w-[46rem]">
             <Content />
           </div>
