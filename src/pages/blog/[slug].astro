@@ -65,9 +65,9 @@ const schema = [
   <main id="main-content">
     <article>
       <header class="container-x pt-8 sm:pt-12 lg:pt-14">
-        <div class="mx-auto max-w-[56rem]">
+        <div class="mx-auto max-w-[56rem] text-center">
           <nav aria-label="Breadcrumb" class="hero-in">
-            <ol class="flex flex-wrap items-center gap-1.5 text-[14px] text-ink-soft">
+            <ol class="flex flex-wrap items-center justify-center gap-1.5 text-[14px] text-ink-soft">
               <li><a href="/blog/" class="font-semibold text-ink transition hover:text-forest">Blog</a></li>
               <li aria-hidden="true"><Icon name="caret-right" class="size-3.5" /></li>
               <li>{category}</li>
@@ -76,10 +76,10 @@ const schema = [
           <h1 class="hero-in mt-5 text-[clamp(2.3rem,4.8vw,3.9rem)] font-extrabold leading-[1.05] tracking-[-0.042em]" style="--d: 80">
             {title}
           </h1>
-          <p class="hero-in mt-5 max-w-[44rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 180">{description}</p>
+          <p class="hero-in mx-auto mt-5 max-w-[44rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 180">{description}</p>
 
-          <div class="hero-in mt-8 flex flex-wrap items-center justify-between gap-x-8 gap-y-5 border-y border-ink/10 py-5" style="--d: 260">
-            <div class="flex items-center gap-3.5">
+          <div class="hero-in mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-5 border-y border-ink/10 py-5" style="--d: 260">
+            <div class="flex items-center gap-3.5 text-left">
               {
                 person && (
                   <span class="portrait-bg size-12 shrink-0 overflow-hidden rounded-full ring-1 ring-ink/[0.08]">
