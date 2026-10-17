@@ -43,7 +43,7 @@ const bookHref = dark ? BOOK_HREF : DISCOVERY_HREF;
 >
   <div class="container-x flex h-[72px] items-center justify-between gap-4 whitespace-nowrap">
     <a href={pageHref('/', Astro.url)} aria-label="GHL Megaminds home" class="shrink-0 rounded-[12px]">
-      <Logo tone={dark ? 'light' : 'ink'} />
+      <Logo tone={dark ? 'light' : 'ink'} class="w-[210px] sm:w-[226px] xl:w-[240px]" />
     </a>
 
     <nav aria-label="Primary" class="hidden items-center gap-0.5 lg:flex">
@@ -52,7 +52,7 @@ const bookHref = dark ? BOOK_HREF : DISCOVERY_HREF;
           <a
             href={pageHref(item.href, Astro.url)}
             class:list={[
-              'rounded-full px-2.5 py-2 text-[15px] font-medium transition xl:px-3.5',
+              'rounded-full px-2 py-2 text-[14.5px] font-medium transition xl:px-3.5 xl:text-[15px]',
               dark ? 'text-canvas/75 hover:bg-canvas/10 hover:text-canvas' : 'text-ink/75 hover:bg-ink/5 hover:text-ink',
             ]}
           >

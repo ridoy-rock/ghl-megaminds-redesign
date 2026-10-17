@@ -1,0 +1,43 @@
+---
+// Share a post: LinkedIn, X and copy link. The copy button is wired up by the post page script ([data-share]).
+import Icon from '../Icon.astro';
+
+interface Props {
+  url: string;
+  title: string;
+  class?: string;
+}
+
+const { url, title, class: className } = Astro.props;
+const button =
+  'grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink';
+---
+
+<div class:list={['flex flex-col gap-3', className]} data-share data-url={url}>
+  <p class="text-[13px] font-bold uppercase tracking-[0.08em] text-ink-soft">Share this post</p>
+  <div class="flex items-center gap-2">
+    <a
+      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Share on LinkedIn (opens in a new tab)"
+      class={button}
+    >
+      <Icon name="linkedin-logo-fill" class="size-[18px]" />
+    </a>
+    <a
+      href={`https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Share on X (opens in a new tab)"
+      class={button}
+    >
+      <Icon name="x-logo-bold" class="size-[17px]" />
+    </a>
+    <button type="button" data-copy aria-label="Copy link" class={button}>
+      <span data-copy-icon><Icon name="link-simple-bold" class="size-[18px]" /></span>
+      <span data-copied-icon class="hidden"><Icon name="check-bold" class="size-[18px]" /></span>
+    </button>
+    <span class="sr-only" aria-live="polite" data-copy-status></span>
+  </div>
+</div>

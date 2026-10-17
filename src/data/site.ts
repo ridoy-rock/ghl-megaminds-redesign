@@ -59,6 +59,7 @@ export const nav = [
   { label: 'Services', href: '/#offers' },
   { label: 'How we work', href: '/#how-it-works' },
   { label: 'Projects', href: '/#projects' },
+  { label: 'Case studies', href: '/case-studies/' },
   { label: 'Team', href: '/#team' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -514,7 +515,8 @@ export const footerColumns = [
     title: 'Company',
     links: [
       { label: 'About', href: '/about' },
-      { label: 'Blog', href: '/blog' },
+      { label: 'Case studies', href: '/case-studies/' },
+      { label: 'Blog', href: '/blog/' },
       { label: 'Contact', href: '/contact' },
     ],
   },

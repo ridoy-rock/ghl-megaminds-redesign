@@ -8,6 +8,7 @@ import Icon from '../../components/Icon.astro';
 import BlogCover from '../../components/blog/BlogCover.astro';
 import PostCard from '../../components/blog/PostCard.astro';
 import TopicCard from '../../components/blog/TopicCard.astro';
+import ShareLinks from '../../components/blog/ShareLinks.astro';
 import ReadyCta from '../../components/ReadyCta.astro';
 import certifiedBadge from '../../assets/badges/highlevel-certified-admin.png';
 import { getPosts, authorOf, postMonth, postMonthIso, readingTime, type Post } from '../../lib/blog';
@@ -65,68 +66,22 @@ const schema = [
   <main id="main-content">
     <article>
       <header class="container-x pt-8 sm:pt-12 lg:pt-14">
-        <div class="mx-auto max-w-[56rem] text-center">
+        <div class="mx-auto max-w-[72rem] text-center">
           <nav aria-label="Breadcrumb" class="hero-in">
-            <ol class="flex flex-wrap items-center justify-center gap-1.5 text-[14px] text-ink-soft">
+            <ol class="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[14px] text-ink-soft">
               <li><a href="/blog/" class="font-semibold text-ink transition hover:text-forest">Blog</a></li>
               <li aria-hidden="true"><Icon name="caret-right" class="size-3.5" /></li>
               <li>{category}</li>
+              <li aria-hidden="true" class="px-1.5 text-ink/30">|</li>
+              <li><time datetime={postMonthIso(date)}>{postMonth(date)}</time></li>
+              <li aria-hidden="true">·</li>
+              <li>{minutes} min read</li>
             </ol>
           </nav>
-          <h1 class="hero-in mt-5 text-[clamp(2.3rem,4.8vw,3.9rem)] font-extrabold leading-[1.05] tracking-[-0.042em]" style="--d: 80">
+          <h1 class="hero-in mx-auto mt-5 max-w-[66rem] text-[clamp(2.3rem,4.8vw,3.9rem)] font-extrabold leading-[1.05] tracking-[-0.042em]" style="--d: 80">
             {title}
           </h1>
-          <p class="hero-in mx-auto mt-5 max-w-[44rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 180">{description}</p>
-
-          <div class="hero-in mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-5 border-y border-ink/10 py-5" style="--d: 260">
-            <div class="flex items-center gap-3.5 text-left">
-              {
-                person && (
-                  <span class="portrait-bg size-12 shrink-0 overflow-hidden rounded-full ring-1 ring-ink/[0.08]">
-                    <Image src={person.photo} alt="" widths={[96, 144]} sizes="48px" class="size-full object-cover object-top" />
-                  </span>
-                )
-              }
-              <p class="leading-snug">
-                <span class="block font-semibold">{author}</span>
-                <span class="text-[14px] text-ink-soft">
-                  <time datetime={postMonthIso(date)}>{postMonth(date)}</time>
-                  <span aria-hidden="true"> · </span>{minutes} min read
-                </span>
-              </p>
-            </div>
-            <div class="flex items-center gap-2" data-share data-url={url} data-title={title}>
-              <span class="mr-1 text-[13px] font-semibold text-ink-soft">Share</span>
-              <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Share on LinkedIn (opens in a new tab)"
-                class="grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink"
-              >
-                <Icon name="linkedin-logo-fill" class="size-[18px]" />
-              </a>
-              <a
-                href={`https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Share on X (opens in a new tab)"
-                class="grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink"
-              >
-                <Icon name="x-logo-bold" class="size-[17px]" />
-              </a>
-              <button
-                type="button"
-                data-copy
-                aria-label="Copy link"
-                class="grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink"
-              >
-                <span data-copy-icon><Icon name="link-simple-bold" class="size-[18px]" /></span>
-                <span data-copied-icon class="hidden"><Icon name="check-bold" class="size-[18px]" /></span>
-              </button>
-              <span class="sr-only" aria-live="polite" data-copy-status></span>
-            </div>
-          </div>
+          <p class="hero-in mx-auto mt-5 max-w-[52rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 180">{description}</p>
         </div>
       </header>
 
@@ -157,6 +112,7 @@ const schema = [
                       ))}
                     </ol>
                   </details>
+                  <ShareLinks url={url} title={title} class="mt-10 hidden border-t border-ink/10 pt-8 lg:flex" />
                 </nav>
               </aside>
             )
@@ -166,6 +122,8 @@ const schema = [
             <div class="prose-blog">
               <Content />
             </div>
+
+            <ShareLinks url={url} title={title} class:list={['mt-14 border-t border-ink/10 pt-8', toc.length > 2 && 'lg:hidden']} />
 
             <!-- Author -->
             {
@@ -230,8 +188,8 @@ const schema = [
 
 <script>
   // Copy link (falls back to the visible URL in the address bar if the clipboard is blocked).
-  const share = document.querySelector<HTMLElement>('[data-share]');
-  const copy = share?.querySelector<HTMLButtonElement>('[data-copy]');
+  document.querySelectorAll<HTMLElement>('[data-share]').forEach((share) => {
+  const copy = share.querySelector<HTMLButtonElement>('[data-copy]');
   copy?.addEventListener('click', async () => {
     const status = share?.querySelector<HTMLElement>('[data-copy-status]');
     try {
@@ -246,6 +204,7 @@ const schema = [
     } catch {
       if (status) status.textContent = 'Could not copy. Copy the address from your browser instead.';
     }
+  });
   });
 
   // "On this page": mark the section being read.
