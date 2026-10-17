@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import CaseCard from '../../components/cases/CaseCard.astro';
+import ReadyCta from '../../components/ReadyCta.astro';
+import { getCases } from '../../lib/cases';
+import { site } from '../../data/site';
+
+const cases = await getCases();
+
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    '@id': `${site.url}/case-studies/#page`,
+    name: 'GHL Megaminds case studies',
+    url: `${site.url}/case-studies/`,
+    hasPart: cases.map((c) => ({ '@type': 'Article', headline: c.data.title, url: `${site.url}/case-studies/${c.id}/` })),
+  },
+];
+---
+
+<Base
+  title="Case studies: real builds, real numbers | GHL Megaminds"
+  description="How GHL Megaminds set up HighLevel for business owners and agencies, and what changed after: booked jobs, no-shows, cancellations and recurring revenue."
+  schema={schema}
+>
+  <Header />
+  <main id="main-content">
+    <section class="relative overflow-hidden">
+      <div class="container-x pb-12 pt-12 sm:pt-16 lg:pb-16 lg:pt-20">
+        <div class="mx-auto max-w-[52rem] text-center" data-stagger>
+          <Eyebrow icon="trophy-fill" class="hero-in">Case studies</Eyebrow>
+          <h1 class="mt-6 text-[clamp(2.6rem,5.4vw,4.4rem)] font-extrabold leading-[1.02] tracking-[-0.045em]">
+            Real builds. <span class="marker">Real numbers.</span>
+          </h1>
+          <p class="mx-auto mt-6 max-w-[38rem] text-lg leading-relaxed text-ink-soft sm:text-xl">
+            What we set up in HighLevel for business owners and agencies, how it ran, and what changed after.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-24 lg:pb-32" aria-label="Case studies">
+      <div class="container-x">
+        <div class="grid gap-5 lg:grid-cols-2">
+          {cases.map((c, i) => <CaseCard study={c} wide={c.data.wide} class={c.data.wide ? 'lg:col-span-2' : ''} style={`--d: ${(i % 2) * 110}`} />)}
+        </div>
+      </div>
+    </section>
+
+    <ReadyCta
+      eyebrow="Next step"
+      title="Want to be the next one?"
+      text="Tell us what is broken. We will tell you what we would build and what it would cost."
+      button="Book a free call"
+      secondary={{ label: 'See our plans', href: '/#offers' }}
+      promises={false}
+    />
+  </main>
+  <Footer />
+</Base>

@@ -27,4 +27,33 @@ const blog = defineCollection({
     }),
 });
 
-export const collections = { blog };
+// Case studies: one Markdown file per study in src/content/case-studies, all in the frontmatter (no body).
+const caseStudies = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/case-studies' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      summary: z.string(),
+      /** List order (1 = first). */
+      order: z.number(),
+      /** "Industry / who it was for", e.g. "Home services / Business owner". */
+      kind: z.string(),
+      /** Short tag on the cover. */
+      label: z.string(),
+      /** Full-width card on the list page. */
+      wide: z.boolean().default(false),
+      cover: z.object({ image: image(), alt: z.string(), fit: z.enum(['cover', 'contain']).default('cover') }),
+      tint: z.enum(['sage', 'butter', 'stone', 'pine']),
+      results: z.array(z.object({ value: z.string(), label: z.string() })).length(3),
+      problem: z.object({ heading: z.string(), points: z.array(z.object({ title: z.string(), body: z.string() })) }),
+      build: z.object({ heading: z.string(), intro: z.string(), items: z.array(z.string()), process: z.array(z.string()) }),
+      outcome: z.object({
+        heading: z.string(),
+        rows: z.array(z.object({ measure: z.string(), before: z.string(), after: z.string() })),
+      }),
+      draft: z.boolean().default(false),
+    }),
+});
+
+export const collections = { blog, caseStudies };

@@ -1,0 +1,55 @@
+---
+// Case study cover: the study's clay illustration on its tinted panel, with the case number and label.
+import { Image } from 'astro:assets';
+import { caseNumber, tintClass, type CaseStudy } from '../../lib/cases';
+
+interface Props {
+  study: CaseStudy;
+  /** card: list grid; wide: full-width list card; hero: detail page banner. */
+  size?: 'card' | 'wide' | 'hero';
+  eager?: boolean;
+}
+
+const { study, size = 'card', eager = false } = Astro.props;
+const { cover, tint, label } = study.data;
+const frame = {
+  card: 'aspect-[16/10]',
+  wide: 'aspect-[16/10] lg:aspect-auto lg:h-full lg:min-h-[360px]',
+  hero: 'aspect-[16/10] sm:aspect-[21/9]',
+}[size];
+const dark = tint === 'pine';
+---
+
+<div class:list={['relative overflow-hidden', tintClass[tint], frame]}>
+  {
+    cover.fit === 'contain' ? (
+      <>
+        <div class="pointer-events-none absolute left-1/2 top-1/2 size-[70%] max-h-[90%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sun/20 blur-3xl" aria-hidden="true" />
+        <Image
+          src={cover.image}
+          alt={cover.alt}
+          widths={[320, 480, 720]}
+          sizes={size === 'hero' ? '420px' : '260px'}
+          loading={eager ? 'eager' : 'lazy'}
+          class:list={['absolute left-1/2 top-1/2 h-[62%] w-auto -translate-x-1/2 -translate-y-1/2 object-contain transition-[scale] duration-700 ease-out-soft group-hover:scale-105', size === 'hero' && 'h-[70%]']}
+        />
+      </>
+    ) : (
+      <Image
+        src={cover.image}
+        alt={cover.alt}
+        widths={size === 'card' ? [400, 640, 800] : [640, 960, 1280, 1600]}
+        sizes={size === 'hero' ? '(min-width: 1240px) 1160px, 94vw' : size === 'wide' ? '(min-width: 1024px) 600px, 94vw' : '(min-width: 1024px) 600px, 94vw'}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        class="absolute inset-0 size-full object-cover transition-[scale] duration-700 ease-out-soft group-hover:scale-105"
+      />
+    )
+  }
+  <div class="absolute left-4 top-4 flex items-center gap-2 sm:left-5 sm:top-5">
+    <span class:list={['rounded-full px-3 py-1 font-display text-[13px] font-bold', dark ? 'bg-canvas/10 text-canvas ring-1 ring-canvas/20' : 'bg-paper/80 text-ink ring-1 ring-ink/[0.08] backdrop-blur-sm']}>
+      Case {caseNumber(study)}
+    </span>
+    <span class:list={['rounded-full px-3 py-1 text-[13px] font-semibold', dark ? 'bg-sun text-on-brand' : 'bg-ink text-canvas']}>{label}</span>
+  </div>
+</div>

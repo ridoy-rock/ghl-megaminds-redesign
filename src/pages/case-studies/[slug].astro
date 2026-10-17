@@ -1,0 +1,258 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Icon from '../../components/Icon.astro';
+import CaseCover from '../../components/cases/CaseCover.astro';
+import CaseCard from '../../components/cases/CaseCard.astro';
+import ReadyCta from '../../components/ReadyCta.astro';
+import { getCases, caseNumber, type CaseStudy } from '../../lib/cases';
+import { site, BOOKING_URL } from '../../data/site';
+
+export async function getStaticPaths() {
+  const cases = await getCases();
+  return cases.map((study) => ({ params: { slug: study.id }, props: { study, cases } }));
+}
+
+interface Props {
+  study: CaseStudy;
+  cases: CaseStudy[];
+}
+
+const { study, cases } = Astro.props;
+const { title, description, summary, kind, label, results, problem, build, outcome } = study.data;
+const url = new URL(`/case-studies/${study.id}/`, site.url).href;
+const others = cases.filter((c) => c.id !== study.id);
+
+const schema = [
+  {
+    '@type': 'Article',
+    '@id': `${url}#case`,
+    headline: title,
+    description,
+    about: kind,
+    publisher: { '@id': `${site.url}/#org` },
+    author: { '@id': `${site.url}/#org` },
+    mainEntityOfPage: url,
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Case studies', item: `${site.url}/case-studies/` },
+      { '@type': 'ListItem', position: 3, name: title, item: url },
+    ],
+  },
+];
+---
+
+<Base title={`Case study: ${title} | GHL Megaminds`} description={description} ogType="article" schema={schema}>
+  <Header />
+  <main id="main-content">
+    <!-- Hero -->
+    <header class="container-x pt-8 sm:pt-12 lg:pt-14">
+      <div class="mx-auto max-w-[56rem] text-center">
+        <nav aria-label="Breadcrumb" class="hero-in">
+          <ol class="flex flex-wrap items-center justify-center gap-1.5 text-[14px] text-ink-soft">
+            <li><a href="/case-studies/" class="font-semibold text-ink transition hover:text-forest">Case studies</a></li>
+            <li aria-hidden="true"><Icon name="caret-right" class="size-3.5" /></li>
+            <li>Case {caseNumber(study)} · {label}</li>
+          </ol>
+        </nav>
+        <p class="hero-in mt-5 inline-flex rounded-full bg-sage px-3.5 py-1.5 text-[13.5px] font-semibold text-forest" style="--d: 60">{kind}</p>
+        <h1 class="hero-in mt-5 text-[clamp(2.4rem,5vw,4.1rem)] font-extrabold leading-[1.04] tracking-[-0.042em]" style="--d: 120">{title}</h1>
+        <p class="hero-in mx-auto mt-5 max-w-[46rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 200">{summary}</p>
+      </div>
+    </header>
+
+    <!-- Cover, with the three results sitting on its lower edge -->
+    <section class="container-x mt-10 lg:mt-12" aria-label="Results">
+      <div class="mx-auto max-w-[72.5rem]">
+        <div class="art-in overflow-hidden rounded-card ring-1 ring-ink/[0.08]">
+          <CaseCover study={study} size="hero" eager />
+        </div>
+        <dl class="relative mx-3 -mt-10 grid gap-3 sm:mx-6 sm:-mt-14 sm:grid-cols-3 sm:gap-4" data-stagger>
+          {
+            results.map((r) => (
+              <div class="flex flex-col rounded-card bg-paper p-6 shadow-[0_24px_44px_-28px_color-mix(in_srgb,var(--color-ink)_45%,transparent)] ring-1 ring-ink/[0.08] sm:p-7">
+                <dt class="order-last mt-2 text-[14.5px] leading-snug text-ink-soft">{r.label}</dt>
+                <dd class="font-display text-[clamp(2rem,3.4vw,2.8rem)] font-extrabold leading-none tracking-[-0.045em]">{r.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <!-- The problem -->
+    <section class="py-20 lg:py-28" aria-labelledby="problem-title">
+      <div class="container-x">
+        <div class="mx-auto max-w-[72.5rem]">
+          <div class="max-w-[44rem]" data-stagger>
+            <Eyebrow icon="warning-circle-fill">The problem</Eyebrow>
+            <h2 id="problem-title" class="mt-5 text-[clamp(2rem,4vw,3.2rem)] font-extrabold leading-[1.05] tracking-[-0.038em]">{problem.heading}</h2>
+          </div>
+          <ol class="mt-12 grid gap-4 md:grid-cols-3 lg:gap-5">
+            {
+              problem.points.map((p, i) => (
+                <li class="flex flex-col rounded-card bg-paper p-7 ring-1 ring-ink/[0.08] sm:p-8" data-reveal="pop" style={`--d: ${i * 110}`}>
+                  <span class="flex items-center justify-between">
+                    <Icon name="x-circle-fill" class="size-7 text-ink/25" />
+                    <span class="font-display text-[13px] font-bold text-ink-soft">0{i + 1}</span>
+                  </span>
+                  <h3 class="mt-6 text-[1.3rem] font-bold leading-snug tracking-[-0.02em]">{p.title}</h3>
+                  <p class="mt-2.5 leading-relaxed text-ink-soft">{p.body}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- What we built -->
+    <section class="px-2 sm:px-4" aria-labelledby="build-title">
+      <div class="on-dark relative overflow-hidden rounded-[2rem] bg-pine text-canvas">
+        <div class="pointer-events-none absolute -right-40 -top-40 size-[34rem] rounded-full border-[56px] border-canvas/[0.035]" aria-hidden="true"></div>
+        <div class="container-x relative py-20 lg:py-28">
+          <div class="mx-auto max-w-[72.5rem]">
+            <div class="max-w-[44rem]" data-stagger>
+              <Eyebrow tone="dark" icon="wrench-fill">What we built</Eyebrow>
+              <h2 id="build-title" class="mt-5 text-[clamp(2rem,4vw,3.2rem)] font-extrabold leading-[1.05] tracking-[-0.038em]">{build.heading}</h2>
+              <p class="mt-5 text-lg leading-relaxed text-canvas/70">{build.intro}</p>
+            </div>
+
+            <div class="mt-12 grid gap-5 lg:grid-cols-12">
+              <div class="rounded-card bg-canvas p-7 text-ink sm:p-9 lg:col-span-7" data-reveal="left">
+                <h3 class="text-[1.5rem] font-extrabold tracking-[-0.03em]">The build</h3>
+                <ul class="mt-6 grid gap-3.5 sm:grid-cols-2 sm:gap-x-6">
+                  {
+                    build.items.map((item) => (
+                      <li class="flex gap-3 text-[16px] leading-snug">
+                        <span class="mt-px grid size-6 shrink-0 place-items-center rounded-full bg-sun text-on-brand">
+                          <Icon name="check-bold" class="size-3.5" />
+                        </span>
+                        {item}
+                      </li>
+                    ))
+                  }
+                </ul>
+              </div>
+              <div class="flex flex-col rounded-card bg-pine-raised p-7 ring-1 ring-canvas/10 sm:p-9 lg:col-span-5" data-reveal="right" style="--d: 120">
+                <h3 class="text-[1.5rem] font-extrabold tracking-[-0.03em]">How it ran</h3>
+                {build.process.map((p) => <p class="mt-4 leading-relaxed text-canvas/75">{p}</p>)}
+                <div class="mt-auto flex flex-wrap gap-3 pt-8">
+                  <a href="/#offers" class="btn btn-sun">
+                    See what this costs
+                    <Icon name="arrow-right" class="btn-arrow size-4" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What happened -->
+    <section class="py-20 lg:py-28" aria-labelledby="outcome-title">
+      <div class="container-x">
+        <div class="mx-auto max-w-[72.5rem]">
+          <div class="max-w-[44rem]" data-stagger>
+            <Eyebrow icon="chart-line-up-fill">What happened</Eyebrow>
+            <h2 id="outcome-title" class="mt-5 text-[clamp(2rem,4vw,3.2rem)] font-extrabold leading-[1.05] tracking-[-0.038em]">{outcome.heading}</h2>
+          </div>
+
+          <!-- Desktop: before/after table. Phones: one card per measure. -->
+          <div class="mt-12 hidden overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] md:block" data-reveal>
+            <table class="w-full text-left">
+              <thead>
+                <tr class="text-[13px] font-bold uppercase tracking-[0.08em] text-ink-soft">
+                  <th scope="col" class="w-[34%] px-7 py-5">What we measured</th>
+                  <th scope="col" class="w-[30%] px-7 py-5">Before</th>
+                  <th scope="col" class="bg-sage px-7 py-5 text-forest">After</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  outcome.rows.map((r) => (
+                    <tr class="border-t border-ink/[0.08]">
+                      <th scope="row" class="px-7 py-5 font-display text-[1.05rem] font-bold tracking-[-0.01em]">{r.measure}</th>
+                      <td class="px-7 py-5 text-ink-soft">{r.before}</td>
+                      <td class="bg-sage/60 px-7 py-5 font-semibold">
+                        <span class="inline-flex items-start gap-2">
+                          <Icon name="check-circle-fill" class="mt-0.5 size-[18px] shrink-0 text-leaf" />
+                          {r.after}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <ul class="mt-10 grid gap-3 md:hidden">
+            {
+              outcome.rows.map((r) => (
+                <li class="rounded-card bg-paper p-5 ring-1 ring-ink/[0.08]">
+                  <p class="font-display text-[1.05rem] font-bold">{r.measure}</p>
+                  <div class="mt-3 grid grid-cols-2 gap-3 text-[14.5px]">
+                    <p>
+                      <span class="block text-[12px] font-bold uppercase tracking-[0.08em] text-ink-soft">Before</span>
+                      <span class="text-ink-soft">{r.before}</span>
+                    </p>
+                    <p class="rounded-inner bg-sage px-3 py-2">
+                      <span class="block text-[12px] font-bold uppercase tracking-[0.08em] text-forest">After</span>
+                      <span class="font-semibold">{r.after}</span>
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="mt-10 flex flex-col items-start justify-between gap-6 rounded-card bg-butter p-7 sm:flex-row sm:items-center sm:p-8" data-reveal>
+            <div>
+              <p class="font-display text-[1.4rem] font-extrabold tracking-[-0.025em]">Running into the same problem?</p>
+              <p class="mt-1.5 text-ink/75">Book a 30-minute call and we will show you what we would build for you.</p>
+            </div>
+            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-ink shrink-0">
+              Book a free call
+              <Icon name="arrow-right" class="btn-arrow size-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {
+      others.length > 0 && (
+        <section class="border-t border-ink/10 py-20 lg:py-24" aria-labelledby="more-cases">
+          <div class="container-x">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+              <h2 id="more-cases" class="text-[clamp(1.8rem,3vw,2.4rem)] font-extrabold leading-tight tracking-[-0.035em]">More case studies</h2>
+              <a href="/case-studies/" class="link-arrow text-[15px]">
+                All case studies
+                <Icon name="arrow-right" class="btn-arrow size-4" />
+              </a>
+            </div>
+            <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {others.slice(0, 3).map((c, i) => <CaseCard study={c} compact style={`--d: ${i * 100}`} />)}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <ReadyCta
+      eyebrow="Next step"
+      title="Want to be the next one?"
+      text="Tell us what is broken. We will tell you what we would build and what it would cost."
+      button="Book a free call"
+      secondary={{ label: 'See our plans', href: '/#offers' }}
+      promises={false}
+    />
+  </main>
+  <Footer />
+</Base>
