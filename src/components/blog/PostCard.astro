@@ -1,0 +1,76 @@
+---
+// Blog post card. The title link stretches over the whole card (::after), so the card is one click target and
+// screen readers hear one link.
+import { Image } from 'astro:assets';
+import BlogCover from './BlogCover.astro';
+import Icon from '../Icon.astro';
+import { authorOf, postMonth, postMonthIso, readingTime, type Post } from '../../lib/blog';
+
+interface Props {
+  post: Post;
+  /** Big horizontal card for the newest post. */
+  featured?: boolean;
+  class?: string;
+  style?: string;
+}
+
+const { post, featured = false, class: className, style } = Astro.props;
+const { title, description, date, author, category, cover } = post.data;
+const person = authorOf(author);
+const minutes = readingTime(post.body);
+const href = `/blog/${post.id}/`;
+---
+
+<article
+  class:list={[
+    'group relative flex flex-col overflow-hidden rounded-card bg-paper ring-1 ring-ink/[0.08] transition hover:-translate-y-1.5 hover:shadow-[0_28px_50px_-30px_color-mix(in_srgb,var(--color-ink)_40%,transparent)]',
+    featured && 'lg:grid lg:grid-cols-12',
+    className,
+  ]}
+  data-category={category}
+  data-reveal="pop"
+  style={style}
+>
+  <div class:list={[featured && 'lg:col-span-7']}>
+    <BlogCover cover={cover} size={featured ? 'feature' : 'card'} />
+  </div>
+
+  <div class:list={['flex grow flex-col p-6 sm:p-7', featured && 'lg:col-span-5 lg:justify-center lg:p-10']}>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px]">
+      {featured && <span class="rounded-full bg-sun px-2.5 py-1 font-bold text-on-brand">Latest</span>}
+      <span class="rounded-full bg-sage px-2.5 py-1 font-semibold text-forest">{category}</span>
+      <span class="inline-flex items-center gap-1 text-ink-soft">
+        <Icon name="clock" class="size-3.5" />
+        {minutes} min read
+      </span>
+    </div>
+
+    <h3
+      class:list={[
+        'mt-4 font-bold leading-snug tracking-[-0.02em]',
+        featured ? 'text-[1.6rem] sm:text-[2rem] lg:leading-[1.15]' : 'text-xl',
+      ]}
+    >
+      <a href={href} class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">{title}</a>
+    </h3>
+    <p class:list={['mt-3 leading-relaxed text-ink-soft', featured ? 'text-[16.5px]' : 'line-clamp-3 text-[15px]']}>{description}</p>
+
+    <div class="mt-auto flex items-center gap-3 pt-6 text-[13.5px]">
+      {
+        person ? (
+          <span class="portrait-bg size-9 shrink-0 overflow-hidden rounded-full ring-1 ring-ink/[0.08]">
+            <Image src={person.photo} alt="" widths={[72, 108]} sizes="36px" class="size-full object-cover object-top" />
+          </span>
+        ) : null
+      }
+      <p class="min-w-0 leading-tight">
+        <span class="block font-semibold">{author}</span>
+        <time datetime={postMonthIso(date)} class="text-ink-soft">{postMonth(date)}</time>
+      </p>
+      <span class="ml-auto inline-flex items-center gap-1 font-semibold text-forest opacity-0 transition group-hover:opacity-100" aria-hidden="true">
+        Read
+        <Icon name="arrow-right" class="size-4 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </div>
+  </div>
+</article>

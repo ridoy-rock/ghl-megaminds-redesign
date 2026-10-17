@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import TopicCard from '../../components/blog/TopicCard.astro';
+import ReadyCta from '../../components/ReadyCta.astro';
+import { getPosts, categoriesOf } from '../../lib/blog';
+import { site } from '../../data/site';
+
+const posts = await getPosts();
+const latest = posts[0];
+const categories = categoriesOf(posts);
+
+const schema = [
+  {
+    '@type': 'Blog',
+    '@id': `${site.url}/blog/#blog`,
+    name: 'GHL Megaminds Blog',
+    url: `${site.url}/blog/`,
+    publisher: { '@id': `${site.url}/#org` },
+    blogPost: posts.map((p) => ({ '@type': 'BlogPosting', headline: p.data.title, url: `${site.url}/blog/${p.id}/` })),
+  },
+];
+---
+
+<Base
+  title="Blog: short reads on making GoHighLevel work | GHL Megaminds"
+  description="Short, plain-words posts from the GHL Megaminds engineers: HighLevel integrations, tools we built and what we learned building them."
+  schema={schema}
+>
+  <Header />
+  <main id="main-content">
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="container-x pb-12 pt-12 sm:pt-16 lg:pb-16 lg:pt-20">
+        <div class="max-w-[52rem]" data-stagger>
+          <Eyebrow icon="newspaper-clipping-fill" class="hero-in">Blog</Eyebrow>
+          <h1 class="mt-6 text-[clamp(2.6rem,5.4vw,4.4rem)] font-extrabold leading-[1.02] tracking-[-0.045em]">
+            Short reads on making <span class="marker">GoHighLevel</span> work.
+          </h1>
+          <p class="mt-6 max-w-[36rem] text-lg leading-relaxed text-ink-soft sm:text-xl">
+            We write the things we say on calls all day. Small posts, plain words, one idea each.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-24 lg:pb-32" aria-label="Posts">
+      <div class="container-x">
+        {latest && <PostCard post={latest} featured />}
+
+        <div class="mt-14 flex flex-wrap items-end justify-between gap-6 border-t border-ink/10 pt-10">
+          <h2 class="text-[clamp(1.8rem,3vw,2.4rem)] font-extrabold leading-tight tracking-[-0.035em]">All posts</h2>
+          {
+            categories.length > 1 && (
+              <div class="flex flex-wrap gap-2" role="group" aria-label="Filter posts by topic" data-filter>
+                {['All', ...categories].map((c, i) => (
+                  <button
+                    type="button"
+                    data-filter-value={c}
+                    aria-pressed={i === 0 ? 'true' : 'false'}
+                    class="rounded-full px-4 py-2 text-[14px] font-semibold ring-1 ring-ink/10 transition hover:bg-ink/5 aria-pressed:bg-ink aria-pressed:text-canvas aria-pressed:ring-ink"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )
+          }
+        </div>
+
+        <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3" data-posts>
+          {posts.map((post, i) => <PostCard post={post} style={`--d: ${(i % 3) * 100}`} />)}
+
+          <TopicCard style={`--d: ${(posts.length % 3) * 100}`} />
+        </div>
+        <p class="mt-8 hidden text-center text-ink-soft" data-empty>No posts on this topic yet.</p>
+      </div>
+    </section>
+
+    <ReadyCta
+      eyebrow="Next step"
+      title="Reading is good. Doing is better."
+      text="If a post made you nod, book a call. We will do that thing for you this month."
+      button="Book a free call"
+      secondary={{ label: 'See what we built', href: '/#projects' }}
+      promises={false}
+    />
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  // Topic filter: show the posts of one category (the topic card stays visible).
+  const group = document.querySelector<HTMLElement>('[data-filter]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-posts] [data-category]')];
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+  group?.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-filter-value]');
+    if (!button) return;
+    const value = button.dataset.filterValue;
+    group.querySelectorAll('[data-filter-value]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+    let shown = 0;
+    cards.forEach((card) => {
+      const match = value === 'All' || card.dataset.category === value;
+      card.hidden = !match;
+      if (match) shown++;
+    });
+    empty?.classList.toggle('hidden', shown > 0);
+  });
+</script>

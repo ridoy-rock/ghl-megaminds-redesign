@@ -7,6 +7,25 @@ import Eyebrow from './Eyebrow.astro';
 import towerArt from '../assets/illustrations/tower.png';
 import { BOOKING_URL, BOOK_LABEL } from '../data/site';
 
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  text?: string;
+  button?: string;
+  /** Optional second, quieter link next to the button. */
+  secondary?: { label: string; href: string };
+  /** Hide the three promises under the button. */
+  promises?: boolean;
+}
+
+const {
+  eyebrow = 'Ready to Scale?',
+  title = 'Ready to plug certified HighLevel experts into your agency?',
+  text = 'Partner with GHL Megaminds to handle implementation and daily support. Scale with confidence.',
+  button = BOOK_LABEL,
+  secondary,
+  promises: showPromises = true,
+} = Astro.props;
 const promises = ['30 Minute Discovery Call', '7-Day Money-Back Guarantee', 'No Long-Term Lock-in'];
 ---
 
@@ -19,17 +38,19 @@ const promises = ['30 Minute Discovery Call', '7-Day Money-Back Guarantee', 'No 
     </div>
     <div class="container-x relative grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-12 lg:py-24">
       <div class="lg:col-span-8" data-stagger>
-        <Eyebrow tone="dark" icon="calendar-check-fill">Ready to Scale?</Eyebrow>
+        <Eyebrow tone="dark" icon="calendar-check-fill">{eyebrow}</Eyebrow>
         <h2 class="mt-6 max-w-[46rem] text-[clamp(2.2rem,4.4vw,3.6rem)] font-extrabold leading-[1.06] tracking-[-0.038em]">
-          Ready to plug certified HighLevel experts into your agency?
+          {title}
         </h2>
-        <p class="mt-6 max-w-xl text-lg leading-relaxed text-canvas/70">
-          Partner with GHL Megaminds to handle implementation and daily support. Scale with confidence.
-        </p>
-        <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-sun mt-8">
-          {BOOK_LABEL}
-          <Icon name="arrow-right" class="btn-arrow size-4" />
-        </a>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-canvas/70">{text}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" class="btn btn-sun">
+            {button}
+            <Icon name="arrow-right" class="btn-arrow size-4" />
+          </a>
+          {secondary && <a href={secondary.href} class="btn btn-ghost-dark">{secondary.label}</a>}
+        </div>
+        {showPromises && (
         <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm text-canvas/75">
           {
             promises.map((item) => (
@@ -40,6 +61,7 @@ const promises = ['30 Minute Discovery Call', '7-Day Money-Back Guarantee', 'No 
             ))
           }
         </ul>
+        )}
       </div>
       <div class="hidden justify-center lg:col-span-4 lg:flex" data-reveal="scale">
         <Image src={towerArt} alt="" widths={[280, 420, 470]} sizes="280px" class="float-soft w-[280px]" />

@@ -1,0 +1,104 @@
+---
+// A post's cover: its own image, or a drawn cover for posts without artwork yet.
+//   art="comparison": the comparison table rising out of a sage panel (same component as the project card)
+//   art="gateway":    HighLevel linked to a local gateway, with the wallets it unlocks
+// size="card" for the blog grid, "feature" for the big card on the blog page, "hero" for the post page.
+import { Image } from 'astro:assets';
+import ComparisonPreview from '../ComparisonPreview.astro';
+import BrandLogo from '../BrandLogo.astro';
+import Icon from '../Icon.astro';
+import type { Post } from '../../lib/blog';
+
+interface Props {
+  cover: Post['data']['cover'];
+  size?: 'card' | 'feature' | 'hero';
+  /** Lazy-load below the fold; the post page hero loads eagerly. */
+  eager?: boolean;
+}
+
+const { cover, size = 'card', eager = false } = Astro.props;
+const frame = {
+  card: 'aspect-[16/10]',
+  feature: 'aspect-[16/10] lg:aspect-auto lg:h-full lg:min-h-[340px]',
+  hero: 'aspect-[16/10] sm:aspect-[2/1]',
+}[size];
+const big = size !== 'card';
+---
+
+{
+  cover && 'image' in cover ? (
+    <div class:list={['relative overflow-hidden bg-stone', frame]}>
+      <Image
+        src={cover.image}
+        alt={cover.alt}
+        widths={big ? [640, 960, 1280, 1600] : [400, 640, 800]}
+        sizes={size === 'hero' ? '(min-width: 1240px) 1160px, 94vw' : size === 'feature' ? '(min-width: 1024px) 680px, 94vw' : '(min-width: 1024px) 380px, (min-width: 768px) 46vw, 94vw'}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : undefined}
+        class="absolute inset-0 size-full object-cover transition-[scale] duration-700 ease-out-soft group-hover:scale-[1.03]"
+      />
+    </div>
+  ) : cover && cover.art === 'comparison' ? (
+    <div class:list={['relative overflow-hidden bg-sage px-[7%] pt-[7%]', frame]} aria-hidden="true">
+      <div class="pointer-events-none absolute -top-24 left-1/2 h-48 w-[70%] -translate-x-1/2 rounded-full bg-paper/50 blur-3xl" />
+      <ComparisonPreview />
+    </div>
+  ) : (
+    <div class:list={['relative grid place-items-center overflow-hidden bg-butter', frame]} aria-hidden="true">
+      <div class="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full border-[44px] border-ink/[0.04]" />
+      {big && <div class="pointer-events-none absolute -bottom-32 -left-20 size-80 rounded-full bg-paper/40 blur-3xl" />}
+      <div class="relative flex flex-col items-center">
+        <div class:list={['flex items-center', big ? 'gap-4 sm:gap-6' : 'gap-3']}>
+          <figure class="flex flex-col items-center">
+            <span class:list={['grid place-items-center rounded-[22%] bg-paper text-ink shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--color-ink)_35%,transparent)]', big ? 'size-20 sm:size-28' : 'size-16']}>
+              <BrandLogo logo="highlevel" height={big ? 40 : 24} />
+            </span>
+            {big && <figcaption class="mt-3 text-[13px] font-semibold text-ink/70">GoHighLevel</figcaption>}
+          </figure>
+          <span class:list={['flex flex-col items-center', big && '-mt-8']}>
+            {big && <span class="mb-2 hidden rounded-full bg-ink px-2.5 py-1 text-[11.5px] font-bold text-canvas sm:inline">Custom payment provider</span>}
+            <span class="flex items-center text-ink/35">
+              <span class:list={['border-t-2 border-dashed border-current', big ? 'w-8 sm:w-14' : 'w-5']} />
+              <Icon name="link-simple" class:list={['mx-1 text-ink/55', big ? 'size-6' : 'size-5']} />
+              <span class:list={['border-t-2 border-dashed border-current', big ? 'w-8 sm:w-14' : 'w-5']} />
+            </span>
+          </span>
+          <figure class="flex flex-col items-center">
+            <span class:list={['grid place-items-center rounded-[22%] bg-pine text-sun shadow-[0_10px_24px_-12px_color-mix(in_srgb,var(--color-ink)_45%,transparent)]', big ? 'size-20 sm:size-28' : 'size-16']}>
+              <span class:list={['font-bold leading-none', big ? 'text-5xl sm:text-6xl' : 'text-3xl']}>৳</span>
+            </span>
+            {big && <figcaption class="mt-3 text-[13px] font-semibold text-ink/70">SSLCommerz</figcaption>}
+          </figure>
+        </div>
+        <ul class:list={['flex flex-wrap justify-center gap-1.5', big ? 'mt-6' : 'mt-4']}>
+          {['bKash', 'Nagad', 'Rocket', 'Cards'].map((w) => (
+            <li class:list={['rounded-full bg-paper font-semibold text-ink/75 ring-1 ring-ink/[0.07]', big ? 'px-3 py-1 text-[13px]' : 'px-2.5 py-0.5 text-[11.5px]']}>{w}</li>
+          ))}
+        </ul>
+      </div>
+      {
+        big && (
+          <>
+            <div class="absolute bottom-[9%] left-[6%] hidden w-[220px] rounded-inner bg-paper p-4 shadow-[0_24px_40px_-24px_color-mix(in_srgb,var(--color-ink)_45%,transparent)] ring-1 ring-ink/[0.06] md:block">
+              <p class="flex items-center justify-between text-[12px] text-ink-soft">
+                Order #1042
+                <span class="inline-flex items-center gap-1 rounded-full bg-sage px-2 py-0.5 font-bold text-forest">
+                  <Icon name="check-bold" class="size-3" />
+                  Paid
+                </span>
+              </p>
+              <p class="mt-2 font-display text-2xl font-extrabold tracking-[-0.03em] text-ink">৳4,500</p>
+              <p class="mt-1 text-[12px] text-ink-soft">via bKash · SSLCommerz</p>
+            </div>
+            <div class="on-dark absolute right-[6%] top-[12%] hidden items-center gap-2.5 rounded-full bg-pine py-2 pl-2 pr-4 text-[12.5px] font-semibold text-canvas shadow-[0_18px_32px_-18px_color-mix(in_srgb,var(--color-ink)_60%,transparent)] md:flex">
+              <span class="grid size-6 place-items-center rounded-full bg-sun text-on-brand">
+                <Icon name="lightning-fill" class="size-3.5" />
+              </span>
+              Workflow fired: tag “Paid”
+            </div>
+          </>
+        )
+      }
+    </div>
+  )
+}

@@ -9,9 +9,16 @@ import { themeOf } from '../lib/theme';
 interface Props {
   title?: string;
   description?: string;
+  /** og:type: "website" (default) or "article" for blog posts. */
+  ogType?: 'website' | 'article';
+  /** Absolute or root-relative URL of the share image. */
+  image?: string;
+  /** Extra JSON-LD nodes for this page (e.g. a BlogPosting), added to the site graph. */
+  schema?: Record<string, unknown>[];
 }
 
-const { title = site.title, description = site.description } = Astro.props;
+const { title = site.title, description = site.description, ogType = 'website', image, schema = [] } = Astro.props;
+const ogImage = image ? new URL(image, Astro.site ?? site.url).href : undefined;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
 // Review builds (PUBLIC_REVIEW_BUILD=true: the review zip and Vercel preview links) skip GTM and the HighLevel chat
 // widget it loads, and ask search engines not to index the copy. Normal production builds include GTM.
@@ -43,6 +50,7 @@ const jsonLd = {
       name: site.name,
       publisher: { '@id': `${site.url}/#org` },
     },
+    ...schema,
   ],
 };
 ---
@@ -60,13 +68,14 @@ const jsonLd = {
     <link rel="icon" type="image/svg+xml" href={blue ? '/favicon-blue.svg' : '/favicon.svg'} />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
 
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={titleFont} as="font" type="font/woff2" crossorigin />

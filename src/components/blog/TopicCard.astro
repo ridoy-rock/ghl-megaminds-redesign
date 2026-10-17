@@ -1,0 +1,26 @@
+---
+// "Suggest a topic" card: fills the post grids while the blog is young and tells the team what to write next.
+import Icon from '../Icon.astro';
+import { CONTACT_HREF } from '../../data/site';
+
+interface Props {
+  style?: string;
+}
+
+const { style } = Astro.props;
+---
+
+<article class="on-dark relative flex flex-col overflow-hidden rounded-card bg-pine p-7 text-canvas sm:p-8" data-reveal="pop" style={style}>
+  <div class="pointer-events-none absolute -right-20 -top-20 size-56 rounded-full border-[36px] border-canvas/[0.04]" aria-hidden="true"></div>
+  <Icon name="chat-circle-dots-fill" class="size-9 text-sun" />
+  <h3 class="mt-6 text-[1.5rem] font-extrabold leading-tight tracking-[-0.03em]">Stuck on something in HighLevel?</h3>
+  <p class="mt-3 leading-relaxed text-canvas/70">
+    Tell us what you would like explained. The best questions from agencies become our next posts.
+  </p>
+  <div class="mt-auto pt-8">
+    <a href={CONTACT_HREF} class="btn btn-sun w-full">
+      Suggest a topic
+      <Icon name="arrow-right" class="btn-arrow size-4" />
+    </a>
+  </div>
+</article>

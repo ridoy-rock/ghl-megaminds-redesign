@@ -1,0 +1,271 @@
+---
+import { render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+import BlogCover from '../../components/blog/BlogCover.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import TopicCard from '../../components/blog/TopicCard.astro';
+import ReadyCta from '../../components/ReadyCta.astro';
+import certifiedBadge from '../../assets/badges/highlevel-certified-admin.png';
+import { getPosts, authorOf, postMonth, postMonthIso, readingTime, type Post } from '../../lib/blog';
+import { site } from '../../data/site';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
+}
+
+interface Props {
+  post: Post;
+  posts: Post[];
+}
+
+const { post, posts } = Astro.props;
+const { title, description, date, author, category, cover } = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const person = authorOf(author);
+const minutes = readingTime(post.body);
+const url = new URL(`/blog/${post.id}/`, site.url).href;
+// More posts: same topic first, then the newest others.
+const more = [...posts.filter((p) => p.id !== post.id && p.data.category === category), ...posts.filter((p) => p.id !== post.id && p.data.category !== category)].slice(0, 3);
+const shareImage = cover && 'image' in cover ? (await getImage({ src: cover.image, width: 1200, format: 'jpg' })).src : undefined;
+
+const schema = [
+  {
+    '@type': 'BlogPosting',
+    '@id': `${url}#post`,
+    headline: title,
+    description,
+    datePublished: postMonthIso(date),
+    author: { '@type': 'Person', name: author, ...(person?.profile && { url: person.profile }) },
+    publisher: { '@id': `${site.url}/#org` },
+    mainEntityOfPage: url,
+    articleSection: category,
+    ...(shareImage && { image: new URL(shareImage, site.url).href }),
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${site.url}/blog/` },
+      { '@type': 'ListItem', position: 3, name: title, item: url },
+    ],
+  },
+];
+---
+
+<Base title={`${title} | GHL Megaminds`} description={description} ogType="article" image={shareImage} schema={schema}>
+  <!-- Reading progress, driven by the scroll position (no work on the main thread where scroll timelines exist) -->
+  <div class="reading-progress pointer-events-none fixed inset-x-0 top-0 z-50 h-[3px] origin-left bg-sun" aria-hidden="true"></div>
+  <Header />
+  <main id="main-content">
+    <article>
+      <header class="container-x pt-8 sm:pt-12 lg:pt-14">
+        <div class="mx-auto max-w-[56rem]">
+          <nav aria-label="Breadcrumb" class="hero-in">
+            <ol class="flex flex-wrap items-center gap-1.5 text-[14px] text-ink-soft">
+              <li><a href="/blog/" class="font-semibold text-ink transition hover:text-forest">Blog</a></li>
+              <li aria-hidden="true"><Icon name="caret-right" class="size-3.5" /></li>
+              <li>{category}</li>
+            </ol>
+          </nav>
+          <h1 class="hero-in mt-5 text-[clamp(2.3rem,4.8vw,3.9rem)] font-extrabold leading-[1.05] tracking-[-0.042em]" style="--d: 80">
+            {title}
+          </h1>
+          <p class="hero-in mt-5 max-w-[44rem] text-lg leading-relaxed text-ink-soft sm:text-xl" style="--d: 180">{description}</p>
+
+          <div class="hero-in mt-8 flex flex-wrap items-center justify-between gap-x-8 gap-y-5 border-y border-ink/10 py-5" style="--d: 260">
+            <div class="flex items-center gap-3.5">
+              {
+                person && (
+                  <span class="portrait-bg size-12 shrink-0 overflow-hidden rounded-full ring-1 ring-ink/[0.08]">
+                    <Image src={person.photo} alt="" widths={[96, 144]} sizes="48px" class="size-full object-cover object-top" />
+                  </span>
+                )
+              }
+              <p class="leading-snug">
+                <span class="block font-semibold">{author}</span>
+                <span class="text-[14px] text-ink-soft">
+                  <time datetime={postMonthIso(date)}>{postMonth(date)}</time>
+                  <span aria-hidden="true"> · </span>{minutes} min read
+                </span>
+              </p>
+            </div>
+            <div class="flex items-center gap-2" data-share data-url={url} data-title={title}>
+              <span class="mr-1 text-[13px] font-semibold text-ink-soft">Share</span>
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Share on LinkedIn (opens in a new tab)"
+                class="grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink"
+              >
+                <Icon name="linkedin-logo-fill" class="size-[18px]" />
+              </a>
+              <a
+                href={`https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Share on X (opens in a new tab)"
+                class="grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink"
+              >
+                <Icon name="x-logo-bold" class="size-[17px]" />
+              </a>
+              <button
+                type="button"
+                data-copy
+                aria-label="Copy link"
+                class="grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink"
+              >
+                <span data-copy-icon><Icon name="link-simple-bold" class="size-[18px]" /></span>
+                <span data-copied-icon class="hidden"><Icon name="check-bold" class="size-[18px]" /></span>
+              </button>
+              <span class="sr-only" aria-live="polite" data-copy-status></span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="container-x mt-10 lg:mt-12">
+        <div class="art-in mx-auto max-w-[72.5rem] overflow-hidden rounded-card ring-1 ring-ink/[0.08]">
+          <BlogCover cover={cover} size="hero" eager />
+        </div>
+      </div>
+
+      <div class="container-x mt-12 lg:mt-16">
+        <div class="mx-auto grid max-w-[72.5rem] gap-10 lg:grid-cols-12 lg:gap-12">
+          {
+            toc.length > 2 && (
+              <aside class="lg:col-span-3">
+                <nav aria-label="On this page" class="lg:sticky lg:top-28" data-toc>
+                  <details class="toc rounded-inner bg-paper p-5 ring-1 ring-ink/[0.08] lg:bg-transparent lg:p-0 lg:ring-0" open>
+                    <summary class="flex cursor-pointer items-center justify-between text-[13px] font-bold uppercase tracking-[0.08em] text-ink-soft lg:pointer-events-none">
+                      On this page
+                      <Icon name="caret-down" class="size-4 transition-transform lg:hidden" />
+                    </summary>
+                    <ol class="mt-4 grid gap-1 border-l border-ink/10 text-[14.5px] leading-snug">
+                      {toc.map((h) => (
+                        <li>
+                          <a href={`#${h.slug}`} class="-ml-px block border-l-2 border-transparent py-1.5 pl-4 text-ink-soft transition hover:text-ink aria-[current=true]:border-sun aria-[current=true]:font-semibold aria-[current=true]:text-ink">
+                            {h.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+                </nav>
+              </aside>
+            )
+          }
+
+          <div class:list={['min-w-0', toc.length > 2 ? 'lg:col-span-8 lg:col-start-5' : 'lg:col-span-8 lg:col-start-3']}>
+            <div class="prose-blog">
+              <Content />
+            </div>
+
+            <!-- Author -->
+            {
+              person && (
+                <aside class="mt-16 flex flex-col gap-5 rounded-card bg-paper p-6 ring-1 ring-ink/[0.08] sm:flex-row sm:items-center sm:p-7" aria-label="About the author">
+                  <span class="portrait-bg relative size-20 shrink-0 overflow-hidden rounded-inner ring-1 ring-ink/[0.06]">
+                    <Image src={person.photo} alt={person.alt} widths={[160, 240]} sizes="80px" class="size-full object-cover object-top" />
+                  </span>
+                  <div class="min-w-0 grow">
+                    <p class="text-[13px] font-semibold uppercase tracking-[0.08em] text-ink-soft">Written by</p>
+                    <p class="mt-1 font-display text-xl font-bold tracking-[-0.02em]">{person.name}</p>
+                    <p class="text-[15px] text-ink-soft">{person.role} at GHL Megaminds · {person.years.replace('yrs', 'years')} experience</p>
+                    {person.certified && 'profile' in person && (
+                      <a href={person.profile} target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-forest underline underline-offset-4">
+                        View certified profile <span aria-hidden="true">↗</span>
+                        <span class="sr-only">for {person.name} (opens in a new tab)</span>
+                      </a>
+                    )}
+                  </div>
+                  {person.certified && (
+                    <Image src={certifiedBadge} alt="HighLevel Certified Admin" widths={[112, 168]} sizes="56px" class="size-14 shrink-0 object-contain" />
+                  )}
+                </aside>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    </article>
+
+    {
+      more.length > 0 && (
+        <section class="py-24 lg:py-28" aria-labelledby="more-posts">
+          <div class="container-x">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+              <h2 id="more-posts" class="text-[clamp(1.8rem,3vw,2.4rem)] font-extrabold leading-tight tracking-[-0.035em]">More posts</h2>
+              <a href="/blog/" class="link-arrow text-[15px]">
+                All posts
+                <Icon name="arrow-right" class="btn-arrow size-4" />
+              </a>
+            </div>
+            <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {more.map((p, i) => <PostCard post={p} style={`--d: ${i * 100}`} />)}
+              {more.length < 3 && <TopicCard style={`--d: ${more.length * 100}`} />}
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    <ReadyCta
+      eyebrow="Next step"
+      title="Reading is good. Doing is better."
+      text="If a post made you nod, book a call. We will do that thing for you this month."
+      button="Book a free call"
+      secondary={{ label: 'See what we built', href: '/#projects' }}
+      promises={false}
+    />
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  // Copy link (falls back to the visible URL in the address bar if the clipboard is blocked).
+  const share = document.querySelector<HTMLElement>('[data-share]');
+  const copy = share?.querySelector<HTMLButtonElement>('[data-copy]');
+  copy?.addEventListener('click', async () => {
+    const status = share?.querySelector<HTMLElement>('[data-copy-status]');
+    try {
+      await navigator.clipboard.writeText(share?.dataset.url ?? location.href);
+      copy.querySelector('[data-copy-icon]')?.classList.add('hidden');
+      copy.querySelector('[data-copied-icon]')?.classList.remove('hidden');
+      if (status) status.textContent = 'Link copied';
+      setTimeout(() => {
+        copy.querySelector('[data-copy-icon]')?.classList.remove('hidden');
+        copy.querySelector('[data-copied-icon]')?.classList.add('hidden');
+      }, 1800);
+    } catch {
+      if (status) status.textContent = 'Could not copy. Copy the address from your browser instead.';
+    }
+  });
+
+  // "On this page": mark the section being read.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc] a[href^="#"]')];
+  const sections = links
+    .map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
+    .filter((el): el is HTMLElement => Boolean(el));
+  if (sections.length && 'IntersectionObserver' in window) {
+    const setCurrent = (id: string) => links.forEach((a) => a.setAttribute('aria-current', String(a.hash.slice(1) === id)));
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setCurrent(visible[0].target.id);
+      },
+      { rootMargin: '-15% 0px -70% 0px' },
+    );
+    sections.forEach((s) => io.observe(s));
+  }
+
+  // On phones the contents list starts closed so the article comes first.
+  const toc = document.querySelector<HTMLDetailsElement>('[data-toc] details');
+  if (toc && matchMedia('(max-width: 1023px)').matches) toc.open = false;
+</script>
