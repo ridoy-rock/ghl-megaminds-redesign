@@ -56,4 +56,20 @@ const caseStudies = defineCollection({
     }),
 });
 
-export const collections = { blog, caseStudies };
+// Legal pages (/terms, /privacy): Markdown, one file per page.
+const legal = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/legal' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    /** One line under the title. */
+    summary: z.string(),
+    updated: z.coerce.date(),
+    /** Tab order in the legal switcher. */
+    order: z.number(),
+    /** Small print under the page, e.g. a reminder to have a lawyer review it. */
+    note: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, caseStudies, legal };

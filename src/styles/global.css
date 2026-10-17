@@ -807,6 +807,26 @@
     color: var(--color-ink-soft);
   }
 
+  /* Legal pages: same reading styles, quieter section headings. */
+  .prose-legal h2 {
+    margin-top: 2em;
+    padding-top: 1.6em;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 9%, transparent);
+    font-size: 1.45rem;
+    letter-spacing: -0.02em;
+  }
+
+  .prose-legal h2:first-child,
+  .prose-legal > p:first-child + h2 {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .prose-legal > p:first-child {
+    font-size: 1.15em;
+    color: var(--color-ink);
+  }
+
   /* Post page: contents caret flips when open (phones), and the reading progress bar. */
   .toc[open] summary svg {
     rotate: 180deg;
