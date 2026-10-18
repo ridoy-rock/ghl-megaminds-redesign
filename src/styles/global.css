@@ -110,6 +110,8 @@
   --color-shadow: #000;
   --color-action: #f3bd33;
   --color-on-action: #14211b;
+  /* The running workflow node lights up a raised green (with the gold ring), not a dark yellow. */
+  --node-glow: #2c4234;
   /* No coloured glow under buttons on dark backgrounds. */
   --glow-a: transparent;
   --glow-b: transparent;
@@ -119,8 +121,11 @@
 }
 
 /* Dark panels (.on-dark: problem, closing CTA, private-project card) keep their light-theme colours in dark mode, so
-   text-canvas stays light on pine and cards inside them stay light. */
-:root[data-theme="dark"] .on-dark {
+   text-canvas stays light on pine and cards inside them stay light. Bright surfaces (.on-bright and every
+   .bg-butter, gold in dark mode, see below) use the same light-theme colours, so their content stays dark. */
+:root[data-theme="dark"] .on-dark,
+:root[data-theme="dark"] .on-bright,
+:root[data-theme="dark"] .bg-butter {
   --color-canvas: #f4f2ec;
   --color-paper: #fbfaf7;
   --color-ink: #14211b;
@@ -130,6 +135,29 @@
   --color-sage: #dce8da;
   --color-butter: #f6e7b4;
   --color-stone: #e9e6dd;
+}
+
+/* Dark mode: a dark butter tint reads as muddy olive, so butter surfaces (pricing card, project headers, badges,
+   call-to-action strips) turn brand gold with dark content. The partnership card turns brand green. */
+:root[data-theme="dark"] .bg-butter {
+  background-color: #f3bd33;
+  color: #14211b;
+}
+
+:root[data-theme="dark"] .on-bright.bright-green {
+  background-color: #9dd29c;
+}
+
+/* Text on bright surfaces is set here: the page's light text colour would otherwise be inherited. */
+:root[data-theme="dark"] .on-bright {
+  color: #14211b;
+}
+
+/* A main button on a gold or green surface stays dark, as in the light theme. */
+:root[data-theme="dark"] :is(.on-bright, .bg-butter) .btn-ink {
+  --btn-bg: #14211b;
+  --btn-fill: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+  color: #f4f2ec;
 }
 
 /* The gold button keeps dark text in dark mode (ink turns light there). */
@@ -1056,7 +1084,7 @@
   }
   8%,
   20% {
-    background-color: var(--color-butter);
+    background-color: var(--node-glow, var(--color-butter));
     box-shadow: inset 0 0 0 1px var(--node-ring);
   }
   30% {
