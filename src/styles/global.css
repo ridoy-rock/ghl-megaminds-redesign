@@ -38,6 +38,8 @@
   /* Text on sun-coloured fills: dark in both themes. */
   --color-on-brand: #14211b;
   --color-tint: #14211b;
+  /* Card and button shadows: always a dark colour, so nothing glows light in dark mode. */
+  --color-shadow: #14211b;
 
   --radius-card: 1.5rem;
   --radius-inner: 1rem;
@@ -90,18 +92,22 @@
   --color-butter: #403b22;
   --color-sage: #263e2e;
   --color-ink: #f4f2ec;
-  --color-ink-soft: #bdc8c0;
+  --color-ink-soft: #a3afa7;
   --color-forest: #b8dabd;
   --color-leaf: #9dd29c;
   --color-deep: #14271d;
   --color-surface: #1b2c23;
   --color-card: #203329;
   --color-hair: #3a4d40;
-  --color-muted: #bdc8c0;
-  --color-dim: #a7b5ac;
+  --color-muted: #a3afa7;
+  --color-dim: #94a199;
   --color-gold: #f3bd33;
   --color-green: #9dd29c;
   --color-tint: #f4f2ec;
+  --color-shadow: #000;
+  /* No coloured glow under buttons on dark backgrounds. */
+  --glow-a: transparent;
+  --glow-b: transparent;
   --portrait-a: #344638;
   --portrait-b: #293b30;
   --portrait-c: #1b2c23;
@@ -121,19 +127,18 @@
   --color-stone: #e9e6dd;
 }
 
-/* Button hover fill (gold to green) needs dark text in both themes; ink turns light in dark mode. */
-:root[data-theme="dark"] .btn-ink .btn-fill,
-:root[data-theme="dark"] .btn-sun .btn-fill,
+/* The gold button keeps dark text in dark mode (ink turns light there). */
 :root[data-theme="dark"] .btn-sun {
   color: var(--color-on-brand);
 }
 
+/* Headline marker in dark mode: the same gold as the light theme, full height, with dark text on it. */
 :root[data-theme="dark"] .marker {
-  color: #f4f2ec;
+  color: var(--color-on-brand);
 }
 
 :root[data-theme="dark"] .marker::before {
-  background: #72581c;
+  inset: 0.1em -0.12em 0.02em -0.1em;
 }
 
 /*
@@ -177,6 +182,21 @@
   --btn-bg: linear-gradient(90deg, #fcc000, #00cc00);
   --btn-fill: linear-gradient(90deg, #00cc00, #fcc000);
   color: var(--color-ink);
+}
+
+/* /v2 keeps its own pale ghost-button hover and navy fill text. */
+:root[data-theme="blue"] .btn-ghost {
+  --btn-fill: linear-gradient(100deg, var(--color-butter), var(--color-sage));
+}
+
+:root[data-theme="blue"] .btn-fill {
+  color: var(--color-ink);
+}
+
+@media (hover: hover) {
+  :root[data-theme="blue"] .btn-ghost:hover {
+    box-shadow: 0 12px 24px -16px color-mix(in srgb, var(--color-forest) 45%, transparent);
+  }
 }
 
 @layer base {
@@ -253,11 +273,13 @@
     ::before = the base colour, the label itself, and .btn-fill on top (added by Base.astro): the fill gradient
     holding a dark copy of the label. Where the fill has reached, the text is dark on colour; elsewhere it stays as
     it was, so the label is readable at every moment of the sweep and no dark rim shows at the edge.
+    Every variant hovers the same way: the gold-to-green fill with dark text and one soft shadow (none in dark mode).
   */
   .btn {
     --x: 50%;
     --y: 50%;
     --btn-bg: transparent;
+    --btn-ring: 0 0 #0000;
     --btn-fill: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
     position: relative;
     isolation: isolate;
@@ -273,6 +295,7 @@
     font-size: 1rem;
     line-height: 1;
     white-space: nowrap;
+    box-shadow: var(--btn-ring);
     transition:
       transform 0.25s var(--ease-out-soft),
       box-shadow 0.4s ease;
@@ -297,7 +320,7 @@
     justify-content: center;
     gap: inherit;
     background: var(--btn-fill);
-    color: var(--color-ink);
+    color: var(--color-on-brand);
     clip-path: circle(0% at var(--x) var(--y));
     transition: clip-path 0.6s var(--ease-out-soft);
     pointer-events: none;
@@ -323,14 +346,13 @@
   }
 
   .btn-ghost {
-    --btn-fill: linear-gradient(100deg, var(--color-butter), var(--color-sage));
+    --btn-ring: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 20%, transparent);
     color: var(--color-ink);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 20%, transparent);
   }
 
   .btn-ghost-dark {
+    --btn-ring: inset 0 0 0 1.5px color-mix(in srgb, var(--color-canvas) 28%, transparent);
     color: var(--color-canvas);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-canvas) 28%, transparent);
   }
 
   .btn:focus-visible .btn-fill {
@@ -347,24 +369,46 @@
       transform: translateX(4px);
     }
 
-    .btn-ink:hover,
-    .btn-sun:hover,
-    .btn-ghost-dark:hover {
+    .btn:hover {
       box-shadow:
+        var(--btn-ring),
         0 14px 28px -14px var(--glow-a),
         0 8px 18px -12px var(--glow-b);
-    }
-
-    .btn-ghost:hover {
-      box-shadow:
-        inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 0%, transparent),
-        0 12px 24px -16px color-mix(in srgb, var(--color-forest) 45%, transparent);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .btn-fill {
       transition: none;
+    }
+  }
+
+  /* Round icon buttons (carousel arrows, share links, menu toggle): the same gold-to-green fill fades in on hover
+     and the icon turns dark, so they match the pill buttons. */
+  .icon-btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .icon-btn::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .icon-btn:hover:not(:disabled) {
+      color: var(--color-on-brand);
+    }
+
+    .icon-btn:hover:not(:disabled)::before {
+      opacity: 1;
     }
   }
 
@@ -492,11 +536,6 @@
   }
 
   @media (hover: hover) {
-    .carousel-btn:hover:not(:disabled) {
-      background-color: var(--color-ink);
-      color: var(--color-canvas);
-    }
-
     .group:hover .play-btn {
       scale: 1.1;
     }

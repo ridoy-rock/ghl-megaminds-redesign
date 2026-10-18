@@ -10,7 +10,7 @@ interface Props {
 
 const { url, title, class: className } = Astro.props;
 const button =
-  'grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:bg-ink hover:text-canvas hover:ring-ink';
+  'icon-btn grid size-10 place-items-center rounded-full text-ink/70 ring-1 ring-ink/10 transition hover:text-on-brand hover:ring-transparent';
 ---
 
 <div class:list={['flex flex-col gap-3', className]} data-share data-url={url}>
