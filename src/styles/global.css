@@ -137,9 +137,17 @@
   color: var(--color-on-brand);
 }
 
-/* The main button is gold in dark mode (--color-action), so its hover sweep runs green to gold like .btn-sun. */
-:root[data-theme="dark"] .btn-ink {
-  --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 55%, var(--fill-a) 100%);
+/* Dark mode: the yellow buttons (main and gold) are the brand gradient, gold to green; the hover sweep runs the
+   other way, green to gold. The selected pill in a switcher (.action-pill) uses the same gradient. */
+:root[data-theme="dark"] .btn-ink,
+:root[data-theme="dark"] .btn-sun {
+  --btn-bg: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+  --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 50%, var(--fill-a) 100%);
+}
+
+:root[data-theme="dark"] .action-pill:is([aria-current="page"], [aria-pressed="true"]) {
+  background-image: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+  --tw-ring-color: transparent;
 }
 
 /*
