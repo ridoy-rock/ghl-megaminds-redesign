@@ -138,6 +138,12 @@
   --color-stone: #e9e6dd;
 }
 
+/* Dark mode: every small project card header uses the same forest green (the light theme rotates butter, sage and
+   stone tints). */
+:root[data-theme="dark"] .project-head {
+  background-color: var(--color-butter);
+}
+
 /* Soft paper-coloured glows behind panel art are a light-theme effect; in dark mode paper is dark and they read as
    smudges, so they are hidden. */
 :root[data-theme="dark"] .paper-glow {
