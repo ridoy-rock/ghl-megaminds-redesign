@@ -40,6 +40,9 @@
   --color-tint: #14211b;
   /* Card and button shadows: always a dark colour, so nothing glows light in dark mode. */
   --color-shadow: #14211b;
+  /* Main buttons and active pills: dark ink in the light theme, gold in the dark theme (never white). */
+  --color-action: #14211b;
+  --color-on-action: #f4f2ec;
 
   --radius-card: 1.5rem;
   --radius-inner: 1rem;
@@ -105,6 +108,8 @@
   --color-green: #9dd29c;
   --color-tint: #f4f2ec;
   --color-shadow: #000;
+  --color-action: #f3bd33;
+  --color-on-action: #14211b;
   /* No coloured glow under buttons on dark backgrounds. */
   --glow-a: transparent;
   --glow-b: transparent;
@@ -132,13 +137,48 @@
   color: var(--color-on-brand);
 }
 
-/* Headline marker in dark mode: the same gold as the light theme, full height, with dark text on it. */
-:root[data-theme="dark"] .marker {
-  color: var(--color-on-brand);
+/* The main button is gold in dark mode (--color-action), so its hover sweep runs green to gold like .btn-sun. */
+:root[data-theme="dark"] .btn-ink {
+  --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 55%, var(--fill-a) 100%);
 }
 
-:root[data-theme="dark"] .marker::before {
-  inset: 0.1em -0.12em 0.02em -0.1em;
+/*
+  Headline marker in dark mode: the same gold, the same half-height shape as the light theme. The word's text is
+  split at the marker's top edge (tilted like the marker): light above it, dark on the gold. The dark part follows
+  the marker as it swipes in (--marker-reach, animated on .marker below). --marker-split is the marker's top edge
+  measured from the top of the .marker-text box (0.5em for a plain inline span, like the ::before inset), and
+  --marker-end its bottom edge (the box is 1.25em tall, the marker stops 0.04em short), where the text turns light
+  again for the tail of a g or y.
+*/
+@property --marker-reach {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 100%;
+}
+
+:root[data-theme="dark"] .marker-text {
+  --marker-split: 0.5em;
+  --marker-end: 1.21em;
+  background-image:
+    linear-gradient(
+      178.6deg,
+      var(--color-ink) var(--marker-split),
+      transparent var(--marker-split) var(--marker-end),
+      var(--color-ink) var(--marker-end)
+    ),
+    linear-gradient(90deg, var(--color-on-brand) var(--marker-reach, 100%), var(--color-ink) var(--marker-reach, 100%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The hero word sits in an inline-block (.word) that starts 0.11em below the marker's box and is only one line
+   tall, so it gets padding (cancelled by negative margins) to keep the g's tail and the edges inside its background. */
+:root[data-theme="dark"] .word > .marker-text {
+  --marker-split: 0.39em;
+  --marker-end: 1.1em;
+  padding: 0 0.03em 0.2em;
+  margin: 0 -0.03em -0.2em;
 }
 
 /*
@@ -335,8 +375,8 @@
   }
 
   .btn-ink {
-    --btn-bg: var(--color-ink);
-    color: var(--color-canvas);
+    --btn-bg: var(--color-action);
+    color: var(--color-on-action);
   }
 
   .btn-sun {
@@ -971,6 +1011,15 @@
   }
 }
 
+@keyframes marker-reach {
+  from {
+    --marker-reach: 0%;
+  }
+  to {
+    --marker-reach: 100%;
+  }
+}
+
 @keyframes marker-swipe {
   from {
     transform: rotate(-1.4deg) scaleX(0);
@@ -1037,6 +1086,10 @@
 
   .marker::before {
     animation: marker-swipe 0.8s 1s var(--ease-out-soft) both;
+  }
+
+  :root[data-theme="dark"] .marker {
+    animation: marker-reach 0.8s 1s var(--ease-out-soft) both;
   }
 
   .float-soft {
