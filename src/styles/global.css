@@ -123,8 +123,10 @@
 }
 
 /* Dark panels (.on-dark: problem, closing CTA, private-project card) keep their light-theme colours in dark mode, so
-   text-canvas stays light on pine and cards inside them stay light. */
-:root[data-theme="dark"] .on-dark {
+   text-canvas stays light on pine and cards inside them stay light. .keep-light pieces (the comparison-table preview)
+   look exactly as in the light theme. */
+:root[data-theme="dark"] .on-dark,
+:root[data-theme="dark"] .keep-light {
   --color-canvas: #f4f2ec;
   --color-paper: #fbfaf7;
   --color-ink: #14211b;
@@ -134,6 +136,11 @@
   --color-sage: #dce8da;
   --color-butter: #f6e7b4;
   --color-stone: #e9e6dd;
+}
+
+/* Its text colour is set too: the page's light text would otherwise be inherited. */
+:root[data-theme="dark"] .keep-light {
+  color: #14211b;
 }
 
 /* Dark mode: the four solution cards share the first card's background and faint border (pricing and partnership
