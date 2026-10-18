@@ -25,6 +25,10 @@
   --color-sun: #f3bd33;
   --color-sun-soft: #f7cd5c;
   --color-leaf: #2f8a55;
+  /* The logo's blue (#2896fb), next to its yellow and green: azure for small text and icons (deepened so it reads on
+     cream), ice for pale blue surfaces. */
+  --color-azure: #1668c7;
+  --color-ice: #e2edfb;
 
   /* Semantic tokens that flip with the light/dark theme (dark values below, :root[data-theme="dark"]). */
   --color-deep: #e9e6dd;
@@ -92,8 +96,12 @@
   --color-canvas: #111e18;
   --color-paper: #1b2c23;
   --color-stone: #293b30;
-  --color-butter: #403b22;
+  /* Brand forest, not a dark yellow (that reads as muddy olive) and not gold (too much yellow): the pricing card,
+     project headers, badges and call-to-action strips. */
+  --color-butter: #1f4a37;
   --color-sage: #263e2e;
+  --color-ice: #1b3450;
+  --color-azure: #7cbcff;
   --color-ink: #f4f2ec;
   --color-ink-soft: #a3afa7;
   --color-forest: #b8dabd;
@@ -121,11 +129,10 @@
 }
 
 /* Dark panels (.on-dark: problem, closing CTA, private-project card) keep their light-theme colours in dark mode, so
-   text-canvas stays light on pine and cards inside them stay light. Bright surfaces (.on-bright and every
-   .bg-butter, gold in dark mode, see below) use the same light-theme colours, so their content stays dark. */
+   text-canvas stays light on pine and cards inside them stay light. Bright panels (.on-bright: the green partnership
+   card) use the same light-theme colours, so their content stays dark. */
 :root[data-theme="dark"] .on-dark,
-:root[data-theme="dark"] .on-bright,
-:root[data-theme="dark"] .bg-butter {
+:root[data-theme="dark"] .on-bright {
   --color-canvas: #f4f2ec;
   --color-paper: #fbfaf7;
   --color-ink: #14211b;
@@ -135,15 +142,11 @@
   --color-sage: #dce8da;
   --color-butter: #f6e7b4;
   --color-stone: #e9e6dd;
+  --color-ice: #e2edfb;
+  --color-azure: #1668c7;
 }
 
-/* Dark mode: a dark butter tint reads as muddy olive, so butter surfaces (pricing card, project headers, badges,
-   call-to-action strips) turn brand gold with dark content. The partnership card turns brand green. */
-:root[data-theme="dark"] .bg-butter {
-  background-color: #f3bd33;
-  color: #14211b;
-}
-
+/* Dark mode: the partnership card turns brand green. */
 :root[data-theme="dark"] .on-bright.bright-green {
   background-color: #9dd29c;
 }
@@ -153,8 +156,8 @@
   color: #14211b;
 }
 
-/* A main button on a gold or green surface stays dark, as in the light theme. */
-:root[data-theme="dark"] :is(.on-bright, .bg-butter) .btn-ink {
+/* A main button on a bright panel stays dark, as in the light theme. */
+:root[data-theme="dark"] .on-bright .btn-ink {
   --btn-bg: #14211b;
   --btn-fill: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
   color: #f4f2ec;
@@ -165,10 +168,9 @@
   color: var(--color-on-brand);
 }
 
-/* Dark mode: the yellow buttons (main and gold) are the brand gradient, gold to green; the hover sweep runs the
+/* Dark mode: the main button turns yellow like .btn-sun, the brand gradient, gold to green; the hover sweep runs the
    other way, green to gold. The selected pill in a switcher (.action-pill) uses the same gradient. */
-:root[data-theme="dark"] .btn-ink,
-:root[data-theme="dark"] .btn-sun {
+:root[data-theme="dark"] .btn-ink {
   --btn-bg: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
   --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 50%, var(--fill-a) 100%);
 }
@@ -415,9 +417,10 @@
     color: var(--color-on-action);
   }
 
+  /* The yellow button is the brand gradient, gold to green; its hover sweep runs the other way, green to gold. */
   .btn-sun {
-    --btn-bg: var(--color-sun);
-    --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 55%, var(--fill-a) 100%);
+    --btn-bg: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
+    --btn-fill: linear-gradient(100deg, var(--fill-c) 0%, var(--fill-b) 50%, var(--fill-a) 100%);
     color: var(--color-ink);
   }
 
@@ -716,9 +719,9 @@
 
   .prose-blog a {
     font-weight: 600;
-    color: var(--color-forest);
+    color: var(--color-azure);
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--color-forest) 35%, transparent);
+    text-decoration-color: color-mix(in srgb, var(--color-azure) 35%, transparent);
     text-decoration-thickness: 1.5px;
     text-underline-offset: 4px;
     transition: text-decoration-color 0.2s;
