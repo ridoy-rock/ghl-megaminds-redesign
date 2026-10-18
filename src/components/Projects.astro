@@ -68,35 +68,51 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
 
                 <div
                   class:list={[
-                    'relative mt-auto overflow-hidden px-4 pt-7 sm:h-[290px] sm:px-10 sm:pt-9',
+                    'relative mt-auto overflow-hidden px-4 pt-7 sm:px-10 sm:pt-9',
                     // The table is cut by the card edge at every width; the site crop sits flush on the edge on phones.
-                    visual.kind === 'table' ? 'h-[250px]' : 'h-auto',
-                    panelTints[visual.tint],
+                    // With a phone beside it, the window sets the height at every width, so it always sits flush on the edge
+                    // and the taller phone is cut there too.
+                    visual.kind === 'table' ? 'h-[250px] sm:h-[290px]' : visual.mobile ? 'h-auto' : 'sm:h-[290px]',
+                    visual.tint && panelTints[visual.tint],
                   ]}
                 >
                   <div class="paper-glow pointer-events-none absolute -top-24 left-1/2 h-48 w-[70%] -translate-x-1/2 rounded-full bg-paper/50 blur-3xl" aria-hidden="true" />
                   {visual.kind === 'table' ? (
                     <ComparisonPreview />
                   ) : (
-                    <figure class="relative mx-auto w-full max-w-[700px] overflow-hidden rounded-t-[16px] bg-paper shadow-[0_28px_60px_-30px_rgb(20_33_27/0.55)] ring-1 ring-ink/[0.07] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5">
-                      <div class="flex h-8 items-center gap-1.5 px-3.5" aria-hidden="true">
-                        <span class="size-2.5 rounded-full bg-ink/15" />
-                        <span class="size-2.5 rounded-full bg-ink/15" />
-                        <span class="size-2.5 rounded-full bg-ink/15" />
-                        <span class="mx-auto flex h-5 items-center gap-1 rounded-full bg-canvas px-3 text-[11px] font-medium text-ink-soft">
-                          <Icon name="lock-simple-fill" class="size-2.5" />
-                          {visual.url}
-                        </span>
-                        <span class="w-12" />
-                      </div>
-                      <Image
-                        src={visual.image}
-                        alt={visual.alt}
-                        widths={[480, 720, 960, 1400]}
-                        sizes="(min-width: 1024px) 700px, 88vw"
-                        class="block h-auto w-full"
-                      />
-                    </figure>
+                    <div class="relative">
+                      <figure class:list={['relative mt-6 max-w-[700px] overflow-hidden sm:mt-8', visual.mobile ? 'mr-[calc(min(28%,150px)_+_1rem)] sm:mr-[calc(min(28%,150px)_+_1.5rem)]' : 'mx-auto', 'rounded-t-[16px] bg-paper shadow-[0_28px_60px_-30px_rgb(20_33_27/0.55)] ring-1 ring-ink/[0.07] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5']}>
+                        <div class="flex h-8 items-center gap-1.5 px-3.5" aria-hidden="true">
+                          <span class="size-2.5 shrink-0 rounded-full bg-ink/15" />
+                          <span class="size-2.5 shrink-0 rounded-full bg-ink/15" />
+                          <span class="size-2.5 shrink-0 rounded-full bg-ink/15" />
+                        </div>
+                        <Image
+                          src={visual.image}
+                          alt={visual.alt}
+                          widths={[480, 720, 960, 1400]}
+                          sizes="(min-width: 1024px) 700px, 88vw"
+                          class="block h-auto w-full"
+                        />
+                      </figure>
+                      {visual.mobile && (
+                        <figure class="absolute right-0 top-0 w-[28%] max-w-[150px] rounded-[24px] bg-[#0c1210] p-[5px] shadow-[0_28px_60px_-30px_rgb(20_33_27/0.55)] ring-1 ring-ink/10 transition-transform duration-500 ease-out-soft group-hover:-translate-y-2">
+                          <div class="overflow-hidden rounded-[19px]">
+                            <!-- Status bar in the page's own top colours, with the camera island -->
+                            <div class="relative h-[18px] bg-[linear-gradient(90deg,#64529f,#7762da_50%,#281f4c)]" aria-hidden="true">
+                              <span class="absolute left-1/2 top-[5px] h-[9px] w-[34%] -translate-x-1/2 rounded-full bg-black" />
+                            </div>
+                            <Image
+                              src={visual.mobile.image}
+                              alt={visual.mobile.alt}
+                              widths={[300, 450]}
+                              sizes="150px"
+                              class="block h-auto w-full"
+                            />
+                          </div>
+                        </figure>
+                      )}
+                    </div>
                   )}
                 </div>
               </article>

@@ -27,6 +27,7 @@ import jamesPoster from '../assets/testimonials/james-barton.jpg';
 import bernhardPoster from '../assets/testimonials/bernhard-buhlmann.jpg';
 
 import automarkHero from '../assets/projects/automark-hero.jpg';
+import automarkMobile from '../assets/projects/automark-mobile.jpg';
 
 // HighLevel embeds on the white-label domain (same calendar and form the live site uses).
 export const BOOKING_EMBED_URL = 'https://links.ghlmegaminds.com/widget/booking/b40dt1YgHIrDlJDWZd1D';
@@ -256,10 +257,11 @@ export type Project = {
         kind: 'shot';
         /** Top of the live site (wide crop), shown in a window that rises out of the bottom of the card. */
         image: ImageMetadata;
-        /** Address shown in the window bar. */
-        url: string;
         alt: string;
-        tint: 'sage' | 'stone' | 'butter';
+        /** Phone screenshot of the same site, shown in a phone beside the window. */
+        mobile?: { image: ImageMetadata; alt: string };
+        /** Tinted panel behind the screenshots; none lets the card show through. */
+        tint?: 'sage' | 'stone' | 'butter';
       }
     | { kind: 'table'; tint: 'sage' | 'stone' | 'butter' }
     | { kind: 'logo'; logo: 'n8n' | 'telegram' }
@@ -320,9 +322,8 @@ export const projects: Project[] = [
     visual: {
       kind: 'shot',
       image: automarkHero,
-      url: 'automark-astro.vercel.app',
       alt: 'Astro + GoHighLevel Website Template screenshot',
-      tint: 'stone',
+      mobile: { image: automarkMobile, alt: 'The same template on a phone' },
     },
   },
 ];
