@@ -138,6 +138,12 @@
   --color-stone: #e9e6dd;
 }
 
+/* Soft paper-coloured glows behind panel art are a light-theme effect; in dark mode paper is dark and they read as
+   smudges, so they are hidden. */
+:root[data-theme="dark"] .paper-glow {
+  display: none;
+}
+
 /* Its text colour is set too: the page's light text would otherwise be inherited. */
 :root[data-theme="dark"] .keep-light {
   color: #14211b;

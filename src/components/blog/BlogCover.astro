@@ -40,13 +40,13 @@ const big = size !== 'card';
     </div>
   ) : cover && cover.art === 'comparison' ? (
     <div class:list={['relative overflow-hidden bg-sage px-[7%] pt-[7%]', frame]} aria-hidden="true">
-      <div class="pointer-events-none absolute -top-24 left-1/2 h-48 w-[70%] -translate-x-1/2 rounded-full bg-paper/50 blur-3xl" />
+      <div class="paper-glow pointer-events-none absolute -top-24 left-1/2 h-48 w-[70%] -translate-x-1/2 rounded-full bg-paper/50 blur-3xl" />
       <ComparisonPreview />
     </div>
   ) : (
     <div class:list={['relative grid place-items-center overflow-hidden bg-butter', frame]} aria-hidden="true">
       <div class="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full border-[44px] border-ink/[0.04]" />
-      {big && <div class="pointer-events-none absolute -bottom-32 -left-20 size-80 rounded-full bg-paper/40 blur-3xl" />}
+      {big && <div class="paper-glow pointer-events-none absolute -bottom-32 -left-20 size-80 rounded-full bg-paper/40 blur-3xl" />}
       <div class="relative flex flex-col items-center">
         <div class:list={['flex items-center', big ? 'gap-4 sm:gap-6' : 'gap-3']}>
           <figure class="flex flex-col items-center">
