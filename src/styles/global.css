@@ -72,8 +72,6 @@
   --portrait-b: #ece8df;
   --portrait-c: #e2ddd1;
   --node-ring: rgb(226 166 20 / 0.55);
-  /* The logo's three dots: yellow #ffc800, blue #2896fb, green #17c94b. The blue is used as a dark-mode accent. */
-  --logo-blue: #2896fb;
 }
 
 /* Satoshi (Indian Type Foundry, via Fontshare; free for commercial use): the title font. One variable file covers every
@@ -153,53 +151,6 @@
   background-color: var(--color-card);
   outline: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
   outline-offset: -1px;
-}
-
-/*
-  Dark mode accents in the logo's blue, next to its yellow (marker, buttons) and green (the theme itself). Small
-  touches only, never blue surfaces: section-label icons, arrow links and article links, the hero's "Calls booked"
-  chip, the reading-progress bar and the current contents entry, and the keyboard focus ring.
-*/
-:root[data-theme="dark"] .eyebrow-icon {
-  color: var(--logo-blue);
-}
-
-:root[data-theme="dark"] .link-arrow {
-  text-decoration-color: color-mix(in srgb, var(--logo-blue) 55%, transparent);
-}
-
-:root[data-theme="dark"] .link-arrow:hover {
-  text-decoration-color: var(--logo-blue);
-}
-
-:root[data-theme="dark"] .link-arrow .btn-arrow {
-  color: var(--logo-blue);
-}
-
-:root[data-theme="dark"] .prose-blog a:not(.btn) {
-  color: var(--logo-blue);
-  text-decoration-color: color-mix(in srgb, var(--logo-blue) 40%, transparent);
-}
-
-:root[data-theme="dark"] .prose-blog a:not(.btn):hover {
-  text-decoration-color: currentColor;
-}
-
-:root[data-theme="dark"] .chip-blue {
-  background-color: color-mix(in srgb, var(--logo-blue) 18%, transparent);
-  color: var(--logo-blue);
-}
-
-:root[data-theme="dark"] .reading-progress {
-  background-color: var(--logo-blue);
-}
-
-:root[data-theme="dark"] [data-toc] a[aria-current="true"] {
-  border-color: var(--logo-blue);
-}
-
-:root[data-theme="dark"] :focus-visible {
-  outline-color: var(--logo-blue);
 }
 
 /* The gold button keeps dark text in dark mode (ink turns light there). */
