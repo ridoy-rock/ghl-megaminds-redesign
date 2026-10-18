@@ -27,6 +27,6 @@ const iconColor = { light: 'text-forest', dark: 'text-sun', sun: 'text-on-brand'
   ]}
   style={style}
 >
-  <Icon name={icon} class:list={['size-3.5 shrink-0', iconColor[tone]]} />
+  <Icon name={icon} class:list={['size-3.5 shrink-0', iconColor[tone], tone === 'light' && 'eyebrow-icon']} />
   <span><slot /></span>
 </p>

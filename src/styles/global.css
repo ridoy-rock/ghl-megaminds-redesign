@@ -25,10 +25,6 @@
   --color-sun: #f3bd33;
   --color-sun-soft: #f7cd5c;
   --color-leaf: #2f8a55;
-  /* The logo's blue (#2896fb), next to its yellow and green: azure for small text and icons (deepened so it reads on
-     cream), ice for pale blue surfaces. */
-  --color-azure: #1668c7;
-  --color-ice: #e2edfb;
 
   /* Semantic tokens that flip with the light/dark theme (dark values below, :root[data-theme="dark"]). */
   --color-deep: #e9e6dd;
@@ -76,6 +72,8 @@
   --portrait-b: #ece8df;
   --portrait-c: #e2ddd1;
   --node-ring: rgb(226 166 20 / 0.55);
+  /* The logo's three dots: yellow #ffc800, blue #2896fb, green #17c94b. The blue is used as a dark-mode accent. */
+  --logo-blue: #2896fb;
 }
 
 /* Satoshi (Indian Type Foundry, via Fontshare; free for commercial use): the title font. One variable file covers every
@@ -100,8 +98,6 @@
      project headers, badges and call-to-action strips. */
   --color-butter: #1f4a37;
   --color-sage: #263e2e;
-  --color-ice: #1b3450;
-  --color-azure: #7cbcff;
   --color-ink: #f4f2ec;
   --color-ink-soft: #a3afa7;
   --color-forest: #b8dabd;
@@ -140,8 +136,6 @@
   --color-sage: #dce8da;
   --color-butter: #f6e7b4;
   --color-stone: #e9e6dd;
-  --color-ice: #e2edfb;
-  --color-azure: #1668c7;
 }
 
 /* Dark mode: the four solution cards share the first card's background and faint border (pricing and partnership
@@ -159,6 +153,53 @@
   background-color: var(--color-card);
   outline: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
   outline-offset: -1px;
+}
+
+/*
+  Dark mode accents in the logo's blue, next to its yellow (marker, buttons) and green (the theme itself). Small
+  touches only, never blue surfaces: section-label icons, arrow links and article links, the hero's "Calls booked"
+  chip, the reading-progress bar and the current contents entry, and the keyboard focus ring.
+*/
+:root[data-theme="dark"] .eyebrow-icon {
+  color: var(--logo-blue);
+}
+
+:root[data-theme="dark"] .link-arrow {
+  text-decoration-color: color-mix(in srgb, var(--logo-blue) 55%, transparent);
+}
+
+:root[data-theme="dark"] .link-arrow:hover {
+  text-decoration-color: var(--logo-blue);
+}
+
+:root[data-theme="dark"] .link-arrow .btn-arrow {
+  color: var(--logo-blue);
+}
+
+:root[data-theme="dark"] .prose-blog a:not(.btn) {
+  color: var(--logo-blue);
+  text-decoration-color: color-mix(in srgb, var(--logo-blue) 40%, transparent);
+}
+
+:root[data-theme="dark"] .prose-blog a:not(.btn):hover {
+  text-decoration-color: currentColor;
+}
+
+:root[data-theme="dark"] .chip-blue {
+  background-color: color-mix(in srgb, var(--logo-blue) 18%, transparent);
+  color: var(--logo-blue);
+}
+
+:root[data-theme="dark"] .reading-progress {
+  background-color: var(--logo-blue);
+}
+
+:root[data-theme="dark"] [data-toc] a[aria-current="true"] {
+  border-color: var(--logo-blue);
+}
+
+:root[data-theme="dark"] :focus-visible {
+  outline-color: var(--logo-blue);
 }
 
 /* The gold button keeps dark text in dark mode (ink turns light there). */
@@ -717,9 +758,9 @@
 
   .prose-blog a {
     font-weight: 600;
-    color: var(--color-azure);
+    color: var(--color-forest);
     text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--color-azure) 35%, transparent);
+    text-decoration-color: color-mix(in srgb, var(--color-forest) 35%, transparent);
     text-decoration-thickness: 1.5px;
     text-underline-offset: 4px;
     transition: text-decoration-color 0.2s;

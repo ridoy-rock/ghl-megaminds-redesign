@@ -7,9 +7,6 @@ import { art, themeOf } from '../lib/theme';
 
 // The homepage sends this button to the booking page; /v2 scrolls to its embedded calendar.
 const blue = themeOf(Astro.url) === 'blue';
-// The three steps take the logo's three colours in its order: yellow, blue, green (circle tint and step number).
-const stepTints = blue ? [] : ['bg-butter', 'bg-ice', 'bg-sage'];
-const stepNumbers = blue ? [] : ['text-gold', 'text-azure', 'text-forest'];
 ---
 
 <section id="how-it-works" class="scroll-mt-20 py-24 lg:py-32">
@@ -37,7 +34,7 @@ const stepNumbers = blue ? [] : ['text-gold', 'text-azure', 'text-forest'];
       {
         steps.map((step, i) => (
           <li class="relative text-center" data-reveal="pop" style={`--d: ${i * 220}`}>
-            <div class:list={['mx-auto grid size-44 place-items-center rounded-full ring-1 ring-ink/[0.08]', stepTints[i] ?? 'bg-paper']}>
+            <div class="mx-auto grid size-44 place-items-center rounded-full bg-paper ring-1 ring-ink/[0.08]">
               <Image
                 src={art(step.art, Astro.url)}
                 alt=""
@@ -48,7 +45,7 @@ const stepNumbers = blue ? [] : ['text-gold', 'text-azure', 'text-forest'];
               />
             </div>
             <p class="mt-7 inline-flex items-center gap-2 rounded-full bg-paper px-3 py-1 text-[13px] font-semibold ring-1 ring-ink/10">
-              <span class:list={['font-display font-bold', stepNumbers[i]]}>{step.n}</span>
+              <span class="font-display font-bold">{step.n}</span>
               <span class="h-3 w-px bg-ink/20" aria-hidden="true" />
               <span class="text-ink-soft">{step.meta}</span>
             </p>
