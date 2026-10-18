@@ -43,13 +43,14 @@ import { usualOptions, megamindsPoints, PLANS_HREF } from '../data/site';
       </div>
 
       <div class="mt-16 grid gap-6 lg:grid-cols-12 lg:gap-5">
-        <div class="lg:col-span-6">
+        <!-- Side by side, the three options share the Megaminds card's height, so both columns end on one line. -->
+        <div class="flex flex-col lg:col-span-6">
           <p class="mb-4 text-sm font-semibold text-canvas/60">The usual options</p>
-          <ul class="grid gap-3">
+          <ul class="grid gap-3 lg:grow lg:auto-rows-fr">
             {
               usualOptions.map((option, i) => (
                 <li
-                  class="rounded-card bg-pine-raised p-6 ring-1 ring-canvas/10 sm:p-7"
+                  class="rounded-card bg-pine-raised p-6 ring-1 ring-canvas/10 sm:p-7 lg:flex lg:flex-col lg:justify-center"
                   data-reveal="left"
                   style={`--d: ${i * 90}`}
                 >
