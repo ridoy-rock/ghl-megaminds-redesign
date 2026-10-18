@@ -129,10 +129,8 @@
 }
 
 /* Dark panels (.on-dark: problem, closing CTA, private-project card) keep their light-theme colours in dark mode, so
-   text-canvas stays light on pine and cards inside them stay light. Bright panels (.on-bright: the green partnership
-   card) use the same light-theme colours, so their content stays dark. */
-:root[data-theme="dark"] .on-dark,
-:root[data-theme="dark"] .on-bright {
+   text-canvas stays light on pine and cards inside them stay light. */
+:root[data-theme="dark"] .on-dark {
   --color-canvas: #f4f2ec;
   --color-paper: #fbfaf7;
   --color-ink: #14211b;
@@ -146,21 +144,9 @@
   --color-azure: #1668c7;
 }
 
-/* Dark mode: the partnership card turns brand green. */
-:root[data-theme="dark"] .on-bright.bright-green {
-  background-color: #9dd29c;
-}
-
-/* Text on bright surfaces is set here: the page's light text colour would otherwise be inherited. */
-:root[data-theme="dark"] .on-bright {
-  color: #14211b;
-}
-
-/* A main button on a bright panel stays dark, as in the light theme. */
-:root[data-theme="dark"] .on-bright .btn-ink {
-  --btn-bg: #14211b;
-  --btn-fill: linear-gradient(100deg, var(--fill-a) 0%, var(--fill-b) 50%, var(--fill-c) 100%);
-  color: #f4f2ec;
+/* Dark mode: the four solution cards (engineering, pricing, partnership, white-label) share one brand forest green. */
+:root[data-theme="dark"] .bento-card {
+  background-color: #1f4a37;
 }
 
 /* The gold button keeps dark text in dark mode (ink turns light there). */
