@@ -263,7 +263,7 @@ export type Project = {
         /** Tinted panel behind the screenshots; none lets the card show through. */
         tint?: 'sage' | 'stone' | 'butter';
       }
-    | { kind: 'table'; tint: 'sage' | 'stone' | 'butter' }
+    | { kind: 'table'; tint?: 'sage' | 'stone' | 'butter' }
     | { kind: 'logo'; logo: 'n8n' | 'telegram' }
     | { kind: 'glyph'; glyph: string; mono?: boolean };
 };
@@ -284,7 +284,7 @@ export const projects: Project[] = [
     body: 'Show prospects how many subscriptions your CRM replaces and exactly what they save every month. Interactive comparison tables built for SaaS resellers.',
     href: 'https://hlcomparisontable.ghlmegaminds.com/',
     cta: 'Live Demo',
-    visual: { kind: 'table', tint: 'sage' },
+    visual: { kind: 'table' },
   },
   {
     type: 'GoHighLevel Custom App',
