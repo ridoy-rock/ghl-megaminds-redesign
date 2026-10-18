@@ -144,9 +144,21 @@
   --color-azure: #1668c7;
 }
 
-/* Dark mode: the four solution cards (engineering, pricing, partnership, white-label) share one brand forest green. */
+/* Dark mode: the four solution cards share the first card's background and faint border (pricing and partnership
+   are butter and sage in the light theme). The message preview inside the partnership card sits one step lighter. */
 :root[data-theme="dark"] .bento-card {
-  background-color: #1f4a37;
+  background-color: var(--color-paper);
+}
+
+:root[data-theme="dark"] .bento-card:is(.bg-butter, .bg-sage) {
+  outline: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+  outline-offset: -1px;
+}
+
+:root[data-theme="dark"] .bento-note {
+  background-color: var(--color-card);
+  outline: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  outline-offset: -1px;
 }
 
 /* The gold button keeps dark text in dark mode (ink turns light there). */
