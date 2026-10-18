@@ -68,7 +68,8 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
 
                 <div
                   class:list={[
-                    'relative mt-auto overflow-hidden px-4 pt-7 sm:px-10 sm:pt-9',
+                    'relative mt-auto overflow-hidden px-4 sm:px-10',
+                    visual.mobile ? 'pt-2 sm:pt-3' : 'pt-7 sm:pt-9',
                     // The table is cut by the card edge at every width; the site crop sits flush on the edge on phones.
                     // With a phone beside it, the window sets the height at every width, so it always sits flush on the edge
                     // and the taller phone is cut there too.
@@ -80,19 +81,20 @@ const panelTints = { sage: 'bg-sage', stone: 'bg-stone', butter: 'bg-butter' };
                   {visual.kind === 'table' ? (
                     <ComparisonPreview />
                   ) : (
-                    <div class="relative">
-                      <figure class:list={['relative mt-6 max-w-[700px] overflow-hidden sm:mt-8', visual.mobile ? 'mr-[calc(min(28%,150px)_+_1rem)] sm:mr-[calc(min(28%,150px)_+_1.5rem)]' : 'mx-auto', 'rounded-t-[16px] bg-paper shadow-[0_28px_60px_-30px_rgb(20_33_27/0.55)] ring-1 ring-ink/[0.07] transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5']}>
-                        <div class="flex h-8 items-center gap-1.5 px-3.5" aria-hidden="true">
-                          <span class="size-2.5 shrink-0 rounded-full bg-ink/15" />
-                          <span class="size-2.5 shrink-0 rounded-full bg-ink/15" />
-                          <span class="size-2.5 shrink-0 rounded-full bg-ink/15" />
+                    <div class:list={['relative', visual.mobile && 'pt-6 sm:pt-8']}>
+                      <figure class:list={['relative max-w-[700px] overflow-hidden', visual.mobile ? 'mr-[calc(min(28%,150px)_+_1rem)] sm:mr-[calc(min(28%,150px)_+_1.5rem)]' : 'mx-auto mt-6 sm:mt-8', 'rounded-t-[16px] bg-[#0c1210] shadow-[0_28px_60px_-30px_rgb(20_33_27/0.55)] ring-1 ring-ink/10 transition-transform duration-500 ease-out-soft group-hover:-translate-y-1.5']}>
+                        <!-- Dark window frame, like the phone beside it -->
+                        <div class="flex h-6 items-center gap-1.5 px-3" aria-hidden="true">
+                          <span class="size-2 shrink-0 rounded-full bg-white/20" />
+                          <span class="size-2 shrink-0 rounded-full bg-white/20" />
+                          <span class="size-2 shrink-0 rounded-full bg-white/20" />
                         </div>
                         <Image
                           src={visual.image}
                           alt={visual.alt}
                           widths={[480, 720, 960, 1400]}
                           sizes="(min-width: 1024px) 700px, 88vw"
-                          class="block h-auto w-full"
+                          class="block aspect-[5/2] h-auto w-full object-cover object-top"
                         />
                       </figure>
                       {visual.mobile && (
